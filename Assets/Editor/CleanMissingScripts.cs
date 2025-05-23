@@ -2,6 +2,10 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
+
+/// <summary>
+/// clean up missing scripts tool(in menu).
+/// </summary>
 public class MissingScriptCleanerAdvanced
 {
     [MenuItem("Tools/Cleanup/ Deep Clean Missing Scripts in All Prefabs")]
