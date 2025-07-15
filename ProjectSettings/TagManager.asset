@@ -5,14 +5,15 @@ TagManager:
   serializedVersion: 2
   tags:
   - GridMap
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - GridMap
   - Water
   - UI
-  - 
+  - Enemy
   - 
   - 
   - 

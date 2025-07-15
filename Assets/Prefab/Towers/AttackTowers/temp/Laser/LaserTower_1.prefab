@@ -231,7 +231,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1
+      scalar: 4
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
@@ -5237,7 +5237,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2.2
+      scalar: 3
       minScalar: 0.6
       maxCurve:
         serializedVersion: 2
@@ -14682,7 +14682,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 14c1ded5940d444d888803bc9cad78a6, type: 2}
+  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14773,6 +14773,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4747494351440812}
+  - component: {fileID: 7477049708547264460}
   m_Layer: 10
   m_Name: LaserTower_1
   m_TagString: Untagged
@@ -14799,6 +14800,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7477049708547264460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839896235219840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0adeba002e3bb2044b35aaacfbfff625, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzle: {fileID: 4283431737270932}
+  turretRotatePart: {fileID: 4668421161031434}
+  energyConsumptionRate: 0
+  maxEnergy: 0
+  currentEnergy: 0
 --- !u!1 &1901571933597918
 GameObject:
   m_ObjectHideFlags: 0
@@ -29286,7 +29304,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 2.5
       minScalar: 0.0001
       maxCurve:
         serializedVersion: 2
@@ -33891,7 +33909,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b5e0b3982ded947cda17890e729362aa, type: 2}
+  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -38771,7 +38789,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b5e0b3982ded947cda17890e729362aa, type: 2}
+  - {fileID: 2100000, guid: 0d092bb197ffbe14ab308860ab412424, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

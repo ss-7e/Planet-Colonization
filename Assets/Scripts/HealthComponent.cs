@@ -5,19 +5,19 @@ using UnityEngine.UIElements;
 
 public class HealthComponent
 {
-    public int maxHealth { get; private set; }
-    public int health { get; private set; }
+    public float maxHealth { get; private set; }
+    public float health { get; private set; }
 
-    public HealthComponent(int H, int maxH)
+    public HealthComponent(float H, float maxH)
     {
         health = H;
         maxHealth = maxH;
     }
-    public void SetHealth(int newHealth)
+    public void SetHealth(float newHealth)
     {
         health = newHealth;
     }
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         health -= damage;
         if (health <= 0)
@@ -27,7 +27,3 @@ public class HealthComponent
     }
 }
 
-public class temp : MonoBehaviour
-{
-    
-}

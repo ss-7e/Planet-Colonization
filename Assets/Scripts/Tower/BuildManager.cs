@@ -36,11 +36,24 @@ public class BuildManager : MonoBehaviour
         {
             Vector3 towerPos = grid.pos + new Vector3(0, 0.5f, 0);
             GameObject turret = (GameObject)Instantiate(turretToBuild, towerPos, Quaternion.identity);
-            grid.buildTower(turret);
+            GameObject Towers =  GameObject.Find("Towers");
+            if (Towers == null)
+            {
+                Towers = new GameObject("Towers");
+            }
+            turret.transform.parent = Towers.transform;
+            Transform quad = turret.transform.Find("Quad");
+            if (quad != null)
+            {
+                quad.gameObject.SetActive(false);
+            }
+            grid.AssignTurretToGrid(turret);
+            UIManager.instance.setHealthBar(turret);
             turretToBuild = null;
         }
         else
         {
+            //cant build UI
             Debug.Log("Cannot build here!");
         }
     }

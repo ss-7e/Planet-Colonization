@@ -1,3 +1,5 @@
+using Game.Tower;
+using Game.Turret;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -5,23 +7,22 @@ public class GridSelector : MonoBehaviour
 {
     public GameObject selectionIndicator;
     public float maxDistance = 20f;
-    private Grid gridSelected;
-    private void Start()
-    {
-    }
 
+    private Grid gridSelected;
+    private TurretBase previousTurret = null;
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
-            HighlightGrid();
-        }
-        if(Input.GetMouseButtonUp(0))
-        {
-            selectionIndicator.SetActive(false);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            ClickGrid();
             buildTowerAt();
         }
-        //HighlightGrid();
+        HighlightGrid();
     }
     private void HighlightGrid()
     {
@@ -40,7 +41,8 @@ public class GridSelector : MonoBehaviour
                 hitPoint.z += GridManager.instance.width / 2;
                 int x = Mathf.RoundToInt(hitPoint.x);
                 int z = Mathf.RoundToInt(hitPoint.z);
-                hitPoint = GridManager.instance.grid[x, z].pos;
+                Vector3 pos = GridManager.instance.grid[x, z].pos;
+                hitPoint = pos;
                 hitPoint.y += 0.5f;
                 selectionIndicator.SetActive(true);
                 selectionIndicator.transform.position = hitPoint;
@@ -51,5 +53,29 @@ public class GridSelector : MonoBehaviour
     private void buildTowerAt()
     {
         BuildManager.instance.BuildTurret(gridSelected);
+    }
+    private void ClickGrid()
+    {
+        if (gridSelected != null)
+        {
+            if (gridSelected.hasTower())
+            {
+                TurretBase turret = gridSelected.tower.GetComponent<TurretBase>();
+                Vector2 clickPosition = Input.mousePosition;
+                float screenWidth = Screen.width;
+                bool isLeft = clickPosition.x < screenWidth / 2f;
+                UIManager.instance.turretUI.SetUI(turret, isLeft);
+                previousTurret = turret;
+            }
+            else if (previousTurret != null)
+            {
+                UIManager.instance.turretUI.HideUI(previousTurret);
+                previousTurret = null;
+            }
+        }
+        else
+        {
+            Debug.Log("No grid selected.");
+        }
     }
 }

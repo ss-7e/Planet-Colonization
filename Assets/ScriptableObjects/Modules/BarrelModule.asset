@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adaf3f978f8f4b14cabe9c86c8affe8f, type: 3}
+  m_Name: BarrelModule
+  m_EditorClassIdentifier: 
+  moduleName: 
+  description: 
+  stackable: 1
+  weight: 1
+  heatCapacitySet: 90
+  caliber: 100
+  lengthIncaliber: 39
+  newModelPrefab: {fileID: 1875090778556656, guid: 7191a0df8b6695d449a0f18a361bc311, type: 3}
