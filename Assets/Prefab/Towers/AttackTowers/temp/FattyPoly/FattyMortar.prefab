@@ -278,9 +278,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48daa38cd9cb87e45beb361f854be12f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _muzzle: {fileID: 4411725851834284}
   turretRotatePart: {fileID: 4940591295711036}
   radarCount: 3
-  shellPrefab: {fileID: 0}
+  defaltRadar: {fileID: 11400000, guid: 10394af779caa66448802462a72be06e, type: 2}
+  defaltReloader: {fileID: 11400000, guid: 9aa22746580a36f479bc5281ba8512ed, type: 2}
+  defaltMotor: {fileID: 11400000, guid: 515180ce49cf88f43b17da8a578d10ff, type: 2}
+  defaltFireControl: {fileID: 11400000, guid: 1ad9b7aea3119d64fa171be91b63d51f, type: 2}
+  defaultAmmoPack: {fileID: 11400000, guid: 1a65ac9c3dbfd5a45a2e64d0e0bcf3d4, type: 2}
+  _maxTargetsPerAttack: 1
+  _totalWeight: 0
+  shellPrefab: {fileID: 2995435287096241545, guid: c41da3a60b3e3c349a933e4f7b960d44, type: 3}
   barrelLengthInCalibers: 0
 --- !u!1 &1658705116820196
 GameObject:

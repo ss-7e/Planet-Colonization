@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using Game.Ammo;
 using Game.Turret;
 using System.Collections.Generic;
-using Game.Ammo;
+using Unity.Android.Gradle.Manifest;
+using Unity.VisualScripting;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Modules
 {
@@ -27,7 +30,7 @@ namespace Game.Modules
                     }
                 }
             }
-
+            
 
             Vector3 targetPosition = Vector3.zero;
             float count = 0f;
@@ -40,43 +43,84 @@ namespace Game.Modules
             {
                 targetPosition /= count;
             }
-            Vector3 targetDirection = targetPosition - turret.transform.position;
+            Vector3 targetDirection = targetPosition - turret.muzzle.position;
 
 
             ReloaderModule reloader = turret.reloaderInstance.module as ReloaderModule;
-            ShellData shell = null;
+            ShellData shellToFire = null;
             if (reloader != null)
             {
                 reloader.ReloaderUpdate(turret.reloaderInstance, turret.ammoStorage);
-                shell = turret.reloaderInstance.GetFiringShell();
+                shellToFire = turret.reloaderInstance.GetFiringShell();
             }
             else
             {
                 Debug.LogWarning("Reloader is null.");
             }
-            if(shell != null)
+
+            bool canFire = true;
+            if(shellToFire != null && count > 0.1f)
             {
-                DirectionCalculate(turret, shell, ref targetDirection);
+                canFire = AimDirectionCalculate(turret, shellToFire, ref targetDirection);
+                float speed = shellToFire.propellantEnergy / 1000f;
             }
 
-            if (targetDirection.magnitude < 0.1f)
+            
+            if (targetDirection.magnitude < 0.1f || count < 0.1f || !canFire)
             {
                 targetDirection = turret.transform.forward; 
             }
+
+
             MotorModule motor = turret.motorInstance.module as MotorModule;
             if (motor != null)
             {
                 motor.RotateTurret(turret.rotatePart, targetDirection, turret);
             }
+
+            if((turret.rotatePart.forward - targetDirection.normalized).magnitude < 0.1f 
+                && shellToFire != null && canFire)
+            {
+                Fire(shellToFire, turret, targetDirection);
+                reloader.Fire(turret.reloaderInstance);
+                canFire = false; 
+            }
         }
         
-        public virtual void DirectionCalculate(TurretBase turret, ShellData shell, ref Vector3 targetDirection)
+        public virtual void Fire(ShellData shellToFire, TurretBase turret, Vector3 fireDirection)
         {
+            GameObject shellObject = Instantiate(turret.shellPrefab,turret.muzzle.position, turret.muzzle.rotation);
+            Shell shell = shellObject.GetComponent<Shell>();
+            shell.ShellData = shellToFire;
+            fireDirection += Random.insideUnitSphere / 5.0f;
+            fireDirection.Normalize();
+            shell.speedVec = fireDirection * shellToFire.propellantEnergy / 1000f; 
+            shell.transform.SetParent(turret.transform);
+            shell.SetState(new FiredState());
+            shell.fired = true;
+        }
+
+
+        public virtual bool AimDirectionCalculate(TurretBase turret, ShellData shell, ref Vector3 targetDirection)
+        {
+            Vector3 targetDirectionXZ = new Vector3(targetDirection.x, 0f, targetDirection.z);
             float speed = shell.propellantEnergy / 1000f;
-            Vector3 gravity = PlanetDataManager.instance.gravity;
-            float timeToTarget = targetDirection.magnitude / speed;
-            Vector3 gravityCompensation = 0.5f * gravity * timeToTarget * timeToTarget;
-            targetDirection -= gravityCompensation;
+            float distance = targetDirectionXZ.magnitude;
+            float height = targetDirection.y;
+            float g =  -PlanetDataManager.instance.gravity.y;
+
+            float speedSquared = speed * speed;
+
+            float underSqrt = speedSquared * speedSquared - g * (g * distance * distance + 2 * height * speedSquared);
+            if (underSqrt < 0f)
+            {
+                targetDirection = turret.transform.forward; // fallback to forward direction
+                return false;
+            }
+            float sqrt = Mathf.Sqrt(underSqrt);
+
+            targetDirection.y = (speedSquared - sqrt) / g;
+            return true;
         }
     }
 }

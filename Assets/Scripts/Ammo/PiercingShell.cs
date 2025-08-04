@@ -5,6 +5,4 @@ using Game.Ammo;
 public class PiercingShell : Shell
 {
     public float piercingPower = 50f;
-    
-    
 }

@@ -12,7 +12,7 @@ public class GridMeshGeneratorEditor : Editor
 
         if (GUILayout.Button("Generate Grid Mesh (Editor)"))
         {
-            generator.GenerateGridMesh();
+            generator.Regenerate();
 
             EditorUtility.SetDirty(generator.gameObject);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(generator.gameObject.scene);

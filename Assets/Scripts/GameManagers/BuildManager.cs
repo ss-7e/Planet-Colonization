@@ -50,6 +50,7 @@ public class BuildManager : MonoBehaviour
             grid.AssignTurretToGrid(turret);
             UIManager.instance.setHealthBar(turret);
             turretToBuild = null;
+            UIManager.instance.downSelectionBarFrame.gameObject.SetActive(false);
         }
         else
         {

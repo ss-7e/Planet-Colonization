@@ -8,8 +8,12 @@ namespace Game.Turret
 {
     public class TurretBase : MonoBehaviour, IDamageable
     {
-        [SerializeField]
-        public Transform muzzle { get; private set; }
+        [SerializeField] protected Transform _muzzle;
+        public Transform muzzle { 
+            get=> _muzzle;
+            protected set { _muzzle = value; }
+        }
+
         [SerializeField]protected Transform turretRotatePart;
         public Transform rotatePart => turretRotatePart;
 
@@ -26,6 +30,7 @@ namespace Game.Turret
         public MotorModuleData motorInstance { get; private set; }
 
         public TurretAmmoStorage ammoStorage { get; private set; }
+        [SerializeField] protected PackedAmmo defaultAmmoPack;
 
         [SerializeField] protected int _maxTargetsPerAttack = 1;
         public int maxTargetsPerAttack
@@ -52,6 +57,9 @@ namespace Game.Turret
             }
         }
 
+
+        public GameObject shellPrefab;
+
         protected void Start()
         {
             healthComp = new HealthComponent(100f, 100f);
@@ -59,7 +67,19 @@ namespace Game.Turret
             radarInstances[0] = new RadarModuleData(defaltRadar);
             reloaderInstance = new ReloaderModuleData(defaltReloader);
             motorInstance = new MotorModuleData(defaltMotor);
+            ammoStorage = new TurretAmmoStorage();
+            totalWeight = 5f;
+            if (defaultAmmoPack != null)
+            {
+                defaultAmmoPack.InitTurretStorage(ammoStorage);
+            }
         }
+
+        protected void Update()
+        {
+            defaltFireControl?.FireControlUpdate(this);
+        }
+        
         public void TakeDamage(float damage)
         {
             healthComp.TakeDamage(damage);

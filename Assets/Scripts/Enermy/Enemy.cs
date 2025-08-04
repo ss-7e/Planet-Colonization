@@ -6,6 +6,7 @@ namespace Game.Entites
     public class Enemy : MonoBehaviour, IEnemyDamageable
     {
         public ParticleSystem explosion;
+        [SerializeField]protected float maxHeight;
         public float armorValue { get; private set; } = 0f;
         public float wearResistance { get; private set; } = 0f;
         public float attackValue { get; private set; } = 10f;
@@ -22,12 +23,13 @@ namespace Game.Entites
 
         protected void Update()
         {
-            if (healthComp.health <= 0)
+            if(transform.position.y > maxHeight)
             {
-                Die();
+                Vector3 h = transform.position;
+                h.y -= 0.1f;
+                transform.position = h;
             }
-            ttl -= Time.deltaTime;
-            if (ttl <= 0)
+            if (healthComp.health <= 0)
             {
                 Die();
             }
@@ -45,7 +47,7 @@ namespace Game.Entites
             Debug.Log("Enermy wear resistance set to " + wearResistance);
         }
 
-        void Die()
+        public void Die()
         {
             Debug.Log("Enermy died.");
             Instantiate(explosion, transform.position, transform.rotation);

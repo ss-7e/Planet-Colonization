@@ -16,6 +16,6 @@ MonoBehaviour:
   description: DefaltRadar
   stackable: 1
   weight: 1
-  searchSensor: {fileID: 0}
+  searchSensor: {fileID: 11400000, guid: cc7518474b2f915418b180a0ebddb85c, type: 2}
   lockSensor: {fileID: 0}
   maxTargets: 1

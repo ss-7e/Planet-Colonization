@@ -41,12 +41,12 @@ public class GridSelector : MonoBehaviour
                 hitPoint.z += GridManager.instance.width / 2;
                 int x = Mathf.RoundToInt(hitPoint.x);
                 int z = Mathf.RoundToInt(hitPoint.z);
-                Vector3 pos = GridManager.instance.grid[x, z].pos;
+                Vector3 pos = GridManager.instance.GetGridXY(x, z).pos;
                 hitPoint = pos;
                 hitPoint.y += 0.5f;
                 selectionIndicator.SetActive(true);
                 selectionIndicator.transform.position = hitPoint;
-                gridSelected = GridManager.instance.grid[x, z];
+                gridSelected = GridManager.instance.GetGridXY(x, z);
             }
         }
     }
@@ -68,7 +68,7 @@ public class GridSelector : MonoBehaviour
                 previousTurret = turret;
             }
             else if (previousTurret != null)
-            {
+            {   
                 UIManager.instance.turretUI.HideUI(previousTurret);
                 previousTurret = null;
             }

@@ -19276,10 +19276,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48daa38cd9cb87e45beb361f854be12f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _muzzle: {fileID: 4457715277627928}
   turretRotatePart: {fileID: 4877050138446582}
-  turretMotor: {fileID: 0}
-  radarModule: {fileID: 0}
-  shellPrefab: {fileID: 1230967522142342, guid: eb167afc8ab53774898a71ad9c87e1e8, type: 3}
+  radarCount: 1
+  defaltRadar: {fileID: 11400000, guid: 10394af779caa66448802462a72be06e, type: 2}
+  defaltReloader: {fileID: 11400000, guid: f6cc9e44541843b48ba26ff480378b1d, type: 2}
+  defaltMotor: {fileID: 11400000, guid: 515180ce49cf88f43b17da8a578d10ff, type: 2}
+  defaltFireControl: {fileID: 11400000, guid: 1ad9b7aea3119d64fa171be91b63d51f, type: 2}
+  defaultAmmoPack: {fileID: 11400000, guid: 9e1c11b68c5383f43bf0272f995beafd, type: 2}
+  _maxTargetsPerAttack: 1
+  _totalWeight: 4
+  shellPrefab: {fileID: 2995435287096241545, guid: c41da3a60b3e3c349a933e4f7b960d44, type: 3}
   barrelLengthInCalibers: 10
 --- !u!1 &1405071060733274
 GameObject:
@@ -43733,8 +43740,8 @@ Transform:
   m_GameObject: {fileID: 3207071584067520288}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.075, z: 0}
-  m_LocalScale: {x: 11.25, y: 11.249999, z: 0.7499999}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 32, y: 32, z: 2.133333}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4795219791600268}
   m_RootOrder: -1

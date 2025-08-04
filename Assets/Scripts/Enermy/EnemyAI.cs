@@ -3,14 +3,13 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public float detectionRange = 10f;
-    public float attackRange = 2f;
+    public float detectionRange = 4f;
+    public float attackRange = 1f;
     public float moveSpeed = 3f;
-    public Transform playerTransform;
-    private Vector3 initialPosition;
+    public Transform target;
     private void Start()
     {
-        initialPosition = transform.position;
+
     }
     private void Update()
     {
@@ -41,10 +40,7 @@ public class EnemyBTAI : EnemyAI
         ));
         return root;
     }
-    private void TurnBack()
-    {
-
-    }
+    
 }
 
 

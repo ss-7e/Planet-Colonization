@@ -38,7 +38,7 @@ namespace Game.Ammo
     {
         public void applyDamage(Shell shell, RaycastHit[] hits)
         {
-            ExplosiveShellData explosiveData = shell.ShellData as ExplosiveShellData;
+            ShellDataExplosive explosiveData = shell.ShellData as ShellDataExplosive;
             float explosionRadius = explosiveData.explosionRadius;
             float explosivePower = explosiveData.explosivePower;
             LayerMask enemyMask = LayerMask.GetMask("Enermy");

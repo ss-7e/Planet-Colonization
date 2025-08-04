@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 enum ResourceType
 {
     Null,
@@ -11,9 +10,11 @@ enum ResourceType
     Oil,
     Crystal
 }
+
 public class Grid
 {
     public GameObject tower = null;
+    public bool isObstacle = false;
     Resource[] resource;
 
     public Grid(Vector3 gridPos)

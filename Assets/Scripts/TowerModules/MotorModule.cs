@@ -9,7 +9,7 @@ namespace Game.Modules
         public float rotatePower = 1f; 
         public void RotateTurret(Transform turretRotatePart, Vector3 targetDirection, TurretBase turret)
         {
-            float rotationSpeed = turret.totalWeight / rotatePower; 
+            float rotationSpeed = rotatePower / turret.totalWeight;
             if (turretRotatePart == null)
             {
                 Debug.LogError("Turret rotate part is not assigned.");

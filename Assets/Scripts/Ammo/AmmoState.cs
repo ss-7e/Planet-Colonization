@@ -32,13 +32,14 @@ public class FiredState : IAmmoState
 {
     public void Enter(Shell shell)
     {
-        Debug.Log("Shell fired.");
+        //Debug.Log("Shell fired.");
     }
     public void Update(Shell shell)
     {
         Transform transform = shell.transform;
-        shell.speedVec += PlanetDataManager.instance.gravity * Time.deltaTime * 0.2f;  
+        shell.speedVec += PlanetDataManager.instance.gravity * Time.deltaTime;  
         transform.position += shell.speedVec * Time.deltaTime;
+        transform.rotation = Quaternion.LookRotation(shell.speedVec.normalized);
     }
     public void Exit(Shell shell)
     {
@@ -51,11 +52,24 @@ public class HitState : IAmmoState
     public void Enter(Shell shell)
     {
         Debug.Log("Shell exploded.");
+        shell.speed = shell.speedVec.magnitude;
         // Add explosion effects here
     }
     public void Update(Shell shell)
     {
-        // Handle any post-explosion logic if needed
+        if (shell.hitTarget == null)
+        {
+            shell.ShellHit();
+            return;
+        }
+        Vector3 dir = shell.hitTarget.transform.position - shell.transform.position;
+        if (dir.magnitude < 0.2f)
+        {
+            shell.ShellHit();
+            return;
+        }
+        shell.transform.position += dir.normalized * shell.speed * Time.deltaTime;
+        shell.transform.rotation = Quaternion.LookRotation(dir.normalized);
     }
     public void Exit(Shell shell)
     {

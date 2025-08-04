@@ -12,16 +12,12 @@ namespace Game.Ammo
         public float deltaTime = 0.1f;
         public float timeToLive = 5f; // seconds
         public IDamageType damageType;
+        public GameObject explosion;
+
+        public virtual float DamageCount()
+        {
+            return calibar * 0.5f;
+        }
     }
-    public class PiercingShellData : ShellData
-    {
-        public float penetrationDepth = 1000f; //mm
-        
-    }
-    public class ExplosiveShellData : ShellData
-    {
-        public float explosionRadius = 5f; 
-        public float explosivePower = 1000f; 
-        
-    }
+
 }

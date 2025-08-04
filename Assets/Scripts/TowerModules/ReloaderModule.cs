@@ -4,7 +4,7 @@ using Game.Ammo;
 
 namespace Game.Modules
 {
-    [CreateAssetMenu(fileName = "AutoloaderModule", menuName = "Tower Modules/ReloaderModule Module", order = 2)]
+    [CreateAssetMenu(fileName = "AutoloaderModule", menuName = "Tower Modules/Reloader Module", order = 2)]
     public class ReloaderModule : TurretModule
     {
         public float reloadTime = 2f; 
@@ -24,6 +24,11 @@ namespace Game.Modules
                 time -= Time.deltaTime;
             }
             reloader.timeCountdown = time;
+        }
+
+        public void Fire(ReloaderModuleData reloader)
+        {
+            reloader.SetFiringShell(null);
         }
 
     }

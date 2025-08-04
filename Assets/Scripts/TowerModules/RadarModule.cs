@@ -15,6 +15,16 @@ namespace Game.Modules
         [SerializeField]
         int maxTargets = 1;
 
+        public float GetRadarRange()
+        {
+            if (searchSensor == null)
+            {
+                Debug.LogError("Search sensor is not assigned.");
+                return 0f;
+            }
+            return searchSensor.range;
+        }
+
         public virtual List<Vector3> SearchEnemy(Transform turretTransform)
         {
             if (searchSensor == null)
@@ -34,5 +44,7 @@ namespace Game.Modules
             }
             return searchSensor.DetectTargets(turretTransform);
         }
+
+
     }
 }

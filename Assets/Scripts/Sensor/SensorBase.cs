@@ -47,49 +47,8 @@ public abstract class SensorBase : ScriptableObject
         return targetPositions;
     }
 }
-public class SensorFOV : SensorBase
-{
-    public float fieldOfView = 45f;
 
-    public override List<Vector3> DetectTargets(Transform turretTransform)
-    {
-        Collider[] hits = Physics.OverlapSphere(turretTransform.position, range);
-        List<GameObject> visibleTargets = new List<GameObject>();
 
-        foreach (var hit in hits)
-        {
-            Vector3 dirToTarget = (hit.transform.position - turretTransform.position).normalized;
-            if (Vector3.Angle(turretTransform.forward, dirToTarget) < fieldOfView / 2)
-            {
-                if (!Physics.Linecast(turretTransform.position, hit.transform.position))
-                {
-                    visibleTargets.Add(hit.gameObject);
-                }
-            }
-        }
-        return CalculateTargetPositions(visibleTargets, turretTransform);
-    }
-}
-public class SensorRadar : SensorBase
-{
-    public override List<Vector3> DetectTargets(Transform turretTransform)
-    {
-        Collider[] hits = Physics.OverlapSphere(turretTransform.position, range);
-        return CalculateTargetPositions(hits.Select(hit => hit.gameObject).ToList(), turretTransform);
-
-    }
-}
-
-[CreateAssetMenu(fileName = "SensorMaskRadar", menuName = "Sensors/SensorMaskRadar")]
-public class SensorRadarMask : SensorBase
-{
-    public LayerMask targetMask;
-    public override List<Vector3> DetectTargets(Transform turretTransform)
-    {
-        Collider[] hits = Physics.OverlapSphere(turretTransform.position, range, targetMask);
-        return CalculateTargetPositions(hits.Select(hit => hit.gameObject).ToList(), turretTransform);
-    }
-}
 
 [CreateAssetMenu(fileName = "SensorMaskOptical", menuName = "Sensors/SensorMaskOptical")]
 public class SensorMaskOptical : SensorBase

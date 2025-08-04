@@ -47,7 +47,7 @@ namespace Game.Modules
             float speed = caculateShellSpeed(chamberPressure);
             GameObject firedShell = Object.Instantiate(shellPrefab, muzzlePos.position, Quaternion.identity);
             Shell shellComponent = firedShell.GetComponent<Shell>();
-            shellComponent.OnFire(direction, speed);
+            
             return true;
         }
         public float caculateShellSpeed(float chamberPressure)

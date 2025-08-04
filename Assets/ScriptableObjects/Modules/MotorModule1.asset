@@ -16,4 +16,4 @@ MonoBehaviour:
   description: Defalt
   stackable: 1
   weight: 1
-  rotatePower: 1
+  rotatePower: 10

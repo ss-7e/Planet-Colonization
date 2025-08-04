@@ -13,38 +13,52 @@ public class GridMeshGenerator : MonoBehaviour
     public float heightMapScale = 1f;
     public MapGenerateConfig config;
     public Mesh tileMesh;
+    public Mesh[] highGroundMeshes;
     public Mesh[] trees;
     public Mesh[] resourses;
-    private void Start()
+
+    public void Regenerate()
     {
-        //float length = config.length;
-        //float width = config.width;
-        //float tileSize = config.tileSize;
-        //GridManager.instance.grid = new Grid[10000, 10000];
-        //GridManager.instance.length = (int)(length * tileSize);
-        //GridManager.instance.width = (int)(width * tileSize);
-        //GenerateGridMesh();
+        MapGenerator mapGenerate = GetComponent<MapGenerator>();
+        if(GridManager.instance != null)
+        {
+            GridManager.instance.grid = null;
+            mapGenerate.RunTimeGenerate();
+        }
+        else
+        {
+            GenerateGridMesh();
+        }
     }
 
     public void GenerateGridMesh()
     {
+
         if (config != null)
         {
             length = config.length;
             width = config.width;
             tileSize = config.tileSize;
         }
-
+        Grid[] grids = null;
+        if (GridManager.instance != null)
+        {
+            grids = GridManager.instance.grid;
+        }
+        else 
+        { 
+            grids = GetComponent<MapGenerator>().GridGenerate();
+        }
         List<CombineInstance> combineList = new List<CombineInstance>();
         Mesh tile = Instantiate(tileMesh);
         Mesh[] trees = this.trees.Select(m => Instantiate(m)).ToArray();
         Mesh[] resourses = this.resourses.Select(m => Instantiate(m)).ToArray();
 
-
         for (int x = 0; x < length; x++)
         {
             for (int y = 0; y < width; y++)
             {
+                Grid grid = grids[y * length + x];
                 CombineInstance ci = new CombineInstance();
                 ci.mesh = tile;
                 if (Random.value < 0.01f)
@@ -55,18 +69,18 @@ public class GridMeshGenerator : MonoBehaviour
                 {
                     ci.mesh = resourses[Random.Range(0, resourses.Length)];
                 }
-                float yPos = yposGengerate(x, y);
-                Vector3 pos = new Vector3(x * tileSize - length * tileSize / 2, yPos, y * tileSize - width * tileSize / 2);
+                if (grid.isObstacle)
+                {
+                    ci.mesh = GenerateHighGround();
+                }
+
+                Vector3 pos = grid.pos;
                 ci.transform = Matrix4x4.TRS(
                     pos,
                     Quaternion.identity,
                     Vector3.one * tileSize
                 );
                 combineList.Add(ci);
-                if(GridManager.instance)
-                {
-                    GridManager.instance.grid[x, y] = new Grid(pos);
-                }
             }
         }
 
@@ -83,14 +97,10 @@ public class GridMeshGenerator : MonoBehaviour
         }
         meshCollider.sharedMesh = combined;
     }
-    float yposGengerate(float x, float y)
+
+    Mesh GenerateHighGround()
     {
-        if (config != null)
-        {
-            heightMapScale = config.heightMapScale;
-        }
-        float yPos = Mathf.PerlinNoise(x * 0.1f * heightMapScale, y * 0.1f * heightMapScale) * 3f;
-        yPos = (float)Mathf.Round(yPos) / 10;
-        return yPos;
+        Mesh highGroundMesh = highGroundMeshes[0];
+        return highGroundMesh;
     }
 }

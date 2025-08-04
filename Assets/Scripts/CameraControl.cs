@@ -38,7 +38,7 @@ public class CameraControl : MonoBehaviour
 
     void Start()
     {
-        targetHeight = transform.position.y;
+        targetHeight = transform.position.y + 1f;
         currentYaw = transform.parent.transform.eulerAngles.y;
         targetYaw = currentYaw; //keep inspector initial value
     }
