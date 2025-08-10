@@ -1,5 +1,5 @@
-﻿using Game.Turret;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Modules
 {
@@ -7,9 +7,16 @@ namespace Game.Modules
     {
         public TurretModule module;
 
+
+        //----------------------------------------------------------
+        // IStorable Implementation
         public int currentCount { get; set; }
         public int maxCount { get; private set; }
         public int Id { get; }
+        public Image Icon { get; set; }
+        public ItemType itemType => ItemType.Module;
+
+        //---------------------------------------------------------
 
         public TurretModuleItem(TurretModule module, int count = 1)
         {

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Tower.Mine
+namespace Game.Towers.Mine
 {
-    public class OilWell : Miner
+    public class DeepMiner : Miner
     {
 
     }

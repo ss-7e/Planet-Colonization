@@ -7,7 +7,7 @@ public class HoverSelectHandler : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public Image selectionFrame; 
     public float hoverSpeed = 4f;
-    [SerializeField] GameObject turretPrefab;
+    [SerializeField] GameObject towerPrefab;
     private bool selecting = false;
     private bool isHovering = false;
 
@@ -44,13 +44,24 @@ public class HoverSelectHandler : MonoBehaviour, IPointerEnterHandler, IPointerE
         isHovering = false;
         selectionFrame.gameObject.SetActive(false);
     }
-
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (selecting) return;
-        isHovering = false;
-        BuildManager.instance.SetTurretToBuild(turretPrefab);
-        selecting = true;
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            isHovering = false;
+            BuildManager.instance.SetTurretToBuild(towerPrefab);
+            selectionFrame.gameObject.SetActive(true);
+            selectionFrame.transform.position = transform.position;
+            selectionFrame.transform.localScale = Vector3.one;
+            selecting = true;
+        }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            BuildManager.instance.SetTurretToBuild(null);
+            isHovering = false;
+            selecting = false;
+            selectionFrame.gameObject.SetActive(false);
+        }
     }
 
 }

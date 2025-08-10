@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Game.Turret;
+using Game.Towers.Turrets;
 
 namespace Game.Modules
 {

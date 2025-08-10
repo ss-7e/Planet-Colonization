@@ -1,9 +1,9 @@
-using Game.Turret;
+using Game.Towers.Turrets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Turret
+namespace Game.Towers.Turrets
 {
     public class LazerTurret : TurretBase
     {

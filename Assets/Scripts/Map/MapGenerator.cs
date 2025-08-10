@@ -61,7 +61,7 @@ namespace Game.Map
                     float yPos = 0;
                     Vector3 pos = new Vector3(x * tileSize - length * tileSize / 2, yPos, y * tileSize - width * tileSize / 2);
                     int index = y * length + x;
-                    Grid grid = new Grid(pos);
+                    Grid grid = new(pos);
                     SetObstacle(grid, (float)x, (float)y);
                     grids[index] = grid;
                 }
@@ -95,30 +95,10 @@ namespace Game.Map
         {
             float h = yposGengerate(x, y);
             float randomValue = Random.Range(0f, 1f); 
-            if (h < ObstacleHeight && h > ObstacleLow && randomValue > 0.5f)
+            if (h < ObstacleHeight && h > ObstacleLow && randomValue > 0.6f)
             {
                 grid.isObstacle = true;
             }
-        }
-
-        float GetPerlinHeight(float x, float y, int octaves = 4, float persistence = 0.5f, float lacunarity = 2f, float scale = 0.5f)
-        {
-            float noiseHeight = 0f;
-            float amplitude = 1f;
-            float frequency = 1f;
-
-            for (int i = 0; i < octaves; i++)
-            {
-                float sampleX = x * frequency * scale;
-                float sampleY = y * frequency * scale;
-                float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2; 
-                noiseHeight += perlinValue * amplitude;
-
-                amplitude *= persistence;
-                frequency *= lacunarity;
-            }
-
-            return noiseHeight;
         }
 
         float yposGengerate(float x, float y)

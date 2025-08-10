@@ -54,4 +54,13 @@ public class GridManager : MonoBehaviour
     {
         grid[y * width + x] = value;
     }
+
+    public Vector2Int GetRridXY(Vector3 pos)
+    {
+        pos.x += length / 2;
+        pos.z += width / 2;
+        int x = Mathf.RoundToInt(pos.x);
+        int z = Mathf.RoundToInt(pos.z);
+        return new Vector2Int(x, z);
+    }
 }

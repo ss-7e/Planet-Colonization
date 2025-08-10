@@ -1,28 +1,27 @@
 using UnityEngine;
 using System.Collections.Generic;
-enum ResourceType
+public enum GridType
 {
-    Null,
-    Wood,
-    Stone,
-    Iron,
-    Gold,
-    Oil,
-    Crystal
+    Grass,
+    Water,
+    Sand,
+    Tree,
+    Mine,
+    Lava
 }
 
 public class Grid
 {
     public GameObject tower = null;
     public bool isObstacle = false;
-    Resource[] resource;
+    public GridType gridType;
 
     public Grid(Vector3 gridPos)
     {
         pos = gridPos;
     }
 
-    public Vector3 pos { get; set; }
+    public Vector3 pos { get; private set; }
 
     public void AssignTurretToGrid(GameObject tower)
     {
@@ -41,16 +40,12 @@ public class Grid
     {
         if (tower == null)
         {
-            return true;
+            return true && !isObstacle;
         }
         return false;
     }
     public bool hasTower()
     {
         return tower != null;
-    }
-    public Resource[] getResources()
-    {
-        return resource;
     }
 }

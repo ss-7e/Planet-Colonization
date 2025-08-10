@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Game.Tower.Wonders
+namespace Game.Towers.Wonders
 {
     public class WonderBuilding : MonoBehaviour, IDamageable
     {

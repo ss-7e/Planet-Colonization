@@ -3,10 +3,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using Game.Ammo;
 using Game.Modules;
+using Game.Towers;
 
-namespace Game.Turret
+namespace Game.Towers.Turrets
 {
-    public class TurretBase : MonoBehaviour, IDamageable
+    public class TurretBase : Tower, IDamageable
     {
         [SerializeField] protected Transform _muzzle;
         public Transform muzzle { 

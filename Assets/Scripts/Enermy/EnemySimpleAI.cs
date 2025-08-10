@@ -1,6 +1,6 @@
 ﻿using Game.Entites;
-using NPBehave;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EnemySimpleAI : EnemyAI
 {
@@ -32,10 +32,18 @@ public class EnemySimpleAI : EnemyAI
 
 public class EnemyAttackState : EnemyBehaviorState
 {
+    List<GridNode> path;
     public override void EnterState(GameObject enemy)
     {
         Debug.Log("Entering Attack State");
-        // Logic for entering attack state
+        EnemySimpleAI enemyAI = enemy.GetComponent<EnemySimpleAI>();
+        Vector2Int startPos = GridManager.instance.GetRridXY(enemy.transform.position);
+        Vector2Int targetPos = GridManager.instance.GetRridXY(enemyAI.target.transform.position);
+        FindPath(startPos, targetPos);
+        foreach (var node in path)
+        {
+            Grid grid = GridManager.instance.GetGridXY(node.x, node.y);
+        }
     }
     public override void UpdateState(GameObject enemy)
     {
@@ -45,11 +53,20 @@ public class EnemyAttackState : EnemyBehaviorState
         {
             return;
         }
-        Vector3 targetDir = (enemyAI.target.transform.position - enemy.transform.position).normalized;
+        if (path == null || path.Count == 0)
+        {
+            Debug.Log("Path is empty, transitioning to idle state.");
+            enemyAI.SetBehaviorState(new EnemyIdleState());
+            return;
+        }
+        Vector2Int currentPos = GridManager.instance.GetRridXY(enemy.transform.position);
+        if (currentPos == new Vector2Int(path[0].x, path[0].y))
+        {
+            path.Remove(path[0]);
+        }
+        Vector3 targetDir = GridManager.instance.GetGridXY(path[0].x, path[0].y).pos - enemy.transform.position;
         targetDir.y = 0;
-        Vector2Int startPos = new Vector2Int(Mathf.RoundToInt(enemy.transform.position.x), Mathf.RoundToInt(enemy.transform.position.z));
-        Vector2Int endPos = new Vector2Int(Mathf.RoundToInt(enemyAI.target.transform.position.x), Mathf.RoundToInt(enemyAI.target.transform.position.z));
-
+        targetDir.Normalize();
         enemy.transform.rotation = Quaternion.LookRotation(targetDir);
         enemy.transform.position += targetDir * Time.deltaTime * enemyAI.moveSpeed;
         LayerMask layerMask = LayerMask.GetMask("Player");
@@ -68,7 +85,7 @@ public class EnemyAttackState : EnemyBehaviorState
             enemyAI.SetBehaviorState(new EnemyExplodeState());
         }
     }
-    public void FindPath()
+    void FindPath(Vector2Int start, Vector2Int target)
     {
         Grid[] grids = GridManager.instance.grid;
         GridNode[] gridNodes = new GridNode[grids.Length];
@@ -82,6 +99,7 @@ public class EnemyAttackState : EnemyBehaviorState
             };
         }
         Pathfinder pathfinder = new Pathfinder();
+        path = pathfinder.FindPath(gridNodes, GridManager.instance.width, GridManager.instance.length, start, target);
     }
     public override void ExitState(GameObject enemy)
     {

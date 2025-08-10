@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Game.Tower.Factory
+namespace Game.Towers.Factory
 {
     public class ShellFactory : IDamageable
     {

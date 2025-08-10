@@ -1,14 +1,20 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor.iOS;
 using UnityEngine;
-namespace Game.Tower.Mine
+namespace Game.Towers.Mine
 {
-    public class Miner : MonoBehaviour, IDamageable
+    public class Miner : Tower, IDamageable
     {
+        [SerializeField]protected float mineSpeed = 0.2f; // unit per second
+        [SerializeField]protected float outputSpeed = 0f;
         HealthComponent healthComp;
-        float mineSpeed = 1f;
-        float outputSpeed = 0f;
-        Grid placedGrid;
-
+        ResourceGrid placedGrid;
+        public float outputTime{ get; protected set; } = 0;
+        public override void BuildOnGrid(Grid grid)
+        {
+            onGrid = grid;
+            placedGrid = grid as ResourceGrid;
+        }
         public void TakeDamage(float damage)
         {
             if (healthComp == null)
@@ -24,25 +30,31 @@ namespace Game.Tower.Mine
 
         protected virtual void Mining()
         {
-            Resource[] resources = placedGrid.getResources();
-            if (resources == null || resources.Length == 0)
+            float timeToMine = 1f / mineSpeed;
+            if(outputTime < timeToMine)
             {
-                Debug.Log("No resources to mine.");
-                return;
+                outputTime += Time.deltaTime;
+                return; 
             }
-            outputSpeed = mineSpeed * Time.deltaTime * resources[0].richness;
-            if (resources[0] is RenewableResource renewableResource)
+            outputTime = 0f; 
+            Output(placedGrid.GetMineOnGrid());
+        }
+
+
+
+        protected virtual void Output(NaturalResource resource)
+        {
+            if (storageList.Count > 0)
             {
-                renewableResource.Regenerate();
-                renewableResource.amount -= outputSpeed;
-                if (renewableResource.amount < 0)
+                foreach (var storage in storageList)
                 {
-                    renewableResource.amount = 0;
+                    if (storage.AddItem(resource))
+                    {
+                        Debug.Log($"Resource {resource.resourceName} added to storage.");
+                        return; // Exit after successfully adding to one storage
+                    }
                 }
-            }
-            else
-            {
-                Debug.Log("Mining non-renewable resource: " + resources[0].resourceName);
+
             }
         }
     }

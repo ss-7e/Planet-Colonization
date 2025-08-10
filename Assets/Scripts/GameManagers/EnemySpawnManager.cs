@@ -96,7 +96,7 @@ namespace Game.Entites
             int x = Random.Range(0, GridManager.instance.length);
             int z = Random.Range(0, GridManager.instance.width);
             Grid grid = GridManager.instance.GetGridXY(x, z);
-            if (grid == null )
+            if (grid == null || grid.isObstacle )
             {
                 return; // Skip if the grid is null or occupied
             }
