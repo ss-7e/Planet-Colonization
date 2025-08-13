@@ -18,4 +18,4 @@ MonoBehaviour:
   weight: 1
   rarity: 0
   rarityIcon: {fileID: 0}
-  reloadTime: 0.3
+  reloadTime: 0.5

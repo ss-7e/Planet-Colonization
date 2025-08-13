@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 namespace Game.Towers.Factory
 {
-    public abstract class FactroyTowerBase : Tower, IDamageable
+    public class FactroyTowerBase : Tower, IDamageable
     {
         [SerializeField]protected List<Vector2Int> effectArea;
         [SerializeField] protected int towerStorageCapacity;

@@ -7,6 +7,8 @@ namespace Game.Entites
     {
         public ParticleSystem explosion;
         [SerializeField]protected float maxHeight;
+        [SerializeField]protected float health = 100f;
+        [SerializeField]protected float speed = 5f;
         public float armorValue { get; private set; } = 0f;
         public float wearResistance { get; private set; } = 0f;
         public float attackValue { get; private set; } = 10f;
@@ -18,7 +20,7 @@ namespace Game.Entites
         private void Awake()
         {
             sensor = ScriptableObject.CreateInstance<SensorFOV>();
-            healthComp = new HealthComponent(100f, 100f);
+            healthComp = new HealthComponent(health, health);
         }
 
         protected void Update()

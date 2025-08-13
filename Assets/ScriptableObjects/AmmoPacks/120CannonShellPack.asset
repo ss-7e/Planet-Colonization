@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ammoStorageList:
   - {fileID: 11400000, guid: b885823302e84ee45aab721d18beead5, type: 2}
-  ammoCount: 05000000
+  ammoCount: 0a000000
   rarity: 0
   rarityIcon: {fileID: 0}

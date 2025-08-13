@@ -1,11 +1,11 @@
 ﻿using Game.Ammo;
 using Game.Modules;
 using Game.Towers.Turrets;
+using Game.Towers;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Game.UI
 {
@@ -15,19 +15,20 @@ namespace Game.UI
         public GameObject itemPrefab;
         public Transform contentParent;
         TurretBase currentTurret;
+        Tower currentTower;
 
         public void Update()
         {
             if ( currentTurret != null) 
             { 
-                PopulateList(currentTurret);
+                PopulateTurretList(currentTurret);
             }
         }
         public void SetUI(TurretBase turret, bool isLeft)
         {
             currentTurret = turret;
             SetUIPos(turret, isLeft);
-            PopulateList(turret);
+            PopulateTurretList(turret);
         }
 
         public void SetUIPos(TurretBase turret, bool isLeft)
@@ -61,13 +62,15 @@ namespace Game.UI
                 turret.transform.Find("Quad").gameObject.SetActive(false);
             }
         }
-        void PopulateList(TurretBase turret)
+        void PopulateTurretList(TurretBase turret)
         {
             if (turret == null){return;}
             List<string> dataList = new List<string>();
             TurretAmmoStorage ammoStorage = turret.ammoStorage;
             IReadOnlyList<ShellData> ammoOrder = ammoStorage.GetAmmoOrder();
             dataList.Add("Ammo Storage:");
+
+
             foreach (ShellData shellData in ammoOrder)
             {
                 int count = ammoStorage.GetAmmoCount(shellData);

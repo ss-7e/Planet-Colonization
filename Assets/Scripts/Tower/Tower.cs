@@ -19,7 +19,6 @@ namespace Game.Towers
         {
             if (storageList.Contains(storage))
             {
-                Debug.LogError("Storage already added to this tower!");
                 return;
             }
             storageList.Add(storage);
@@ -43,6 +42,16 @@ namespace Game.Towers
         public void addStorage(Storage storage)
         {
             storageList.Add(storage);
+        }
+
+        public List<Storage> GetStorageList()
+        {
+            return storageList;
+        }
+
+        public Dictionary<Storage, Tower> GetStorageTowerList()
+        {
+            return storageTowerList;
         }
     }
 }

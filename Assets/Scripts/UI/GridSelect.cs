@@ -1,11 +1,12 @@
 using Game.Towers;
 using Game.Towers.Turrets;
-using Unity.Mathematics;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class GridSelector : MonoBehaviour
 {
+    public GameObject ConnectTowerUIPrefab;
     public GameObject selectionIndicator;
     public float maxDistance = 20f;
     public Vector3 targetSize = new Vector3(1f, 1f, 1f);
@@ -13,6 +14,7 @@ public class GridSelector : MonoBehaviour
     private Vector3[] originalVertices;
     private Grid gridSelected;
     private TurretBase previousTurret = null;
+    private Tower previousTower = null;
 
     private void Start()
     {
@@ -47,13 +49,11 @@ public class GridSelector : MonoBehaviour
         {
             Vector3 v = originalVertices[i];
 
-            // 判断顶点在正负 X/Y/Z 方向的符号
             float signX = Mathf.Sign(v.x);
             float signY = Mathf.Sign(v.y);
             float signZ = Mathf.Sign(v.z);
 
-            // 原来是 0.5f 的位置 → 变成 halfX/halfY/halfZ
-            // 厚度保持不变：偏离中心的量只调整外框部分
+
             float absX = Mathf.Abs(v.x);
             float absY = Mathf.Abs(v.y);
             float absZ = Mathf.Abs(v.z);
@@ -106,19 +106,17 @@ public class GridSelector : MonoBehaviour
     {
         if (gridSelected != null)
         {
+            if (previousTower != null)
+            {
+                UIManager.instance.HideTowerUI(previousTower);
+                previousTurret = null;
+            }
             if (gridSelected.hasTower())
             {
-                TurretBase turret = gridSelected.tower.GetComponent<TurretBase>();
-                Vector2 clickPosition = Input.mousePosition;
-                float screenWidth = Screen.width;
-                bool isLeft = clickPosition.x < screenWidth / 2f;
-                UIManager.instance.turretUI.SetUI(turret, isLeft);
-                previousTurret = turret;
-            }
-            else if (previousTurret != null)
-            {   
-                UIManager.instance.turretUI.HideUI(previousTurret);
-                previousTurret = null;
+                Tower tower = gridSelected.tower.GetComponent<Tower>();
+                SetConnectTowerUI(tower);
+                UIManager.instance.SetTowerUI(tower, isLeft: Input.mousePosition.x < Screen.width / 2f);
+                previousTower = tower;
             }
             buildTowerAt();
         }
@@ -127,4 +125,33 @@ public class GridSelector : MonoBehaviour
             Debug.Log("No grid selected.");
         }
     }
+    void SetConnectTowerUI(Tower tower)
+    {
+        List<Storage> storageList = tower.GetStorageList();
+        Dictionary<Storage, Tower> storageTowerList = tower.GetStorageTowerList();
+        GameObject connectTowerUIParent = GameObject.Find("ConnectTower");
+        if (connectTowerUIParent == null)
+        {
+            Debug.LogError("ConnectTower UI not found!");
+            return;
+        }
+        foreach (Transform child in connectTowerUIParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Storage storage in storageList)
+        {
+            if (storageTowerList.ContainsKey(storage))
+            {
+                Tower storageTower = storageTowerList[storage];
+                if (storageTower != null)
+                {
+                    Vector3 UIPos = storageTower.onGrid.pos + new Vector3(0, 3f, 0);
+                    GameObject connectTowerUI = Instantiate(ConnectTowerUIPrefab, UIPos, Quaternion.identity);
+                    connectTowerUI.transform.SetParent(connectTowerUIParent.transform);
+                }
+            }
+        }
+    }
+
 }

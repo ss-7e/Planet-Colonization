@@ -7,7 +7,7 @@ namespace Game.Entites
     class EnemySpawnManager : MonoBehaviour
     {
         public static EnemySpawnManager instance;
-        public GameObject enemyPrefab;
+        public GameObject[] enemyPrefab;
         [SerializeField] private int startSpawnCount = 20;
         [SerializeField] private int _maxSpawnCount = 40;
         public int maxSpawnCount
@@ -39,6 +39,7 @@ namespace Game.Entites
         }
         void RandomPositionWaveSpawn()
         {
+            GameObject enemyPrefab = this.enemyPrefab[Random.Range(0, this.enemyPrefab.Length)];
             currentSpawnCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
             if (currentSpawnCount >= maxSpawnCount)
             {
@@ -88,6 +89,7 @@ namespace Game.Entites
         }
         void RandomSpawnEnemy()
         {
+            GameObject enemyPrefab = this.enemyPrefab[Random.Range(0, this.enemyPrefab.Length)];
             currentSpawnCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
             if (currentSpawnCount >= maxSpawnCount)
             {

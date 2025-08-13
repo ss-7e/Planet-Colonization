@@ -105,7 +105,7 @@ public class BuildManager : MonoBehaviour
             float distance = (TowerPos - storagePos).magnitude;
             if (distance < 10)
             {
-                tower.addStorage(storageTower.GetStorage(), distance);
+                tower.addStorage(storageTower, storageTower.GetStorage(), distance);
             }
         }
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Game.Towers.Turrets;
 public enum GridType
 {
     Grass,
@@ -47,5 +48,10 @@ public class Grid
     public bool hasTower()
     {
         return tower != null;
+    }
+
+    public bool hasTurret()
+    {
+        return tower != null && tower.GetComponent<TurretBase>() != null;
     }
 }
