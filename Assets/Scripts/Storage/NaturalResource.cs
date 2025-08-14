@@ -26,6 +26,14 @@ public class NaturalResource : ScriptableObject, IStorable
     [SerializeField] protected Image _icon;
 
     public ItemType itemType => ItemType.NaturalResource;
+    public bool SameItem(IStorable other)
+    {
+        if (other is NaturalResource naturalResource)
+        {
+            return naturalResource.resourceType == resourceType;
+        }
+        return false;
+    }
     //-----------------------------------------------------------
 
 

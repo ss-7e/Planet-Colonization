@@ -80,6 +80,7 @@ public class BuildManager : MonoBehaviour
             case TurretBase turret:
                 turretList.Add(turret);
                 SetTowerStorage(turret);
+                SetFactoryAffectTurret(turret);
                 break;
             case Miner miner:
                 miners.Add(miner);
@@ -92,6 +93,7 @@ public class BuildManager : MonoBehaviour
             case FactroyTowerBase factory:
                 factoryTowers.Add(factory);
                 SetTowerStorage(factory);
+                SetFactroyTurretList(factory);
                 break;
         }
 
@@ -109,18 +111,50 @@ public class BuildManager : MonoBehaviour
             }
         }
     }
+
+    void SetFactoryAffectTurret(TurretBase turret)
+    {
+        Vector3 TowerPos = turret.onGrid.pos;
+        foreach (FactroyTowerBase factory in factoryTowers)
+        {
+            Vector3 factoryPos = factory.onGrid.pos;
+            float distance = (TowerPos - factoryPos).magnitude;
+            if (distance < 10)
+            {
+                factory.AddTurrettoList(turret);
+            }
+        }
+    }
+    void SetFactroyTurretList(FactroyTowerBase factory)
+    {
+        Vector3 factoryPos = factory.onGrid.pos;
+        foreach (TurretBase turret in turretList)
+        {
+            Vector3 TowerPos = turret.onGrid.pos;
+            float distance = (TowerPos - factoryPos).magnitude;
+            if (distance < 10)
+            {
+                factory.AddTurrettoList(turret);
+            }
+        }
+    }
+
+
     void UpdateTowersStorage()
     {
         foreach (TurretBase turret in turretList)
         {
             SetTowerStorage(turret);
+            Debug.LogWarning($"Updated storage for turret: {turret.name}");
         }
         foreach (Miner miner in miners)
         {
             SetTowerStorage(miner);
+            Debug.LogWarning($"Updated storage for miner: {miner.name}");
         }
         foreach (FactroyTowerBase factory in factoryTowers)
         {
+            Debug.LogWarning($"Updated storage for factory: {factory.name}");
             SetTowerStorage(factory);
         }
     }

@@ -6,8 +6,28 @@ public class TurretAmmoStorage
 {
     Dictionary<ShellData, int> ammoStorage = new Dictionary<ShellData, int>();
     List<ShellData> ammoOrder = new List<ShellData>();
+    public int ammoCount { get; private set; } = 0;
+    public int ammoCapacity { get; private set; } = 100;
+    public TurretAmmoStorage(int capacity = 100)
+    {
+        ammoCapacity = capacity;
+    }
+
+
+    public bool AddAmmo(AmmoItem ammoItem)
+    {
+        int count = ammoItem.currentCount;
+        count = Mathf.Clamp(count, 0, ammoCapacity - ammoCount);
+        AddAmmo(ammoItem.shellData, count);
+        ammoCount += count;
+        ammoItem.currentCount -= count;
+        return ammoItem.currentCount <= 0;
+    }
+
+
     public void AddAmmo(ShellData ShellData, int count)
     {
+        count = Mathf.Clamp(count, 0, ammoCapacity - ammoCount);
         if (ammoStorage.ContainsKey(ShellData))
         {
             ammoStorage[ShellData] += count;

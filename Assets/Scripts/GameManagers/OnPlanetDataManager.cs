@@ -1,10 +1,12 @@
 using UnityEngine;
 
-public class PlanetDataManager : MonoBehaviour
+public class OnPlanetDataManager : MonoBehaviour
 {
     
-    public static PlanetDataManager instance;
+    public static OnPlanetDataManager instance;
     public Vector3 gravity = new Vector3(0, -2f, 0);
+    public int fixingRobotCount = 0;
+    public int transportRobotCount = 0;
     void Awake()
     {
         if (instance == null)

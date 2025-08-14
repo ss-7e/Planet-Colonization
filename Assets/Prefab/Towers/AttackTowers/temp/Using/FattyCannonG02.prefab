@@ -5184,6 +5184,7 @@ MonoBehaviour:
   defaultAmmoPack: {fileID: 11400000, guid: 9e1c11b68c5383f43bf0272f995beafd, type: 2}
   _maxTargetsPerAttack: 1
   _totalWeight: 0
+  caliber: 30
   shellPrefab: {fileID: 2995435287096241545, guid: c41da3a60b3e3c349a933e4f7b960d44, type: 3}
   barrelLengthInCalibers: 20
 --- !u!1 &1931211189434318

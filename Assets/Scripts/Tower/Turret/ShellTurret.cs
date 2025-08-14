@@ -11,7 +11,6 @@ namespace Game.Towers.Turrets
         protected float barrelLengthInCalibers;
         protected BarrelModule barrelModule;
 
-        List<GameObject> targets;
 
         public void AddAmmo(ShellData shell, int count)
         {

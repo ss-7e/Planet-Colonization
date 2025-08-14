@@ -57,7 +57,7 @@ namespace Game.Towers.Turrets
                 _totalWeight = value;
             }
         }
-
+        [SerializeField] protected float caliber = 30f;
 
         public GameObject shellPrefab;
 
@@ -79,6 +79,11 @@ namespace Game.Towers.Turrets
         protected void Update()
         {
             defaltFireControl?.FireControlUpdate(this);
+            if(ammoStorage.ammoCount <= 0)
+            {
+                TryGetAmmo();
+            }
+
         }
         
         public void TakeDamage(float damage)
@@ -142,6 +147,33 @@ namespace Game.Towers.Turrets
             return true;
         }
 
+        public bool AddAmmo(AmmoItem ammoItem)
+        {
+            if (ammoItem == null || ammoItem.shellData == null)
+            {
+                Debug.LogWarning("AmmoItem or ShellData is null");
+                return false;
+            }
+            if(ammoItem.shellData.calibar != caliber)
+            {
+                return false;
+            }
+            return ammoStorage.AddAmmo(ammoItem);
+        }
 
+        protected virtual void TryGetAmmo()
+        {
+            foreach (Storage storage in storageList)
+            {
+                storage.GetItemsByType(ItemType.Ammo, out List<IStorable> ammoItems);
+                foreach (AmmoItem ammoItem in ammoItems)
+                {
+                    if(ammoItem.shellData.calibar == caliber && ammoItem.currentCount > 0)
+                    {
+                        ammoStorage.AddAmmo(storage.GetItem(ammoItem) as AmmoItem);
+                    }
+                }
+            }
+        }
     }
 }

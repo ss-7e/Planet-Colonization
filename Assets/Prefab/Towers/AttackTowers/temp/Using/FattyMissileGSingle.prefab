@@ -327,6 +327,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4881489855263244}
   - component: {fileID: 114488249069696938}
+  - component: {fileID: 1050843664889884013}
   m_Layer: 0
   m_Name: FattyMissileGSingle
   m_TagString: Untagged
@@ -359,7 +360,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1545943666229906}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c02d99ed6d2ff5f4da31f151e897a3e7, type: 3}
   m_Name: 
@@ -377,6 +378,30 @@ MonoBehaviour:
   muzzleSub: {fileID: 0}
   muzzleEff: {fileID: 1497772684437746, guid: bd75ef4ae186f454a90b2de71bed2854, type: 3}
   bullet: {fileID: 1773485284122676, guid: 9e0d59e1858a95d4aafcfc9ef7e94671, type: 3}
+--- !u!114 &1050843664889884013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545943666229906}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6098c0711e867dc4387396bfb7825e1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _muzzle: {fileID: 0}
+  turretRotatePart: {fileID: 0}
+  radarCount: 1
+  defaltRadar: {fileID: 0}
+  defaltReloader: {fileID: 0}
+  defaltMotor: {fileID: 0}
+  defaltFireControl: {fileID: 0}
+  defaultAmmoPack: {fileID: 0}
+  _maxTargetsPerAttack: 1
+  _totalWeight: 0
+  caliber: 100
+  shellPrefab: {fileID: 0}
 --- !u!1 &1593263721353114
 GameObject:
   m_ObjectHideFlags: 0

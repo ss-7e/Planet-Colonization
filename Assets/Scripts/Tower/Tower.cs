@@ -30,8 +30,11 @@ namespace Game.Towers
         {
             if (storageTowerList.ContainsKey(storage))
             {
-                Debug.LogError("Storage tower already added to this tower!");
                 return;
+            }
+            if (storage == null)
+            {
+                Debug.LogError("Storage is null when adding to tower storage list.");
             }
             storageTowerList[storage] = tower;
             storageDistance[storage] = distance;

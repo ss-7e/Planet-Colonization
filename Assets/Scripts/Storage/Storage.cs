@@ -1,7 +1,4 @@
-using Game.Ammo;
-using Game.Modules;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 public class Storage
 {
@@ -14,56 +11,123 @@ public class Storage
     }
     public bool AddItem(IStorable item)
     {
+        foreach (IStorable existingItem in storableItems)
+        {
+            if (existingItem.SameItem(item))
+            {
+                if (existingItem.currentCount + item.currentCount <= existingItem.maxCount)
+                {
+                    existingItem.currentCount += item.currentCount;
+                    return true; 
+                }
+                else
+                {
+                    item.currentCount -= (existingItem.maxCount - existingItem.currentCount);
+                }
+            }
+        }
+        if (item.currentCount > 0) { return AddNewItem(item); } 
+        return false;
+    }
+    bool AddNewItem(IStorable item)
+    {
         if (storableItems.Count >= maxCapacity)
         {
             Debug.LogWarning("Storage is full!");
             return false;
         }
-        else
-        {
-            storableItems.Add(item);
-        }
+        storableItems.Add(item);
         return true;
     }
-    public bool RemoveItem(IStorable item)
+
+    public IStorable GetItem(IStorable item)
     {
-        if (storableItems.Contains(item))
+        foreach (IStorable existingItem in storableItems)
         {
-            storableItems.Remove(item);
+            if (existingItem.SameItem(item))
+            {
+                storableItems.Remove(existingItem);
+                return existingItem;
+            }
+        }
+        return null;
+    }
+
+    public bool GetItem(IStorable item, int count)
+    {
+        List<IStorable> itemsToRemove = new List<IStorable>();
+        foreach (IStorable existingItem in storableItems)
+        {
+            if (existingItem.SameItem(item))
+            {
+                if (existingItem.currentCount >= count)
+                {
+                    existingItem.currentCount -= count;
+                    if (existingItem.currentCount <= 0)
+                    {
+                        storableItems.Remove(existingItem);
+                    }
+                    item.currentCount += count; 
+                    count = 0;
+                    break;
+                }
+                else
+                {
+                    count -= existingItem.currentCount;
+                    item.currentCount += existingItem.currentCount;
+                    itemsToRemove.Add(existingItem);
+                }
+            }
+        }
+        if (count <= 0)
+        {
+            foreach (IStorable removeItem in itemsToRemove)
+            {
+                storableItems.Remove(removeItem);
+            }
             return true;
         }
-        else
-        {
-            Debug.LogWarning("Item not found in storage!");
-            return false;
-        }
+        return false;
     }
-    public bool TakeIndexItem(int index, out IStorable item)
-    {
-        if (index < 0 || index >= storableItems.Count)
-        {
-            Debug.LogWarning("Index out of range!");
-            item = null;
-            return false;
-        }
-        item = storableItems[index];
-        storableItems.RemoveAt(index);
-        return true;
-    }
-    public bool PutBackIndexItem(int index, IStorable item)
-    {
-        if (index < 0 || index >= storableItems.Count)
-        {
-            Debug.LogWarning("Index out of range!");
-            return false;
-        }
-        if (storableItems.Contains(item))
-        {
-            Debug.LogWarning("Item already exists in storage!");
-            return false;
-        }
 
-        storableItems[index] = item;
-        return true;
+    public List<IStorable> GetAllItems()
+    {
+        return new List<IStorable>(storableItems);
+    }
+
+    public List<IStorable> GetItemsByType(ItemType itemType)
+    {
+        List<IStorable> itemsOfType = new List<IStorable>();
+        foreach (IStorable item in storableItems)
+        {
+            if (item.itemType == itemType)
+            {
+                itemsOfType.Add(item);
+            }
+        }
+        return itemsOfType;
+    }
+
+    public void GetItemsByType(ItemType itemType, out List<IStorable> items)
+    {
+        items = GetItemsByType(itemType);
+    }
+
+
+    public void OranizeStorage()
+    {
+        Dictionary<IStorable, int> itemCounts = new Dictionary<IStorable, int>();
+        foreach (IStorable item in storableItems)
+        {
+            if (itemCounts.ContainsKey(item))
+            {
+                itemCounts[item] += item.currentCount;
+            }
+            else
+            {
+                itemCounts[item] = item.currentCount;
+            }
+        }
+        storableItems.Clear();
     }
 }

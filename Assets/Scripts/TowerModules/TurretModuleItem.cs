@@ -16,6 +16,10 @@ namespace Game.Modules
         public Image Icon { get; set; }
         public ItemType itemType => ItemType.Module;
 
+        public bool SameItem(IStorable other)
+        {
+            return false;
+        }
         //---------------------------------------------------------
 
         public TurretModuleItem(TurretModule module, int count = 1)

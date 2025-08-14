@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 731cb0c5fe7d90b4a88c75386456b891, type: 3}
-  m_Name: 120mmWeakCannonShell
+  m_Script: {fileID: 11500000, guid: 5129bd7fbb5035c43b4f06b3e27d5ecc, type: 3}
+  m_Name: 30mmAPShell
   m_EditorClassIdentifier: 
-  shellName: 120mmWeakCannonShell
-  propellantEnergy: 5000
-  calibar: 120
-  deltaTime: 0.1
+  shellName: 30mmAP
+  maxCount: 20
+  propellantEnergy: 9000
+  calibar: 30
+  deltaTime: 0.05
   timeToLive: 5
   explosion: {fileID: 1868602337266200, guid: 6d074a749488789479e539251fdf184e, type: 3}
-  explosionRadius: 5
-  explosivePower: 1000
+  penetrationDepth: 1000

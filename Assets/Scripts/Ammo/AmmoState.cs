@@ -37,7 +37,7 @@ public class FiredState : IAmmoState
     public void Update(Shell shell)
     {
         Transform transform = shell.transform;
-        shell.speedVec += PlanetDataManager.instance.gravity * Time.deltaTime;  
+        shell.speedVec += OnPlanetDataManager.instance.gravity * Time.deltaTime;  
         transform.position += shell.speedVec * Time.deltaTime;
         transform.rotation = Quaternion.LookRotation(shell.speedVec.normalized);
     }

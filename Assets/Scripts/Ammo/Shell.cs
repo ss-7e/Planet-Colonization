@@ -10,7 +10,7 @@ namespace Game.Ammo
     public class Shell : MonoBehaviour
     {
         private IAmmoState currentState;
-        
+
         // Shell states
         public bool fired = false;
         public Vector3 speedVec = Vector3.zero;
@@ -43,23 +43,14 @@ namespace Game.Ammo
             {
                 Destroy(gameObject);
             }
-
-            //if (Input.GetKeyDown(KeyCode.Space))
-            //{
-            //    transform.position = Pos;
-            //}
         }
 
-
-
-
-        // not finished yet
         private void ProjectileTracer()
         {
             float deltaTime = ShellData.deltaTime; 
             // simulate trajectory with multiple raycasts  
             if (!(currentState is FiredState)) { return; }
-            Vector3 gravity = PlanetDataManager.instance.gravity;
+            Vector3 gravity = OnPlanetDataManager.instance.gravity;
             Vector3 startPos = transform.position;
             Vector3 endPos = startPos + speedVec * deltaTime + 0.5f * gravity * deltaTime * deltaTime;
             LayerMask mask = LayerMask.GetMask("Enemy", "GridMap");

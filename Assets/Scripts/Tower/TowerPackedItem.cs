@@ -17,7 +17,12 @@ public class TowerPackedItem : MonoBehaviour, IStorable
     [SerializeField] protected Image _icon;
 
     public ItemType itemType => ItemType.Component;
+
+    public bool SameItem(IStorable other)
+    {
+        return false;
+    }
     //-----------------------------------------------------------
 
-
+    public Tower towerData;
 }

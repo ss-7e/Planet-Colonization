@@ -9,11 +9,22 @@ namespace Game.Towers
     {
         [SerializeField] protected int storageLength = 8;
         [SerializeField] protected int storageWidth = 4;
-        [SerializeField] protected Storage storage = null;
+        protected Storage storage = null;
 
-        public void Start()
+        public void Awake()
         {
-            storage = new Storage(storageLength * storageWidth);
+            if(storage == null)
+            {
+                storage = new Storage(storageLength * storageWidth);
+            }
+        }
+
+        public void Init()
+        {
+            if (storage == null)
+            {
+                storage = new Storage(storageLength * storageWidth);
+            }
         }
 
         public Storage GetStorage()

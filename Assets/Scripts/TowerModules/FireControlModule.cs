@@ -107,7 +107,7 @@ namespace Game.Modules
             float speed = shell.propellantEnergy / 1000f;
             float distance = targetDirectionXZ.magnitude;
             float height = targetDirection.y;
-            float g =  -PlanetDataManager.instance.gravity.y;
+            float g =  -OnPlanetDataManager.instance.gravity.y;
 
             float speedSquared = speed * speed;
 

@@ -1,3 +1,4 @@
+using Game.Ammo;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +7,8 @@ public enum ItemType
     NaturalResource,
     Module,
     ProcessingResource,
-    Component
+    Component,
+    Ammo
 }
 public interface IStorable
 {
@@ -15,5 +17,6 @@ public interface IStorable
     int currentCount { get; set; }
     Image Icon { get; set; }
 
+    bool SameItem(IStorable other);
     ItemType itemType { get; }
 }
