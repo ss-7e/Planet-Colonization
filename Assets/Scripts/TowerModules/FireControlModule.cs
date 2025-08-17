@@ -1,10 +1,7 @@
 ﻿using Game.Ammo;
 using Game.Towers.Turrets;
 using System.Collections.Generic;
-using Unity.Android.Gradle.Manifest;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Modules
 {
@@ -79,7 +76,7 @@ namespace Game.Modules
             }
 
             if((turret.rotatePart.forward - targetDirection.normalized).magnitude < 0.1f 
-                && shellToFire != null && canFire)
+                && shellToFire != null && canFire && targets.Count > 0)
             {
                 Fire(shellToFire, turret, targetDirection);
                 reloader.Fire(turret.reloaderInstance);

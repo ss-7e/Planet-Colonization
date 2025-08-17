@@ -8,10 +8,10 @@ namespace Game.UI
 {
     public class FactoryUI : MonoBehaviour
     {
-        FactroyTowerBase currentFactory;
+        FactoryTowerBase currentFactory;
         Tower currentTower;
         [SerializeField] private GameObject selectImage;
-        [SerializeField] private AssembleLinePress[] assembleLines;
+        [SerializeField] private LongPressBtn[] assembleLines;
         [SerializeField] private GameObject progressBar;
         public void Update()
         {
@@ -21,7 +21,7 @@ namespace Game.UI
             }
             UpdateProgressBar();
         }
-        public void SetUI(FactroyTowerBase factory, bool isLeft)
+        public void SetUI(FactoryTowerBase factory, bool isLeft)
         {
             currentFactory = factory;
             SetUIPos(factory, isLeft);
@@ -32,11 +32,12 @@ namespace Game.UI
             }
             else
             {
+                OnAssemblelineSelect(null);
                 selectImage.SetActive(false);
                 progressBar.SetActive(false);
             }
         }
-        public void SetUIPos(FactroyTowerBase factory, bool isLeft)
+        public void SetUIPos(FactoryTowerBase factory, bool isLeft)
         {
             if (factory == null)
             {
@@ -52,7 +53,7 @@ namespace Game.UI
             currentFactory = factory;
             this.gameObject.SetActive(true);
         }
-        public void HideUI(FactroyTowerBase factory)
+        public void HideUI(FactoryTowerBase factory)
         {
             this.gameObject.SetActive(false);
             if (factory != null)
@@ -60,16 +61,24 @@ namespace Game.UI
                 // Additional cleanup if necessary
             }
         }
-        private void PopulateFactoryList(FactroyTowerBase factory)
+        private void PopulateFactoryList(FactoryTowerBase factory)
         {
             // Implement logic to populate the factory list in the UI
         }
 
-        public void OnAssemblelineSelect(AssembleLinePress assembleLine)
+        public void OnAssemblelineSelect(LongPressBtn assembleLine)
         {
+
+            foreach (LongPressBtn line in assembleLines)
+            {
+                if (line != assembleLine)
+                {
+                    line.isSelected = false;
+                }
+            }
+
             if (assembleLine == null)
             {
-                Debug.LogError("AssembleLine is null, cannot select.");
                 return;
             }
             selectImage.SetActive(true);
@@ -82,13 +91,6 @@ namespace Game.UI
 
 
             assembleLine.isSelected = true; 
-            foreach (AssembleLinePress line in assembleLines)
-            {
-                if (line != assembleLine)
-                {
-                    line.isSelected = false;
-                }
-            }
             currentFactory.assblelinePressUI = assembleLine;
 
         }

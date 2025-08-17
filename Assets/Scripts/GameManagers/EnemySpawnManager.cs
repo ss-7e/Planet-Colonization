@@ -8,6 +8,7 @@ namespace Game.Entites
     {
         public static EnemySpawnManager instance;
         public GameObject[] enemyPrefab;
+        [SerializeField] private float spawnInterval = 1f;
         [SerializeField] private int startSpawnCount = 20;
         [SerializeField] private int _maxSpawnCount = 40;
         public int maxSpawnCount
@@ -27,7 +28,7 @@ namespace Game.Entites
                 return;
             }
             instance = this;
-            InvokeRepeating(nameof(RandomSpawnEnemy), 0f, 3f);
+            InvokeRepeating(nameof(RandomSpawnEnemy), 0f, spawnInterval);
             StartSpawn();
         }
         void StartSpawn()
@@ -89,7 +90,24 @@ namespace Game.Entites
         }
         void RandomSpawnEnemy()
         {
-            GameObject enemyPrefab = this.enemyPrefab[Random.Range(0, this.enemyPrefab.Length)];
+            int index = 1;
+            if(LevelDirector.instance != null)
+            {
+                switch (LevelDirector.instance.levelDifficulty)
+                {
+                    case LevelDifficulty.Easy:
+                        index = Random.Range(0, 7);
+                        break;
+                    case LevelDifficulty.Normal:
+                        index = Random.Range(0, 5);
+                        break;
+                    case LevelDifficulty.Hard:
+                        index = Random.Range(0, 2);
+                        break;
+                }
+            }
+            index = Mathf.Clamp(index, 0, 1);
+            GameObject enemyPrefab = this.enemyPrefab[index];
             currentSpawnCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
             if (currentSpawnCount >= maxSpawnCount)
             {
@@ -104,6 +122,8 @@ namespace Game.Entites
             }
             SpawnEnemy(enemyPrefab, grid);
         }
+
+
 
     }
 }

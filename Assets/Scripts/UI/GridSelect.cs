@@ -118,6 +118,10 @@ public class GridSelector : MonoBehaviour
                 UIManager.instance.SetTowerUI(tower, isLeft: Input.mousePosition.x < Screen.width / 2f);
                 previousTower = tower;
             }
+            if(gridSelected.isObstacle)
+            {
+                return;
+            }
             buildTowerAt();
         }
         else

@@ -99,9 +99,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosion: {fileID: 198049787571439516, guid: 274f984a6d36c7948a3ee011a963ed5b, type: 3}
+  randomForceInterval: 4
+  randomForceScale: 0.01
   maxHeight: 0.6
   health: 40
-  speed: 5
+  speed: 0.5
   sensor: {fileID: 0}
   ttl: 20
 --- !u!114 &5975849232711024508
@@ -117,7 +119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionRange: 4
-  attackRange: 0.4
+  attackRange: 0.3
   moveSpeed: 1
   target: {fileID: 0}
 --- !u!135 &3059921209096603460

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Game.Entites;
+using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 public class EnemyGroup
@@ -15,5 +16,13 @@ public class EnemyGroup
         this.maxMember = maxMember;
     }
     
+    public void UpdateForce()
+    {
+        foreach(GameObject enemy in enemyPrefab)
+        {
+            Enemy enemyData = enemy.GetComponent<Enemy>();
+            
+        }
+    }
 
 }

@@ -19,7 +19,6 @@ public class EnemySimpleAI : EnemyAI
     }
     public void SetBehaviorState(EnemyBehaviorState newState)
     {
-        Debug.Log($"Transitioning from {behaviorState.GetType().Name} to {newState.GetType().Name}");
         if (behaviorState != null)
         {
             behaviorState.ExitState(this.gameObject);
@@ -33,12 +32,14 @@ public class EnemySimpleAI : EnemyAI
 public class EnemyAttackState : EnemyBehaviorState
 {
     List<GridNode> path;
+    Vector3 movingForce;
+    float updateTargetInterval = 1.5f;
+    float updateTargetTime = 0f;
     public override void EnterState(GameObject enemy)
     {
-        Debug.Log("Entering Attack State");
         EnemySimpleAI enemyAI = enemy.GetComponent<EnemySimpleAI>();
-        Vector2Int startPos = GridManager.instance.GetRridXY(enemy.transform.position);
-        Vector2Int targetPos = GridManager.instance.GetRridXY(enemyAI.target.transform.position);
+        Vector2Int startPos = GridManager.instance.GetGridXY(enemy.transform.position);
+        Vector2Int targetPos = GridManager.instance.GetGridXY(enemyAI.target.transform.position);
         FindPath(startPos, targetPos);
         foreach (var node in path)
         {
@@ -47,6 +48,7 @@ public class EnemyAttackState : EnemyBehaviorState
     }
     public override void UpdateState(GameObject enemy)
     {
+        updateTargetTime += Time.deltaTime;
         EnemySimpleAI enemyAI = enemy.GetComponent<EnemySimpleAI>();
         Enemy enemyData = enemy.GetComponent<Enemy>();
         if (enemyAI.target == null)
@@ -55,11 +57,10 @@ public class EnemyAttackState : EnemyBehaviorState
         }
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Path is empty, transitioning to idle state.");
             enemyAI.SetBehaviorState(new EnemyIdleState());
             return;
         }
-        Vector2Int currentPos = GridManager.instance.GetRridXY(enemy.transform.position);
+        Vector2Int currentPos = GridManager.instance.GetGridXY(enemy.transform.position);
         if (currentPos == new Vector2Int(path[0].x, path[0].y))
         {
             path.Remove(path[0]);
@@ -67,8 +68,11 @@ public class EnemyAttackState : EnemyBehaviorState
         Vector3 targetDir = GridManager.instance.GetGridXY(path[0].x, path[0].y).pos - enemy.transform.position;
         targetDir.y = 0;
         targetDir.Normalize();
-        enemy.transform.rotation = Quaternion.LookRotation(targetDir);
-        enemy.transform.position += targetDir * Time.deltaTime * enemyAI.moveSpeed;
+        if (updateTargetTime >= updateTargetInterval)
+        {
+            updateTargetTime = 0f;
+            enemyData.AddMoveForce(targetDir, 1f);
+        }
         LayerMask layerMask = LayerMask.GetMask("Player");
         Collider[] hitColliders = Physics.OverlapSphere(enemy.transform.position, enemyAI.attackRange, layerMask);
         if (hitColliders.Length > 0)
@@ -78,18 +82,16 @@ public class EnemyAttackState : EnemyBehaviorState
                 if( hitCollider.GetComponent<IDamageable>() is IDamageable damageable)
                 {
                     damageable.TakeDamage(enemyData.attackValue);
-                    Debug.Log("Enemy attacked player for " + enemyData.attackValue + " damage.");
                 }
             }
-            Debug.Log("Enemy has attacked the player, transitioning to explode state.");
             enemyAI.SetBehaviorState(new EnemyExplodeState());
         }
     }
-    void FindPath(Vector2Int start, Vector2Int target)
+    public void FindPath(Vector2Int start, Vector2Int target)
     {
         Grid[] grids = GridManager.instance.grid;
         GridNode[] gridNodes = new GridNode[grids.Length];
-        for (int i = 0; i < grids.Length; i++)
+        for (int i = 0; i < grids.Length; i++) 
         {
             gridNodes[i] = new GridNode
             {
@@ -101,18 +103,14 @@ public class EnemyAttackState : EnemyBehaviorState
         Pathfinder pathfinder = new Pathfinder();
         path = pathfinder.FindPath(gridNodes, GridManager.instance.width, GridManager.instance.length, start, target);
     }
-    public override void ExitState(GameObject enemy)
-    {
-        Debug.Log("Exiting Attack State");
-        // Logic for exiting attack state
-    }
+
 }
+
 
 public class EnemyExplodeState : EnemyBehaviorState
 {
     public override void EnterState(GameObject enemy)
     {
-        Debug.Log("Entering Explode State");
         Enemy enemyData = enemy.GetComponent<Enemy>();
         enemyData.Die();
     }

@@ -13,7 +13,6 @@ public class StoredState : IAmmoState
 {
     public void Enter(Shell shell)
     {
-        Debug.Log("Shell stored.");
         
     }
 
@@ -32,7 +31,6 @@ public class FiredState : IAmmoState
 {
     public void Enter(Shell shell)
     {
-        //Debug.Log("Shell fired.");
     }
     public void Update(Shell shell)
     {
@@ -43,7 +41,7 @@ public class FiredState : IAmmoState
     }
     public void Exit(Shell shell)
     {
-        Debug.Log("Shell exited fired state.");
+        
     }
 }
 
@@ -51,7 +49,6 @@ public class HitState : IAmmoState
 {
     public void Enter(Shell shell)
     {
-        Debug.Log("Shell exploded.");
         shell.speed = shell.speedVec.magnitude;
         // Add explosion effects here
     }
@@ -73,7 +70,6 @@ public class HitState : IAmmoState
     }
     public void Exit(Shell shell)
     {
-        Debug.Log("Shell exited exploded state.");
     }
 }
 

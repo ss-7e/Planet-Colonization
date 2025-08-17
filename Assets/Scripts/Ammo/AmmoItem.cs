@@ -13,8 +13,8 @@ namespace Game.Ammo
 
         public int currentCount { get; set; } = 1;
 
-        public Image Icon { get => _icon; set => _icon = value; }
-        [SerializeField] protected Image _icon;
+        public Sprite icon { get => _icon; set => _icon = value; }
+        [SerializeField] protected Sprite _icon;
 
         public ItemType itemType => ItemType.Ammo;
 

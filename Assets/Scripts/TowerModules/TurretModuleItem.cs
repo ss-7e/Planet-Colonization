@@ -13,7 +13,8 @@ namespace Game.Modules
         public int currentCount { get; set; }
         public int maxCount { get; private set; }
         public int Id { get; }
-        public Image Icon { get; set; }
+        public Sprite icon { get => _icon; set => _icon = value; }
+        [SerializeField] protected Sprite _icon;
         public ItemType itemType => ItemType.Module;
 
         public bool SameItem(IStorable other)

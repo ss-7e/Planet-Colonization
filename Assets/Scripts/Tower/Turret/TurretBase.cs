@@ -18,7 +18,6 @@ namespace Game.Towers.Turrets
         [SerializeField]protected Transform turretRotatePart;
         public Transform rotatePart => turretRotatePart;
 
-        protected IAttackStrategy attackStrategy;
         protected HealthComponent healthComp;
         [SerializeField]protected int radarCount = 1;
 

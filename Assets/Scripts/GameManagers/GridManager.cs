@@ -25,7 +25,6 @@ public class GridManager : MonoBehaviour
 
         if (!System.IO.File.Exists(path))
         {
-            Debug.LogError("Grid JSON not FOund！");
             return;
         }
 
@@ -42,7 +41,6 @@ public class GridManager : MonoBehaviour
             grid[i] = new Grid(data.GetPosition());
         }
 
-        Debug.Log($"成功加载 {grid.Length} 个格子数据");
     }
 
     public Grid GetGridXY(int x, int y)
@@ -55,7 +53,7 @@ public class GridManager : MonoBehaviour
         grid[y * width + x] = value;
     }
 
-    public Vector2Int GetRridXY(Vector3 pos)
+    public Vector2Int GetGridXY(Vector3 pos)
     {
         pos.x += length / 2;
         pos.z += width / 2;

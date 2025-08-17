@@ -11,7 +11,7 @@ public class BuildManager : MonoBehaviour
     private List<TurretBase> turretList = new List<TurretBase>();
     private List<Miner> miners = new List<Miner>();
     private List<StorageTower> storageTowers = new List<StorageTower>();
-    private List<FactroyTowerBase> factoryTowers = new List<FactroyTowerBase>();
+    private List<FactoryTowerBase> factoryTowers = new List<FactoryTowerBase>();
     void Awake()
     {
         if (instance != null)
@@ -29,7 +29,7 @@ public class BuildManager : MonoBehaviour
         towerToBuild = turret;
     }
 
-    public GameObject GetTurretToBuild()
+    public GameObject GetTowerToBuild()
     {
         return towerToBuild;
     }
@@ -42,6 +42,10 @@ public class BuildManager : MonoBehaviour
         }
         if (grid.canBuild())
         {
+            if (!Cargo.instance.FindTower(towerToBuild.GetComponent<Tower>())) 
+            {
+                return;
+            }
             Vector3 towerPos = grid.pos + new Vector3(0, 0.5f, 0);
             GameObject tower = (GameObject)Instantiate(towerToBuild, towerPos, Quaternion.identity);
             GameObject Towers =  GameObject.Find("Towers");
@@ -64,6 +68,7 @@ public class BuildManager : MonoBehaviour
             grid.AssignTurretToGrid(tower);
             UIManager.instance.setHealthBar(tower);
             UIManager.instance.downSelectionBarFrame.gameObject.SetActive(false);
+            
         }
         else
         {
@@ -90,7 +95,7 @@ public class BuildManager : MonoBehaviour
                 storageTowers.Add(storage);
                 UpdateTowersStorage();
                 break;
-            case FactroyTowerBase factory:
+            case FactoryTowerBase factory:
                 factoryTowers.Add(factory);
                 SetTowerStorage(factory);
                 SetFactroyTurretList(factory);
@@ -115,7 +120,7 @@ public class BuildManager : MonoBehaviour
     void SetFactoryAffectTurret(TurretBase turret)
     {
         Vector3 TowerPos = turret.onGrid.pos;
-        foreach (FactroyTowerBase factory in factoryTowers)
+        foreach (FactoryTowerBase factory in factoryTowers)
         {
             Vector3 factoryPos = factory.onGrid.pos;
             float distance = (TowerPos - factoryPos).magnitude;
@@ -125,7 +130,7 @@ public class BuildManager : MonoBehaviour
             }
         }
     }
-    void SetFactroyTurretList(FactroyTowerBase factory)
+    void SetFactroyTurretList(FactoryTowerBase factory)
     {
         Vector3 factoryPos = factory.onGrid.pos;
         foreach (TurretBase turret in turretList)
@@ -152,7 +157,7 @@ public class BuildManager : MonoBehaviour
             SetTowerStorage(miner);
             Debug.LogWarning($"Updated storage for miner: {miner.name}");
         }
-        foreach (FactroyTowerBase factory in factoryTowers)
+        foreach (FactoryTowerBase factory in factoryTowers)
         {
             Debug.LogWarning($"Updated storage for factory: {factory.name}");
             SetTowerStorage(factory);

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Game.Ammo;
@@ -28,6 +27,7 @@ public class TurretAmmoStorage
     public void AddAmmo(ShellData ShellData, int count)
     {
         count = Mathf.Clamp(count, 0, ammoCapacity - ammoCount);
+        ammoCount += count;
         if (ammoStorage.ContainsKey(ShellData))
         {
             ammoStorage[ShellData] += count;
@@ -45,6 +45,7 @@ public class TurretAmmoStorage
         if (ammoStorage.ContainsKey(ShellData) && ammoStorage[ShellData] > 0)
         {
             ammoStorage[ShellData]--;
+            ammoCount--;
             if (ammoStorage[ShellData] == 0)
             {
                 ammoOrder.RemoveAt(0);

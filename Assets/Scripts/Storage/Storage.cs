@@ -11,6 +11,7 @@ public class Storage
     }
     public bool AddItem(IStorable item)
     {
+        if (item == null) { return false; }
         foreach (IStorable existingItem in storableItems)
         {
             if (existingItem.SameItem(item))
@@ -51,6 +52,19 @@ public class Storage
             }
         }
         return null;
+    }
+
+    public void RemoveItem(IStorable item)
+    {
+        for (int i = 0; i < storableItems.Count; i++)
+        {
+            if (storableItems[i] == item)
+            {
+                storableItems.RemoveAt(i);
+                return;
+            }
+        }
+        Debug.LogWarning("Item not found in storage.");
     }
 
     public bool GetItem(IStorable item, int count)

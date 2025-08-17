@@ -1,20 +1,43 @@
 ﻿using UnityEngine;
 using Game.Entites;
+
+public enum LevelDifficulty
+{
+    Easy,
+    Normal,
+    Hard
+}
+
 public class LevelDirector : MonoBehaviour
 {
+    public static LevelDirector instance;
+    public LevelDifficulty levelDifficulty = LevelDifficulty.Easy;
     private float levelTime;
     private float attackTimeCounter = 0f;
+    private float groupAttackTimeCounter = 0f;
     [SerializeField] private GameObject shuttle;
-    [SerializeField] private float attackWave = 300f;
+    [SerializeField] private float attackCooldown = 10f;
+    [SerializeField] private float groupAttackCooldown = 80f; 
     private void Start()
     {
+        if (instance != null)
+        {
+            return;
+        }
+        instance = this;
         InvokeRepeating(nameof(UpdateLevelTime), 1f, 1f);
     }
     private void Update()
     {
         levelTime += Time.deltaTime;
         attackTimeCounter += Time.deltaTime;
-        if (attackTimeCounter >= attackWave)
+        groupAttackTimeCounter += Time.deltaTime;
+        if (groupAttackTimeCounter >= groupAttackCooldown)
+        {
+            groupAttackTimeCounter = 0f;
+            StartGroupAttack();
+        }
+        if (attackTimeCounter >= attackCooldown)
         {
             attackTimeCounter = 0f;
             StartAttack();
@@ -37,13 +60,12 @@ public class LevelDirector : MonoBehaviour
                 {
                     enemyAI.target = shuttle.transform;
                     enemyAI.SetBehaviorState(new EnemyAttackState());
-                    Debug.Log($"Enemy {enemy.name} is now attacking.");
                 }
             }
         }
-        else
-        {
-            Debug.Log("No enemies found to attack.");
-        }
+    }
+    private void StartGroupAttack()
+    {
+        
     }
 }

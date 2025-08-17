@@ -15,6 +15,7 @@ public class Grid
 {
     public GameObject tower = null;
     public bool isObstacle = false;
+    public bool isShipyard = false;
     public GridType gridType;
 
     public Grid(Vector3 gridPos)
@@ -41,7 +42,7 @@ public class Grid
     {
         if (tower == null)
         {
-            return true && !isObstacle;
+            return true && !isObstacle && !isShipyard;
         }
         return false;
     }

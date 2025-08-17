@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
     public GameObject healthBarPrefab;
+    public GameObject cargoUI;
     public TurretUI turretUI;
     public FactoryUI factoryUI;
     [SerializeField] TextMeshProUGUI GalaxyCreditUI;
@@ -31,7 +32,7 @@ public class UIManager : MonoBehaviour
     {
         if (GalaxyCreditUI != null)
         {
-            GalaxyCreditUI.text = amount.ToString();
+            GalaxyCreditUI.text = "Galactic Credits: " + amount.ToString() + "G";
         }
         else
         {
@@ -64,7 +65,7 @@ public class UIManager : MonoBehaviour
             case TurretBase turret:
                 turretUI.SetUI(turret, isLeft);
                 break;
-            case FactroyTowerBase factory:
+            case FactoryTowerBase factory:
                 factoryUI.SetUI(factory, isLeft);
                 break;
             default:
@@ -80,12 +81,24 @@ public class UIManager : MonoBehaviour
             case TurretBase turret:
                 turretUI.HideUI(turret);
                 break;
-            case FactroyTowerBase factory:
+            case FactoryTowerBase factory:
                 factoryUI.HideUI(factory);
                 break;
             default:
                 Debug.LogWarning("Unsupported tower type for hiding UI: " + tower.GetType());
                 break;
+        }
+    }
+
+    public void SetCargoUI(bool isActive)
+    {
+        if (cargoUI != null)
+        {
+            cargoUI.SetActive(isActive);
+        }
+        else
+        {
+            Debug.LogWarning("Cargo UI is not assigned in the UIManager.");
         }
     }
 }

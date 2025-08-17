@@ -6,7 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/temp/Sample/SampleScene.unity
-    guid: d1c3109bdb54ad54c8a2b2838528e640
+    path: Assets/Scenes/MainMenu.unity
+    guid: 92128ab77d4f4d743b94df9b8c6864c0
+  - enabled: 1
+    path: Assets/Scenes/GardenPlanet.unity
+    guid: 3e3ddfcde17286a47a43c14bf59eda03
+  - enabled: 1
+    path: Assets/Scenes/DessertPlanet.unity
+    guid: 310d628b78d43c040b37717956e8f91c
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEditor.iOS;
-using UnityEngine;
+﻿using UnityEngine;
 namespace Game.Towers.Mine
 {
     public class Miner : Tower, IDamageable

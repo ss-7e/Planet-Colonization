@@ -16,6 +16,8 @@ namespace Game.Map
         public float ObstacleLow = 0.1f;
         public float gridLevel = 1f;
 
+
+        public Shuttle shuttlePrefab;
         public MapGenerateConfig config;
         public GridMeshGenerator gridMeshGenerator;
 
@@ -30,6 +32,7 @@ namespace Game.Map
             gridMeshGenerator = GetComponent<GridMeshGenerator>();
             gridMeshGenerator.config = config;
             gridMeshGenerator.GenerateGridMesh();
+            shuttlePrefab.SetShipGrids();
         }
 
         void setConfig()
