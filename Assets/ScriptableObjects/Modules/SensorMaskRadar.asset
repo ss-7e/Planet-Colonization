@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f0e7aed6f616e4ba88ae17f89251c6, type: 3}
   m_Name: SensorMaskRadar
   m_EditorClassIdentifier: 
-  range: 10
+  range: 3
   updateInterval: 0.5
   accuracy: 0.1
   targetMask:
