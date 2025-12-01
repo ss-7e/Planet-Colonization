@@ -25,7 +25,7 @@ namespace Game.Map
         private void Start()
         {
             setConfig();
-            if (GridManager.instance.grid == null)
+            if (GridManager.instance.grids == null)
             {
                 RunTimeGenerate();
             }
@@ -51,7 +51,7 @@ namespace Game.Map
         {
             GridManager.instance.length = (int)(length * tileSize);
             GridManager.instance.width = (int)(width * tileSize);
-            GridManager.instance.grid = GridGenerate();
+            GridManager.instance.grids = GridGenerate();
         }
 
         public Grid[] GridGenerate()

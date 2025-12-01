@@ -89,7 +89,7 @@ public class EnemyAttackState : EnemyBehaviorState
     }
     public void FindPath(Vector2Int start, Vector2Int target)
     {
-        Grid[] grids = GridManager.instance.grid;
+        Grid[] grids = GridManager.instance.grids;
         GridNode[] gridNodes = new GridNode[grids.Length];
         for (int i = 0; i < grids.Length; i++) 
         {

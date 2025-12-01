@@ -63,7 +63,6 @@ public class Projectile : MonoBehaviour {
             {
                 Vector3 Vo = CalculateCatapult(target.transform.position, transform.position, 1);
 
-                transform.GetComponent<Rigidbody>().velocity = Vo;
                 lockOn = false;
             }
         }else if(type == TurretAI.TurretType.Dual)

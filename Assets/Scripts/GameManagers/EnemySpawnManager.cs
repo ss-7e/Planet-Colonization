@@ -118,7 +118,7 @@ namespace Game.Entites
             Grid grid = GridManager.instance.GetGridXY(x, z);
             if (grid == null || grid.isObstacle )
             {
-                return; // Skip if the grid is null or occupied
+                return; // Skip if the grids is null or occupied
             }
             SpawnEnemy(enemyPrefab, grid);
         }

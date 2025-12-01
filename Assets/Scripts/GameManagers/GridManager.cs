@@ -9,13 +9,14 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager instance;
     public MapType mapType;
-    public Grid[] grid;
+    public Grid[] grids;
+    public GridPathDirection[] gridPathDirections;
     public int length { get; set; }
     public int width { get; set; }
     void Awake()
     {
         instance = this;
-        grid = null;
+        grids = null;
         LoadGridFromJson();
     }
 
@@ -33,24 +34,24 @@ public class GridManager : MonoBehaviour
         width = 1000;
         length = 1000;
 
-        grid = new Grid[gridDataArray.Length];
+        grids = new Grid[gridDataArray.Length];
 
         for (int i = 0; i < gridDataArray.Length; i++)
         {
             var data = gridDataArray[i];
-            grid[i] = new Grid(data.GetPosition());
+            grids[i] = new Grid(data.GetPosition());
         }
 
     }
 
     public Grid GetGridXY(int x, int y)
     {
-        return grid[y * width + x];
+        return grids[y * width + x];
     }
 
     public void SetGridPos(int x, int y, Grid value)
     {
-        grid[y * width + x] = value;
+        grids[y * width + x] = value;
     }
 
     public Vector2Int GetGridXY(Vector3 pos)

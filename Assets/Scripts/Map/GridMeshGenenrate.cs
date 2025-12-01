@@ -22,7 +22,7 @@ public class GridMeshGenerator : MonoBehaviour
         MapGenerator mapGenerate = GetComponent<MapGenerator>();
         if(GridManager.instance != null)
         {
-            GridManager.instance.grid = null;
+            GridManager.instance.grids = null;
             mapGenerate.RunTimeGenerate();
         }
         else
@@ -43,7 +43,7 @@ public class GridMeshGenerator : MonoBehaviour
         Grid[] grids = null;
         if (GridManager.instance != null)
         {
-            grids = GridManager.instance.grid;
+            grids = GridManager.instance.grids;
         }
         else 
         { 

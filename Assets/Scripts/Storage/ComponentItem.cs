@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class Component : ScriptableObject, IStorable
+public class ItemComponent : ScriptableObject, IStorable
 {
 
     //-----------------------------------------------------------

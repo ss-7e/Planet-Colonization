@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class GridData
+public struct GridData
 {
     public int x, y;
     public int height;
