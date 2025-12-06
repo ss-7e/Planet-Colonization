@@ -22,32 +22,109 @@ public class BuildManager : MonoBehaviour
         instance = this;
     }
 
-    private GameObject towerToBuild;
+    private GameObject objectToBuild;
 
-    public void SetTurretToBuild(GameObject turret)
+
+    public void SetObjectToBuild(GameObject obj)
     {
-        towerToBuild = turret;
+        if (objectToBuild != null) {
+            Destroy(objectToBuild);
+        }
+        objectToBuild = Instantiate(obj);
+        objectToBuild.SetActive(false);
     }
 
-    public GameObject GetTowerToBuild()
+    public void ClearObjectToBuild()
     {
-        return towerToBuild;
+        if (objectToBuild != null)
+        {
+            Destroy(objectToBuild);
+        }
+        objectToBuild = null;
     }
 
-    public void BuildTower(Grid grid)
+    public GameObject GetObjectToBuild()
     {
-        if (towerToBuild == null)
+        return objectToBuild;
+    }
+
+    /// <summary>
+    /// 点击格子尝试建造塔，或许应该改成观察者模式
+    /// </summary>
+    /// <param name="grid"></param>
+    public void ConfirmBuildOnGrid(Grid grid)
+    {
+        if (objectToBuild == null || !grid.canBuild()) return;
+        if (objectToBuild.GetComponent<Tower>())
+        {
+            BuildTowerOnGrid(grid);
+        }
+        else if (objectToBuild.GetComponent<Factory.FactorySquare>())
+        {
+            BuildFactoryOnGrid(grid);
+        }
+    }
+
+
+    public void TryBuildingOnGrid(Grid grid, bool set)
+    {
+        if (objectToBuild == null ) return;
+        if(set && grid.canBuild())
+        {
+            objectToBuild.SetActive(true);
+            if (objectToBuild.GetComponent<Tower>())
+            {
+                Vector3 towerPos = grid.pos + new Vector3(0, 0.5f, 0);
+                objectToBuild.transform.position = towerPos;
+            }
+            else if (objectToBuild.GetComponent<Factory.FactorySquare>())
+            {
+                objectToBuild.transform.position = grid.pos + new Vector3(0, 1f, 0);
+            }
+        }
+        else
+        {
+            objectToBuild.SetActive(false);
+        }
+    }
+    
+
+    private void BuildFactoryOnGrid(Grid grid)
+    {
+        objectToBuild.SetActive(true);
+        objectToBuild.transform.position = grid.pos + new Vector3(0, 1f, 0);
+
+        GameObject Factories = GameObject.Find("Factories");
+        if (Factories == null)
+        {
+            Factories = new GameObject("Factories");
+        }
+        objectToBuild.transform.parent = Factories.transform;
+
+        objectToBuild.GetComponent<Factory.FactorySquare>().ConfirmBuild();
+        objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild();
+        grid.AddFactoryToGrid(objectToBuild);
+        objectToBuild = null;
+
+    }
+
+
+    private void BuildTowerOnGrid(Grid grid)
+    {
+        if (objectToBuild == null)
         {
             return;
         }
         if (grid.canBuild())
         {
-            if (!Cargo.instance.FindTower(towerToBuild.GetComponent<Tower>())) 
-            {
-                return;
-            }
+            //if (!Cargo.instance.FindTower(objectToBuild.GetComponent<Tower>())) 
+            //{
+            //    return;
+            //}
             Vector3 towerPos = grid.pos + new Vector3(0, 0.5f, 0);
-            GameObject tower = (GameObject)Instantiate(towerToBuild, towerPos, Quaternion.identity);
+            objectToBuild.SetActive(true);
+            objectToBuild.transform.position = towerPos;
+            GameObject tower = objectToBuild;
             GameObject Towers =  GameObject.Find("Towers");
             if (Towers == null)
             {
@@ -55,7 +132,7 @@ public class BuildManager : MonoBehaviour
             }
             //finish set GameObject
 
-            towerToBuild = null;
+            objectToBuild = null;
             tower.GetComponent<Tower>().BuildOnGrid(grid);
             AddToTowerList(tower);
 

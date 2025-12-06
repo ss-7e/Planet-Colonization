@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
 public class GridSelector : MonoBehaviour
 {
     public GameObject ConnectTowerUIPrefab;
@@ -27,12 +28,11 @@ public class GridSelector : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
             {
                 return;
             }
             ClickGrid();
-            
         }
         HighlightGrid();
         ResizeFrame(targetSize);
@@ -75,7 +75,13 @@ public class GridSelector : MonoBehaviour
     private void HighlightGrid()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance);
+        RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance, LayerMask.GetMask("Default"));
+        if(Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
+        {
+            BuildManager.instance.TryBuildingOnGrid(gridSelected, false);
+            return;
+        }
+        
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
@@ -95,12 +101,16 @@ public class GridSelector : MonoBehaviour
                 selectionIndicator.SetActive(true);
                 selectionIndicator.transform.position = hitPoint;
                 gridSelected = GridManager.instance.GetGridXY(x, z);
+
+                BuildManager.instance.TryBuildingOnGrid(gridSelected, true);
+                return;
             }
         }
+        BuildManager.instance.TryBuildingOnGrid(gridSelected, false);
     }
-    private void buildTowerAt()
+    private void ConfirmBuild()
     {
-        BuildManager.instance.BuildTower(gridSelected);
+        BuildManager.instance.ConfirmBuildOnGrid(gridSelected);
     }
     private void ClickGrid()
     {
@@ -122,7 +132,7 @@ public class GridSelector : MonoBehaviour
             {
                 return;
             }
-            buildTowerAt();
+            ConfirmBuild();
         }
         else
         {
