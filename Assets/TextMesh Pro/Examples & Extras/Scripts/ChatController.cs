@@ -33,7 +33,7 @@ public class ChatController : MonoBehaviour {
 
         if (ChatDisplayOutput != null)
         {
-            // No special formatting for first entry
+            // No special formatting for firstIdx entry
             // Add line feed before each subsequent entries
             if (ChatDisplayOutput.text == string.Empty)
                 ChatDisplayOutput.text = formattedInput;

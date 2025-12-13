@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum MapType
 {
@@ -61,5 +61,11 @@ public class GridManager : MonoBehaviour
         int x = Mathf.RoundToInt(pos.x);
         int z = Mathf.RoundToInt(pos.z);
         return new Vector2Int(x, z);
+    }
+
+    public Grid GetGridXY(Vector3 pos, out Vector2Int gridXY)
+    {
+        gridXY = GetGridXY(pos);
+        return GetGridXY(gridXY.x, gridXY.y);
     }
 }

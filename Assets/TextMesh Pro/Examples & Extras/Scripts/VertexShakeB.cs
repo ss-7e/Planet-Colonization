@@ -52,7 +52,7 @@ namespace TMPro.Examples
         IEnumerator AnimateVertexColors()
         {
 
-            // We force an update of the text object since it would only be updated at the end of the frame. Ie. before this code is executed on the first frame.
+            // We force an update of the text object since it would only be updated at the end of the frame. Ie. before this code is executed on the firstIdx frame.
             // Alternatively, we could yield and wait until the end of the frame when the text object will be generated.
             m_TextComponent.ForceMeshUpdate();
 
@@ -112,7 +112,7 @@ namespace TMPro.Examples
                         // Get the index of the material used by the current character.
                         int materialIndex = textInfo.characterInfo[j].materialReferenceIndex;
 
-                        // Get the index of the first vertex used by this text element.
+                        // Get the index of the firstIdx vertex used by this text element.
                         int vertexIndex = textInfo.characterInfo[j].vertexIndex;
 
                         // Get the vertices of the mesh used by this text element (character or sprite).

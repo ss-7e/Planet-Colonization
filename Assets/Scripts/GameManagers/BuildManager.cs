@@ -1,17 +1,26 @@
-using Game.Towers.Mine;
+ï»¿using Game.Towers.Mine;
 using Game.Towers.Turrets;
 using Game.Towers.Factory;
 using Game.Towers;
+using Factory;
 using System.Collections.Generic;
 using UnityEngine;
+using Factroy;
 
 public class BuildManager : MonoBehaviour
 {
     public static BuildManager instance;
+
+    public List<GameObject> canveyerBelts;
+
+
     private List<TurretBase> turretList = new List<TurretBase>();
     private List<Miner> miners = new List<Miner>();
     private List<StorageTower> storageTowers = new List<StorageTower>();
     private List<FactoryTowerBase> factoryTowers = new List<FactoryTowerBase>();
+    private GameObject objectToBuild;
+    private CanveyerBeltBuild canveyerBeltBuild = null;
+
     void Awake()
     {
         if (instance != null)
@@ -22,8 +31,18 @@ public class BuildManager : MonoBehaviour
         instance = this;
     }
 
-    private GameObject objectToBuild;
+    private void Update()
+    {
+        if(canveyerBeltBuild != null) {
+            canveyerBeltBuild.Update();
+        }
+    }
 
+    public void SetCanveyerBeltBuild()
+    {
+        canveyerBeltBuild = new CanveyerBeltBuild();
+        canveyerBeltBuild.Awake();
+    }
 
     public void SetObjectToBuild(GameObject obj)
     {
@@ -41,6 +60,7 @@ public class BuildManager : MonoBehaviour
             Destroy(objectToBuild);
         }
         objectToBuild = null;
+        canveyerBeltBuild = null;
     }
 
     public GameObject GetObjectToBuild()
@@ -49,7 +69,7 @@ public class BuildManager : MonoBehaviour
     }
 
     /// <summary>
-    /// µã»÷¸ñ×Ó³¢ÊÔ½¨ÔìËş£¬»òĞíÓ¦¸Ã¸Ä³É¹Û²ìÕßÄ£Ê½
+    /// ç‚¹å‡»æ ¼å­å°è¯•å»ºé€ å¡”ï¼Œæˆ–è®¸åº”è¯¥æ”¹æˆè§‚å¯Ÿè€…æ¨¡å¼
     /// </summary>
     /// <param name="grid"></param>
     public void ConfirmBuildOnGrid(Grid grid)
@@ -68,7 +88,7 @@ public class BuildManager : MonoBehaviour
 
     public void TryBuildingOnGrid(Grid grid, bool set)
     {
-        if (objectToBuild == null ) return;
+        if (objectToBuild == null) return;
         if(set && grid.canBuild())
         {
             objectToBuild.SetActive(true);
@@ -100,7 +120,7 @@ public class BuildManager : MonoBehaviour
             Factories = new GameObject("Factories");
         }
         objectToBuild.transform.parent = Factories.transform;
-
+        SelectFactory.instance.OnCancelSelect();
         objectToBuild.GetComponent<Factory.FactorySquare>().ConfirmBuild();
         objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild();
         grid.AddFactoryToGrid(objectToBuild);
@@ -180,6 +200,8 @@ public class BuildManager : MonoBehaviour
         }
 
     }
+
+
     void SetTowerStorage(Tower tower)
     {
         Vector3 TowerPos = tower.onGrid.pos;
