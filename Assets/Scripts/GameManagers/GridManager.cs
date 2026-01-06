@@ -68,4 +68,9 @@ public class GridManager : MonoBehaviour
         gridXY = GetGridXY(pos);
         return GetGridXY(gridXY.x, gridXY.y);
     }
+
+    public Rect GetMapRectInWorld()
+    {
+        return new Rect(-length / 2, -width / 2, length, width);
+    }
 }
