@@ -16389,6 +16389,8 @@ GameObject:
   - component: {fileID: 1608993363}
   - component: {fileID: 1608993364}
   - component: {fileID: 1608993366}
+  - component: {fileID: 1608993368}
+  - component: {fileID: 1608993369}
   m_Layer: 3
   m_Name: GameManagers
   m_TagString: GridMap
@@ -16630,6 +16632,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   factoryPreview: {fileID: 0}
+--- !u!114 &1608993368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608993347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7334ca652da67624cb8e2bc8f664d743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1608993369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608993347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afa71e6c4e4d9f147aeb1be90e048ba2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1610660838
 GameObject:
   m_ObjectHideFlags: 0
