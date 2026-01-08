@@ -44,11 +44,11 @@ public class HeatMapVisualizer : EntityBase
         {
             for (int y = 0; y < _mapSize.y + 1; y++)
             {
-                float worldX = x + _mapRectInWorld.x;
-                float worldY = y + _mapRectInWorld.y;
-                vertices[x + y * (_mapSize.x + 1)] = new Vector3(worldX, 0.6f, worldY);
+                float worldX = y + _mapRectInWorld.y;
+                float worldZ = x + _mapRectInWorld.x;
+                vertices[x + y * (_mapSize.x + 1)] = new Vector3(worldX, 0.6f, worldZ);
                 // 目前只支持 NavFlowField
-                float heatValue = _heatMapSet.NavFlowField.GetValue(worldX, worldY) * heatValueScale;
+                float heatValue = _heatMapSet.NavFlowField.GetValue(worldX, worldZ) * heatValueScale;
                 Color color = Utils.MathUtils.ColorHSVInterpClamped(Color.green, Color.red, heatValue);
                 colors[x + y * (_mapSize.x + 1)] = color;
             }
@@ -61,11 +61,11 @@ public class HeatMapVisualizer : EntityBase
                 int triangleIndex = x + y * _mapSize.x;
                 int vertexIndex = triangleIndex * 6;
                 triangles[vertexIndex + 0] = x + y * (_mapSize.x + 1);
-                triangles[vertexIndex + 1] = x + (y + 1) * (_mapSize.x + 1);
-                triangles[vertexIndex + 2] = x + 1 + y * (_mapSize.x + 1);
+                triangles[vertexIndex + 1] = x + 1 + y * (_mapSize.x + 1);
+                triangles[vertexIndex + 2] = x + (y + 1) * (_mapSize.x + 1);
                 triangles[vertexIndex + 3] = x + 1 + y * (_mapSize.x + 1);
-                triangles[vertexIndex + 4] = x + (y + 1) * (_mapSize.x + 1);
-                triangles[vertexIndex + 5] = x + 1 + (y + 1) * (_mapSize.x + 1);
+                triangles[vertexIndex + 4] = x + 1 + (y + 1) * (_mapSize.x + 1);
+                triangles[vertexIndex + 5] = x + (y + 1) * (_mapSize.x + 1);
             }
         }
             
