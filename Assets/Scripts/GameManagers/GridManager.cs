@@ -71,6 +71,6 @@ public class GridManager : MonoBehaviour
 
     public Rect GetMapRectInWorld()
     {
-        return new Rect(-length / 2, -width / 2, length, width);
+        return new Rect(-length / 2 - 0.5f, -width / 2 - 0.5f, length, width);
     }
 }
