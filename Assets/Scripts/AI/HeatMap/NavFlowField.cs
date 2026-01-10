@@ -253,12 +253,12 @@ public class FastSweepingSolver
             if (x > 0 && !obstacle[y, x - 1] && T[y, x - 1] != float.MaxValue)
                 dx += T[y, x] - T[y, x - 1];
             if (x < width - 1 && !obstacle[y, x + 1] && T[y, x + 1] != float.MaxValue)
-                dx += T[y, x] - T[y, x + 1];
+                dx += T[y, x + 1] - T[y, x];
 
             if (y > 0 && !obstacle[y - 1, x] && T[y - 1, x] != float.MaxValue)
                 dy += T[y, x] - T[y - 1, x];
             if (y < height - 1 && !obstacle[y + 1, x] && T[y + 1, x] != float.MaxValue)
-                dy += T[y, x] - T[y + 1, x];
+                dy += T[y + 1, x] - T[y, x];
 
             return new Vector2(dx, dy);
         }
@@ -388,26 +388,40 @@ public class NavFlowField : IHeatMap
                 }
             }
         }
+
+        GridManager gridManager = GridManager.instance;
+        for (int x = 0; x < gridManager.length; x++)
+        {
+            for (int y = 0; y < gridManager.width; y++)
+            {
+                Grid grid = gridManager.GetGridXY(x, y);
+                if (grid.isObstacle || grid.factoryTowers.Count > 0)
+                {
+                    m_solver.SetObstacle(x, y, true);
+                }
+            }
+        }
+
         m_solver.Solve(m_goal.x, m_goal.y, maxIterations: 8);
 
         OnHeatMapChange?.Invoke();
     }
 
-    public float GetValue(float x, float y)
+    public float GetValue(float worldX, float worldZ)
     {
         int width = m_solver.CostField.GetLength(0);
         int length = m_solver.CostField.GetLength(1);
-        int cellX = Mathf.Clamp((int)((x - m_mapRect.xMin) / m_mapRect.width * m_solver.width), 0, width - 1);
-        int cellY = Mathf.Clamp((int)((y - m_mapRect.yMin) / m_mapRect.height * m_solver.height), 0, length - 1);
-        return m_solver.CostField[cellX, cellY];
+        int cellX = Mathf.Clamp(Mathf.RoundToInt((worldX - m_mapRect.xMin) / m_mapRect.width * m_solver.width), 0, width - 1);
+        int cellY = Mathf.Clamp(Mathf.RoundToInt((worldZ - m_mapRect.yMin) / m_mapRect.height * m_solver.height), 0, length - 1);
+        return m_solver.CostField[cellY, cellX];
     }
 
-    public Vector2 GetGradient(float x, float y)
+    public Vector2 GetGradient(float worldX, float worldZ)
     {
         int width = m_solver.CostField.GetLength(0);
         int length = m_solver.CostField.GetLength(1);
-        int cellX = Mathf.Clamp((int)((x - m_mapRect.xMin) / m_mapRect.width * m_solver.width), 0, width - 1);
-        int cellY = Mathf.Clamp((int)((y - m_mapRect.yMin) / m_mapRect.height * m_solver.height), 0, length - 1);
+        int cellX = Mathf.Clamp(Mathf.RoundToInt((worldX - m_mapRect.xMin) / m_mapRect.width * m_solver.width), 0, width - 1);
+        int cellY = Mathf.Clamp(Mathf.RoundToInt((worldZ - m_mapRect.yMin) / m_mapRect.height * m_solver.height), 0, length - 1);
         return m_solver.GetGrad(cellX, cellY);
     }
 
@@ -421,9 +435,13 @@ public class NavFlowField : IHeatMap
         m_obstacles.Remove(obstacle);
     }
 
-    public void SetGoal(Vector2Int goal)
+    public void SetGoal(float worldX, float worldZ)
     {
-        m_goal = goal;
+        int width = m_solver.CostField.GetLength(0);
+        int length = m_solver.CostField.GetLength(1);
+        int cellX = Mathf.Clamp(Mathf.RoundToInt((worldX - m_mapRect.xMin) / m_mapRect.width * m_solver.width), 0, width - 1);
+        int cellY = Mathf.Clamp(Mathf.RoundToInt((worldZ - m_mapRect.yMin) / m_mapRect.height * m_solver.height), 0, length - 1);
+        m_goal = new Vector2Int(cellX, cellY);
     }
 
     public void Clear()
