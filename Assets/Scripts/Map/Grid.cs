@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using Game.Towers.Turrets;
 public enum GridType
@@ -13,7 +13,7 @@ public enum GridType
 
 public class Grid
 {
-    public GameObject tower = null;
+    public GameObject _buildingOnGrid = null;
     public List<GameObject> factoryTowers = new List<GameObject>();
     public bool isObstacle = false;
     public bool isShipyard = false;
@@ -39,20 +39,20 @@ public class Grid
 
     public void AssignTurretToGrid(GameObject tower)
     {
-        this.tower = tower;
+        this._buildingOnGrid = tower;
     }
 
     public void destroyTower()
     {
-        if (tower != null)
+        if (_buildingOnGrid != null)
         {
-            tower = null;
+            _buildingOnGrid = null;
         }
     }
 
     public bool canBuild()
     {
-        if (tower == null)
+        if (_buildingOnGrid == null)
         {
             return true && !isObstacle && !isShipyard && factoryTowers.Count == 0;
         }
@@ -60,11 +60,11 @@ public class Grid
     }
     public bool hasTower()
     {
-        return tower != null;
+        return _buildingOnGrid != null;
     }
 
     public bool hasTurret()
     {
-        return tower != null && tower.GetComponent<TurretBase>() != null;
+        return _buildingOnGrid != null && _buildingOnGrid.GetComponent<TurretBase>() != null;
     }
 }

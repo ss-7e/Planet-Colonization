@@ -5,7 +5,7 @@ using Game.Towers;
 using Factory;
 using System.Collections.Generic;
 using UnityEngine;
-using Factroy;
+using Factory;
 
 public class BuildManager : MonoBehaviour
 {
@@ -195,7 +195,7 @@ public class BuildManager : MonoBehaviour
             case FactoryTowerBase factory:
                 factoryTowers.Add(factory);
                 SetTowerStorage(factory);
-                SetFactroyTurretList(factory);
+                SetFactoryTurretList(factory);
                 break;
         }
 
@@ -229,7 +229,7 @@ public class BuildManager : MonoBehaviour
             }
         }
     }
-    void SetFactroyTurretList(FactoryTowerBase factory)
+    void SetFactoryTurretList(FactoryTowerBase factory)
     {
         Vector3 factoryPos = factory.onGrid.pos;
         foreach (TurretBase turret in turretList)

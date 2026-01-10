@@ -1,10 +1,175 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 namespace Factory
 {
-    public class CanveyerBeltUnit : MonoBehaviour
-    {
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum BeltDir //TODO 这个玩意后续不应该放这里
+    {
+        up, down, left, right
+    }
+    public static class BeltDirExtensions
+    {
+        public static BeltDir Opposite(this BeltDir dir)
+        {
+            return dir switch
+            {
+                BeltDir.up => BeltDir.down,
+                BeltDir.down => BeltDir.up,
+                BeltDir.left => BeltDir.right,
+                BeltDir.right => BeltDir.left,
+                _ => throw new ArgumentOutOfRangeException(nameof(dir), dir, null)
+            };
+        }
+
+        public static BeltDir Not(this BeltDir dir) => dir.Opposite();
+    }
+
+
+    public class CanveyerBeltUnit : MonoBehaviour,  IItemInput
+    {
+        public float ItemDeltaY;
+
+        private IItemInput _deliveItemTo;   //从本单元输出到这个接口
+        private float _beltSpeed;
+        private LinkedList<GameObject> _itemsOnBelt;
+        private List<Vector3> _itemPositions;       //满排情况下物品的位置
+        private readonly int _maxItems = 4;
+        private int _currentItemCount;
+        private float _deltaAxisValue;
+        
+
+        private void Update()
+        {
+            //UpdateItemOnBelt();
+        }
+        
+
+        // 初始化传送带：所有物品满排位置
+        public void CanveyerBeltUnitInit(BeltDir inputDir, BeltDir outputDir)
+        {
+            _currentItemCount = 0;
+            _deliveItemTo = null;
+            _beltSpeed = 2f; 
+            _itemsOnBelt = new LinkedList<GameObject>();
+            _itemPositions = new List<Vector3>(_maxItems + 1);
+            ItemDeltaY = 0.1f;
+            // 暂时把初始化放这里
+
+            _deltaAxisValue = 0.25f;
+            Vector3 deltaPos1 = Vector3.zero;
+            Vector3 deltaPos2 = Vector3.zero;
+            Vector3 outputPos = Vector3.zero;
+            switch (outputDir)
+            {
+                case BeltDir.up:
+                    deltaPos2 = new Vector3(0, 0, -_deltaAxisValue);
+                    outputPos = new Vector3(0, ItemDeltaY, 0.5f) + transform.position;
+                    break;
+                case BeltDir.down:
+                    deltaPos2 = new Vector3(0, 0, _deltaAxisValue);
+                    outputPos = new Vector3(0, ItemDeltaY, -0.5f) + transform.position;
+                    break;
+                case BeltDir.left:
+                    deltaPos2 = new Vector3(_deltaAxisValue, 0, 0);
+                    outputPos = new Vector3(-0.5f, ItemDeltaY, 0) + transform.position;
+                    break;
+                case BeltDir.right:
+                    deltaPos2 = new Vector3(-_deltaAxisValue, 0, 0);
+                    outputPos = new Vector3(0.5f, ItemDeltaY, 0) + transform.position;
+                    break;
+            }
+            switch (inputDir)
+            {
+                case BeltDir.up:
+                    deltaPos1 = new Vector3(0, 0, _deltaAxisValue);
+                    break;
+                case BeltDir.down:
+                    deltaPos1 = new Vector3(0, 0, -_deltaAxisValue);
+                    break;
+                case BeltDir.left:
+                    deltaPos1 = new Vector3(-_deltaAxisValue, 0, 0);
+                    break;
+                case BeltDir.right:
+                    deltaPos1 = new Vector3(_deltaAxisValue, 0, 0);
+                    break;
+            }
+            
+            for (int i = 0; i <= _maxItems; i++)
+            {
+                if (i <= _maxItems / 2)
+                {
+                    _itemPositions.Add(outputPos + i * deltaPos2 );
+                }
+                else
+                {
+                    _itemPositions.Add(_itemPositions[i - 1] + deltaPos1);
+                }
+            }
+            Debug.Log("Item Positions Initialized:");
+            Debug.Log("Output Position: " + outputPos);
+            Debug.Log("Dir:" + inputDir + " to " + outputDir);
+            foreach (var pos in _itemPositions)
+            {
+                Debug.Log("Item Position: " + pos);
+            }
+        }
+
+
+        public void SetItemDeliverTarget(CanveyerBeltUnit unit)
+        {
+            _deliveItemTo = unit;
+        }
+
+        public bool InputItem(GameObject item)
+        {
+            if (_currentItemCount >= _maxItems)
+            {
+                return false;
+            }
+            if(_itemsOnBelt.Count != 0)
+            {
+                GameObject lastItem = _itemsOnBelt.Last.Value;
+                if((lastItem.transform.position - _itemPositions[_maxItems]).magnitude <= _deltaAxisValue)
+                {
+                    return false;
+                }
+            }
+
+            _itemsOnBelt.AddLast(item);
+            item.transform.position = transform.position + _itemPositions[_maxItems];
+            _currentItemCount++;
+            return true;
+        }
+
+
+        private void UpdateItemOnBelt()
+        {
+            int idx = 0;
+            for (var node = _itemsOnBelt.First; node != null;)
+            {
+                var item = node.Value;
+                Vector3 targetPos = _itemPositions[idx];
+                // 将当前编号物品移动到目标位置
+                item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, _beltSpeed * Time.deltaTime);
+                if(item.transform.position == targetPos && idx == 0)
+                {
+                    if(_deliveItemTo != null)
+                    {
+                        _deliveItemTo.InputItem(item);
+                        _currentItemCount--;
+                        _itemsOnBelt.Remove(node);
+                    }
+                }
+                idx++;
+                node = node.Next;
+                
+            }
+        }
     }
 }

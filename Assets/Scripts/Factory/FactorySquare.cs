@@ -36,9 +36,5 @@ namespace Factory
             }
 
         }
-        public void GetItem()
-        {
-
-        }
     }
 }

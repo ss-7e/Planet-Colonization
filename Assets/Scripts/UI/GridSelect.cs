@@ -123,7 +123,7 @@ public class GridSelector : MonoBehaviour
             }
             if (gridSelected.hasTower())
             {
-                Tower tower = gridSelected.tower.GetComponent<Tower>();
+                Tower tower = gridSelected._buildingOnGrid.GetComponent<Tower>();
                 SetConnectTowerUI(tower);
                 UIManager.instance.SetTowerUI(tower, isLeft: Input.mousePosition.x < Screen.width / 2f);
                 previousTower = tower;
