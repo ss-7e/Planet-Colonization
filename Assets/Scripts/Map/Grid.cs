@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Game.Towers.Turrets;
+using Factory;
 public enum GridType
 {
     Grass,
@@ -18,6 +19,7 @@ public class Grid
     public bool isObstacle = false;
     public bool isShipyard = false;
     public GridType gridType;
+    public FactoryProducer ProducerFrom = null;// 输出工厂目标格子，暂时这么写TODO 后续改进
 
     public Grid(Vector3 gridPos)
     {

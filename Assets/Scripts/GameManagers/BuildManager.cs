@@ -5,7 +5,6 @@ using Game.Towers;
 using Factory;
 using System.Collections.Generic;
 using UnityEngine;
-using Factory;
 
 public class BuildManager : MonoBehaviour
 {
@@ -121,7 +120,7 @@ public class BuildManager : MonoBehaviour
         }
         objectToBuild.transform.parent = Factories.transform;
         SelectFactory.instance.OnCancelSelect();
-        objectToBuild.GetComponent<Factory.FactorySquare>().ConfirmBuild();
+        objectToBuild.GetComponent<FactoryProducer>().ConfirmBuild();
         objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild();
         grid.AddFactoryToGrid(objectToBuild);
         objectToBuild = null;

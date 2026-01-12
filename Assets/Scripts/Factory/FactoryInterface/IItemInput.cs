@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Factory
 {
-    internal interface IItemInput
+    internal interface IItemInput : IConnectTo
     {
         bool InputItem(GameObject item);
     }

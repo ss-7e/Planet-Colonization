@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 namespace Factory
 {
 
@@ -33,20 +31,22 @@ namespace Factory
 
     public class CanveyerBeltUnit : MonoBehaviour,  IItemInput
     {
-        public float ItemDeltaY;
+        [SerializeField]
+        private float _itemDeltaY;
 
-        private IItemInput _deliveItemTo;   //从本单元输出到这个接口
+        private IItemInput _itemTo;   //从本单元输出到这个接口
+        private IConnectTo _itemFrom;
+
         private float _beltSpeed;
         private LinkedList<GameObject> _itemsOnBelt;
         private List<Vector3> _itemPositions;       //满排情况下物品的位置
         private readonly int _maxItems = 4;
         private int _currentItemCount;
         private float _deltaAxisValue;
-        
 
         private void Update()
         {
-            //UpdateItemOnBelt();
+            UpdateItemOnBelt();
         }
         
 
@@ -54,11 +54,11 @@ namespace Factory
         public void CanveyerBeltUnitInit(BeltDir inputDir, BeltDir outputDir)
         {
             _currentItemCount = 0;
-            _deliveItemTo = null;
+            _itemTo = null;
             _beltSpeed = 2f; 
             _itemsOnBelt = new LinkedList<GameObject>();
             _itemPositions = new List<Vector3>(_maxItems + 1);
-            ItemDeltaY = 0.1f;
+            _itemDeltaY = 0.1f;
             // 暂时把初始化放这里
 
             _deltaAxisValue = 0.25f;
@@ -69,19 +69,19 @@ namespace Factory
             {
                 case BeltDir.up:
                     deltaPos2 = new Vector3(0, 0, -_deltaAxisValue);
-                    outputPos = new Vector3(0, ItemDeltaY, 0.5f) + transform.position;
+                    outputPos = new Vector3(0, _itemDeltaY, 0.5f) + transform.position;
                     break;
                 case BeltDir.down:
                     deltaPos2 = new Vector3(0, 0, _deltaAxisValue);
-                    outputPos = new Vector3(0, ItemDeltaY, -0.5f) + transform.position;
+                    outputPos = new Vector3(0, _itemDeltaY, -0.5f) + transform.position;
                     break;
                 case BeltDir.left:
                     deltaPos2 = new Vector3(_deltaAxisValue, 0, 0);
-                    outputPos = new Vector3(-0.5f, ItemDeltaY, 0) + transform.position;
+                    outputPos = new Vector3(-0.5f, _itemDeltaY, 0) + transform.position;
                     break;
                 case BeltDir.right:
                     deltaPos2 = new Vector3(-_deltaAxisValue, 0, 0);
-                    outputPos = new Vector3(0.5f, ItemDeltaY, 0) + transform.position;
+                    outputPos = new Vector3(0.5f, _itemDeltaY, 0) + transform.position;
                     break;
             }
             switch (inputDir)
@@ -111,22 +111,20 @@ namespace Factory
                     _itemPositions.Add(_itemPositions[i - 1] + deltaPos1);
                 }
             }
-            Debug.Log("Item Positions Initialized:");
-            Debug.Log("Output Position: " + outputPos);
-            Debug.Log("Dir:" + inputDir + " to " + outputDir);
-            foreach (var pos in _itemPositions)
-            {
-                Debug.Log("Item Position: " + pos);
-            }
         }
 
 
-        public void SetItemDeliverTarget(CanveyerBeltUnit unit)
+        internal void SetItemDeliverTarget(IItemInput unit)
         {
-            _deliveItemTo = unit;
+            _itemTo = unit;
         }
 
-        public bool InputItem(GameObject item)
+        internal void SetItemDeliverFrom(IConnectTo itemInput)
+        {
+            _itemFrom = itemInput;
+        }
+
+        bool IItemInput.InputItem(GameObject item)
         {
             if (_currentItemCount >= _maxItems)
             {
@@ -142,7 +140,7 @@ namespace Factory
             }
 
             _itemsOnBelt.AddLast(item);
-            item.transform.position = transform.position + _itemPositions[_maxItems];
+            item.transform.position = _itemPositions[_maxItems];
             _currentItemCount++;
             return true;
         }
@@ -159,9 +157,8 @@ namespace Factory
                 item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, _beltSpeed * Time.deltaTime);
                 if(item.transform.position == targetPos && idx == 0)
                 {
-                    if(_deliveItemTo != null)
+                    if(_itemTo != null && _itemTo.InputItem(item))
                     {
-                        _deliveItemTo.InputItem(item);
                         _currentItemCount--;
                         _itemsOnBelt.Remove(node);
                     }

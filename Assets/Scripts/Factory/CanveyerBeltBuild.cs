@@ -41,7 +41,7 @@ namespace Factory
         int _firstIdx;
         PreviewDirection direction;
         IItemInput _connectTo;
-        IItemOutput _connectFrom = null;
+        IConnectTo _connectFrom = null;
 
 
         public void Awake()
@@ -62,7 +62,11 @@ namespace Factory
             _markPointGrids.Clear();
             _previewBeltList.Clear();
             _startGrid = PointAt.Instance.gridHit;
-            GameObject belt = BuildBeltUnit(_startGrid.pos, Quaternion.Euler(0, 0, 0));
+            if( _startGrid.ProducerFrom != null)
+            {
+                _connectFrom = _startGrid.ProducerFrom;
+            }
+            BuildBeltUnit(_startGrid.pos, Quaternion.Euler(0, 0, 0));
             _firstIdx = 0;
         }
 
@@ -83,11 +87,11 @@ namespace Factory
                 }
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                curBeltInputDir = (BeltDir)(((int)curBeltInputDir + 1) % 4);
-                Debug.Log(curBeltInputDir);
-            }
+            //if (Input.GetKeyDown(KeyCode.R))
+            //{
+            //    curBeltInputDir = (BeltDir)(((int)curBeltInputDir + 1) % 4);
+            //    Debug.Log(curBeltInputDir);
+            //}
             AddMarkPoint();
             RefreshBuildPreview();
             if(Input.GetMouseButtonDown(0))
@@ -107,9 +111,18 @@ namespace Factory
             {
                 return;
             }
-            else if (currGrid == _startGrid)
+
+            for (int i = _previewBeltList.Count - 1; i >= _firstIdx; i--)
             {
-                Debug.Log("Same Grid");
+                GameObject.Destroy(_previewBeltList[i]);
+                _inputDirs.RemoveAt(i);
+                _outputDirs.RemoveAt(i);
+                _previewBeltList.RemoveAt(i);
+            }
+
+            if(currGrid == _startGrid)
+            {
+                _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.pos, curBeltInputDir, curBeltInputDir.Opposite()));
                 return;
             }
             else if (currGrid.pos.x == _startGrid.pos.x)
@@ -127,14 +140,6 @@ namespace Factory
                 {
                     curBeltInputDir = currGrid.pos.x - _startGrid.pos.x < 0 ? BeltDir.right : BeltDir.left;
                 }
-            }
-
-            for (int i = _previewBeltList.Count - 1; i >= _firstIdx; i--)
-            {
-                GameObject.Destroy(_previewBeltList[i]);
-                _inputDirs.RemoveAt(i);
-                _outputDirs.RemoveAt(i);
-                _previewBeltList.RemoveAt(i);
             }
 
             GenerateBuildPreview();
@@ -373,7 +378,7 @@ namespace Factory
         {
             BuildManager.instance.ClearObjectToBuild();
             if (!_buildable)
-            { 
+            {
                 _previewBeltList.ForEach(belt => GameObject.Destroy(belt));
                 _previewBeltList.Clear();
                 _inputDirs.Clear();
@@ -381,14 +386,29 @@ namespace Factory
                 _buildable = true;
                 return;
             }
+            List<CanveyerBeltUnit> canveyerBeltUnits = new List<CanveyerBeltUnit>();
             for (int i = 0; i < _previewBeltList.Count; i++)
             {
                 GameObject beltUnit = _previewBeltList[i];
                 CanveyerBeltUnit canveyerBeltUnit = beltUnit.AddComponent<CanveyerBeltUnit>();
-                canveyerBeltUnit.SetItemDeliverTarget(i < _previewBeltList.Count - 1 ? _previewBeltList[i + 1].GetComponent<CanveyerBeltUnit>() : null);
+                canveyerBeltUnits.Add(canveyerBeltUnit);
                 canveyerBeltUnit.CanveyerBeltUnitInit(_inputDirs[i], _outputDirs[i]);
                 Grid grid = GridManager.instance.GetGridXY(beltUnit.transform.position, out Vector2Int _);
                 grid.AddFactoryToGrid(beltUnit);
+            }
+            for (int i = 0; i < canveyerBeltUnits.Count; i++)
+            {
+                canveyerBeltUnits[i].SetItemDeliverTarget(
+                    i == canveyerBeltUnits.Count - 1 ? _connectTo : canveyerBeltUnits[i + 1]
+                    );
+                canveyerBeltUnits[i].SetItemDeliverFrom(
+                    i == 0 ? _connectFrom : canveyerBeltUnits[i - 1]
+                    );
+            }
+            if (_connectFrom != null)
+            {
+                FactoryProducer producer = _connectFrom as FactoryProducer;
+                producer.SetItemTarget(canveyerBeltUnits[0]);
             }
         }
     }
