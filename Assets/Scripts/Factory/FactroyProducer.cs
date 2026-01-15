@@ -9,6 +9,9 @@ namespace Factory
         private IItemInput _itemTo;
         private Grid _targetGrid;
 
+        public Grid TargetGrid => _targetGrid;
+        public BeltDir OutputDir => BeltDir.up;
+
         public new void Start()
         {
             base.Start();

@@ -29,6 +29,8 @@ namespace Factory
     }
 
 
+    // TODO 将Mono和非Mono部分拆开
+    // 不知道要不要做三通
     public class CanveyerBeltUnit : MonoBehaviour,  IItemInput
     {
         [SerializeField]
@@ -36,6 +38,15 @@ namespace Factory
 
         private IItemInput _itemTo;   //从本单元输出到这个接口
         private IConnectTo _itemFrom;
+        internal IItemInput ItemTo => _itemTo;
+        internal IConnectTo ItemFrom => _itemFrom;
+
+
+        private BeltDir _inputDir;
+        private BeltDir _outputDir;
+        public BeltDir InputDir => _inputDir;
+        public BeltDir OutputDir => _outputDir;
+
 
         private float _beltSpeed;
         private LinkedList<GameObject> _itemsOnBelt;
@@ -43,6 +54,7 @@ namespace Factory
         private readonly int _maxItems = 4;
         private int _currentItemCount;
         private float _deltaAxisValue;
+
 
         private void Update()
         {
@@ -59,6 +71,8 @@ namespace Factory
             _itemsOnBelt = new LinkedList<GameObject>();
             _itemPositions = new List<Vector3>(_maxItems + 1);
             _itemDeltaY = 0.1f;
+            _inputDir = inputDir;
+            _outputDir = outputDir;
             // 暂时把初始化放这里
 
             _deltaAxisValue = 0.25f;

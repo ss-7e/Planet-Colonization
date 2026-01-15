@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Shuttle : MonoBehaviour, IDamageable, IPointerClickHandler
@@ -28,7 +28,7 @@ public class Shuttle : MonoBehaviour, IDamageable, IPointerClickHandler
             for (int j = -OccupyGrids.y; j < OccupyGrids.y; j++)
             {
                 Vector2Int gridPos = new Vector2Int(basicGrid.x + i, basicGrid.y + j);
-                GridManager.instance.GetGridXY(gridPos.x, gridPos.y).isShipyard = true;
+                GridManager.instance.GetGridXY(gridPos.x, gridPos.y).IsShipyard = true;
             }
         }
     }

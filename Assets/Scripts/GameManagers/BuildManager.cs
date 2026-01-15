@@ -39,7 +39,9 @@ public class BuildManager : MonoBehaviour
 
     public void SetCanveyerBeltBuild()
     {
-        canveyerBeltBuild = new CanveyerBeltBuild();
+        if( canveyerBeltBuild == null ) {
+            canveyerBeltBuild = new CanveyerBeltBuild();
+        }
         canveyerBeltBuild.Awake();
     }
 
@@ -93,12 +95,12 @@ public class BuildManager : MonoBehaviour
             objectToBuild.SetActive(true);
             if (objectToBuild.GetComponent<Tower>())
             {
-                Vector3 towerPos = grid.pos + new Vector3(0, 0.5f, 0);
+                Vector3 towerPos = grid.Pos + new Vector3(0, 0.5f, 0);
                 objectToBuild.transform.position = towerPos;
             }
             else if (objectToBuild.GetComponent<Factory.FactorySquare>())
             {
-                objectToBuild.transform.position = grid.pos + new Vector3(0, 1f, 0);
+                objectToBuild.transform.position = grid.Pos + new Vector3(0, 1f, 0);
             }
         }
         else
@@ -111,7 +113,7 @@ public class BuildManager : MonoBehaviour
     private void BuildFactoryOnGrid(Grid grid)
     {
         objectToBuild.SetActive(true);
-        objectToBuild.transform.position = grid.pos + new Vector3(0, 1f, 0);
+        objectToBuild.transform.position = grid.Pos + new Vector3(0, 1f, 0);
 
         GameObject Factories = GameObject.Find("Factories");
         if (Factories == null)
@@ -140,7 +142,7 @@ public class BuildManager : MonoBehaviour
             //{
             //    return;
             //}
-            Vector3 towerPos = grid.pos + new Vector3(0, 0.5f, 0);
+            Vector3 towerPos = grid.Pos + new Vector3(0, 0.5f, 0);
             objectToBuild.SetActive(true);
             objectToBuild.transform.position = towerPos;
             GameObject tower = objectToBuild;
@@ -161,7 +163,7 @@ public class BuildManager : MonoBehaviour
             {
                 quad.gameObject.SetActive(false);
             }
-            grid.AssignTurretToGrid(tower);
+            grid.AssignBuildingToGrid(tower);
             UIManager.instance.setHealthBar(tower);
             UIManager.instance.downSelectionBarFrame.gameObject.SetActive(false);
             
@@ -203,10 +205,10 @@ public class BuildManager : MonoBehaviour
 
     void SetTowerStorage(Tower tower)
     {
-        Vector3 TowerPos = tower.onGrid.pos;
+        Vector3 TowerPos = tower.onGrid.Pos;
         foreach (StorageTower storageTower in storageTowers)
         { 
-            Vector3 storagePos = storageTower.onGrid.pos;
+            Vector3 storagePos = storageTower.onGrid.Pos;
             float distance = (TowerPos - storagePos).magnitude;
             if (distance < 10)
             {
@@ -217,10 +219,10 @@ public class BuildManager : MonoBehaviour
 
     void SetFactoryAffectTurret(TurretBase turret)
     {
-        Vector3 TowerPos = turret.onGrid.pos;
+        Vector3 TowerPos = turret.onGrid.Pos;
         foreach (FactoryTowerBase factory in factoryTowers)
         {
-            Vector3 factoryPos = factory.onGrid.pos;
+            Vector3 factoryPos = factory.onGrid.Pos;
             float distance = (TowerPos - factoryPos).magnitude;
             if (distance < 10)
             {
@@ -230,10 +232,10 @@ public class BuildManager : MonoBehaviour
     }
     void SetFactoryTurretList(FactoryTowerBase factory)
     {
-        Vector3 factoryPos = factory.onGrid.pos;
+        Vector3 factoryPos = factory.onGrid.Pos;
         foreach (TurretBase turret in turretList)
         {
-            Vector3 TowerPos = turret.onGrid.pos;
+            Vector3 TowerPos = turret.onGrid.Pos;
             float distance = (TowerPos - factoryPos).magnitude;
             if (distance < 10)
             {

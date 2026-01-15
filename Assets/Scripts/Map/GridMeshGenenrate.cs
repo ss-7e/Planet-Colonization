@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Map;
@@ -69,12 +69,12 @@ public class GridMeshGenerator : MonoBehaviour
                 {
                     ci.mesh = resourses[Random.Range(0, resourses.Length)];
                 }
-                if (grid.isObstacle)
+                if (grid.IsObstacle)
                 {
                     ci.mesh = GenerateHighGround();
                 }
 
-                Vector3 pos = grid.pos;
+                Vector3 pos = grid.Pos;
                 ci.transform = Matrix4x4.TRS(
                     pos,
                     Quaternion.identity,

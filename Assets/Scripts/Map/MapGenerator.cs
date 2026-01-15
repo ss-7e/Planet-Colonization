@@ -84,13 +84,13 @@ namespace Game.Map
                 int count = 0;
                 foreach (var neighbor in neighbors)
                 {
-                    if (neighbor.isObstacle || Random.Range(0f, 1f) > 0.9f)
+                    if (neighbor.IsObstacle || Random.Range(0f, 1f) > 0.9f)
                     {
                         count++;
                     }
                 }
-                if (count > 4) { grids[i].isObstacle = true; }
-                if(count < 1) { grids[i].isObstacle = false; }
+                if (count > 4) { grids[i].IsObstacle = true; }
+                if(count < 1) { grids[i].IsObstacle = false; }
             }
         }
 
@@ -100,7 +100,7 @@ namespace Game.Map
             float randomValue = Random.Range(0f, 1f); 
             if (h < ObstacleHeight && h > ObstacleLow && randomValue > 0.6f)
             {
-                grid.isObstacle = true;
+                grid.IsObstacle = true;
             }
         }
 
