@@ -395,7 +395,7 @@ public class NavFlowField : IHeatMap
             for (int y = 0; y < gridManager.width; y++)
             {
                 Grid grid = gridManager.GetGridXY(x, y);
-                if (grid.isObstacle || grid.factoryTowers.Count > 0)
+                if (grid.IsObstacle || grid.FactoryTowers.Count > 0)
                 {
                     m_solver.SetObstacle(x, y, true);
                 }
