@@ -27,11 +27,11 @@ public class GridSelector : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
-            {
-                return;
-            }
+            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
+            //{
+            //    return;
+            //}
             ClickGrid();
         }
         HighlightGrid();

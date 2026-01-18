@@ -478,11 +478,14 @@ namespace Factory
                     i == 0 ? _connectFrom : canveyerBeltUnits[i - 1]
                     );
             }
-            if (_connectFrom != null && _connectFrom is FactoryProducer producer)
+            if (_connectFrom != null)
             {
-                producer.SetItemTarget(canveyerBeltUnits[0]);
-            } 
-            if(_connectFrom == null)
+                if (_connectFrom is FactoryProducer producer)
+                    producer.SetItemTarget(canveyerBeltUnits[0]);
+                else if (_connectFrom is CanveyerBeltUnit fromUnit)
+                    fromUnit.SetItemDeliverTarget(canveyerBeltUnits[0]);
+            }
+            else
             {
                 GetGridByDir(firstGrid, canveyerBeltUnits[0].InputDir, out Grid grid);
                 grid.CanveyerBeltUnitTo = canveyerBeltUnits[0];
@@ -498,7 +501,17 @@ namespace Factory
             {
                 GetGridByDir(lastGrid, canveyerBeltUnits[^1].OutputDir, out Grid grid);
                 grid.CanveyerBeltUnitFrom = canveyerBeltUnits[^1];
-                if (canveyerBeltUnits[^1] == null) Debug.Log("null");
+            }
+            else
+            {
+                if (_connectTo is FactoryProducer toProducer)
+                {
+                    //lastGrid.ProducerTo = toProducer;
+                }
+                else if (_connectTo is CanveyerBeltUnit toUnit)
+                {
+                    toUnit.SetItemDeliverFrom(canveyerBeltUnits[^1]);
+                }
             }
         }
     }
