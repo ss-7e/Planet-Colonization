@@ -9,10 +9,10 @@ public class BuildingProcess : MonoBehaviour
     {
         this.gameObject.GetComponent<Renderer>().material = transparentMaterial;
     }
-    public void building(GameObject buildOn)
+    public void Building(GameObject buildOn)
     {
        Factory.FactorySquare factorySquare = buildOn.GetComponent<Factory.FactorySquare>();
-        this.gameObject.GetComponent<Renderer>().material = transparentMaterial;
+       this.gameObject.GetComponent<Renderer>().material = transparentMaterial;
     }
 
     /// <summary>

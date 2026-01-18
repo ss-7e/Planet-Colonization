@@ -27,11 +27,11 @@ public class GridSelector : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
-            {
-                return;
-            }
+            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
+            //{
+            //    return;
+            //}
             ClickGrid();
         }
         HighlightGrid();
@@ -95,7 +95,7 @@ public class GridSelector : MonoBehaviour
                 hitPoint.z += GridManager.instance.width / 2;
                 int x = Mathf.RoundToInt(hitPoint.x);
                 int z = Mathf.RoundToInt(hitPoint.z);
-                Vector3 pos = GridManager.instance.GetGridXY(x, z).pos;
+                Vector3 pos = GridManager.instance.GetGridXY(x, z).Pos;
                 hitPoint = pos;
                 hitPoint.y += 0.5f;
                 selectionIndicator.SetActive(true);
@@ -123,12 +123,12 @@ public class GridSelector : MonoBehaviour
             }
             if (gridSelected.hasTower())
             {
-                Tower tower = gridSelected.tower.GetComponent<Tower>();
+                Tower tower = gridSelected.BuildingOnGrid.GetComponent<Tower>();
                 SetConnectTowerUI(tower);
                 UIManager.instance.SetTowerUI(tower, isLeft: Input.mousePosition.x < Screen.width / 2f);
                 previousTower = tower;
             }
-            if(gridSelected.isObstacle)
+            if(gridSelected.IsObstacle)
             {
                 return;
             }
@@ -160,7 +160,7 @@ public class GridSelector : MonoBehaviour
                 Tower storageTower = storageTowerList[storage];
                 if (storageTower != null)
                 {
-                    Vector3 UIPos = storageTower.onGrid.pos + new Vector3(0, 3f, 0);
+                    Vector3 UIPos = storageTower.onGrid.Pos + new Vector3(0, 3f, 0);
                     GameObject connectTowerUI = Instantiate(ConnectTowerUIPrefab, UIPos, Quaternion.identity);
                     connectTowerUI.transform.SetParent(connectTowerUIParent.transform);
                 }

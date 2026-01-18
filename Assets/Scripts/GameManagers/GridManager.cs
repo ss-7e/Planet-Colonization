@@ -46,6 +46,10 @@ public class GridManager : MonoBehaviour
 
     public Grid GetGridXY(int x, int y)
     {
+        if (x < 0 || x >= length || y < 0 || y >= width)
+        {
+            return null;
+        }
         return grids[y * width + x];
     }
 
