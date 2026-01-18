@@ -56,7 +56,7 @@ namespace Game.Entites
             spawnPosition.z += GridManager.instance.width / 2;
             int x = Mathf.RoundToInt(spawnPosition.x);
             int z = Mathf.RoundToInt(spawnPosition.z);
-            spawnPosition = GridManager.instance.GetGridXY(x, z).pos;
+            spawnPosition = GridManager.instance.GetGridXY(x, z).Pos;
             spawnPosition.y += 1f;
             SpawnEnemy(enemyPrefab, spawnPosition);
         }
@@ -84,7 +84,7 @@ namespace Game.Entites
             {
                 enemiesparent = new GameObject("Enemies");
             }
-            Vector3 spawnPosition = grid.pos + new Vector3(0, 1f, 0);
+            Vector3 spawnPosition = grid.Pos + new Vector3(0, 1f, 0);
             GameObject enemyInstance = Instantiate(enemy, spawnPosition, Quaternion.identity);
             enemyInstance.transform.SetParent(enemiesparent.transform);
         }
@@ -116,7 +116,7 @@ namespace Game.Entites
             int x = Random.Range(0, GridManager.instance.length);
             int z = Random.Range(0, GridManager.instance.width);
             Grid grid = GridManager.instance.GetGridXY(x, z);
-            if (grid == null || grid.isObstacle )
+            if (grid == null || grid.IsObstacle )
             {
                 return; // Skip if the grids is null or occupied
             }

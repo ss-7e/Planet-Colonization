@@ -65,7 +65,7 @@ public class EnemyAttackState : EnemyBehaviorState
         {
             path.Remove(path[0]);
         }
-        Vector3 targetDir = GridManager.instance.GetGridXY(path[0].x, path[0].y).pos - enemy.transform.position;
+        Vector3 targetDir = GridManager.instance.GetGridXY(path[0].x, path[0].y).Pos - enemy.transform.position;
         targetDir.y = 0;
         targetDir.Normalize();
         if (updateTargetTime >= updateTargetInterval)
@@ -97,7 +97,7 @@ public class EnemyAttackState : EnemyBehaviorState
             {
                 x = i % GridManager.instance.width,
                 y = i / GridManager.instance.width,
-                isObstacle = grids[i].isObstacle
+                isObstacle = grids[i].IsObstacle
             };
         }
         Pathfinder pathfinder = new Pathfinder();

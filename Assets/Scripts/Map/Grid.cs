@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using Game.Towers.Turrets;
+using Factory;
 public enum GridType
 {
     Grass,
@@ -13,58 +14,64 @@ public enum GridType
 
 public class Grid
 {
-    public GameObject tower = null;
-    public List<GameObject> factoryTowers = new List<GameObject>();
-    public bool isObstacle = false;
-    public bool isShipyard = false;
-    public GridType gridType;
+    public GameObject BuildingOnGrid = null;
+    public List<GameObject> FactoryTowers = new List<GameObject>();
+    public bool IsObstacle = false;
+    public bool IsShipyard = false;
+    public GridType GridType;
+
+    internal IConnectTo ConnectableBuilding = null; //可连接物品，如工厂输入输出口，传送带等
+    public FactoryProducer ProducerFrom = null;             //工厂输出接口前方的格子
+    public FactoryProducer ProducerTo = null;               //TODO: 后续需要做成抽象
+    public CanveyerBeltUnit CanveyerBeltUnitFrom = null;    //传送带输出口前方格子
+    public CanveyerBeltUnit CanveyerBeltUnitTo = null;      //传送带输入口前方格子
 
     public Grid(Vector3 gridPos)
     {
-        pos = gridPos;
-        factoryTowers = new List<GameObject>();
+        Pos = gridPos;
+        FactoryTowers = new List<GameObject>();
     }
 
-    public Vector3 pos { get; private set; }
+    public Vector3 Pos { get; private set; }
 
     public void AddFactoryToGrid(GameObject factory)
     {
-        factoryTowers.Add(factory);
+        FactoryTowers.Add(factory);
     }
 
     public void RemoveFactoryFromGrid(GameObject factory)
     {
-        factoryTowers.Remove(factory);
+        FactoryTowers.Remove(factory);
     }
 
-    public void AssignTurretToGrid(GameObject tower)
+    public void AssignBuildingToGrid(GameObject tower)
     {
-        this.tower = tower;
+        this.BuildingOnGrid = tower;
     }
 
     public void destroyTower()
     {
-        if (tower != null)
+        if (BuildingOnGrid != null)
         {
-            tower = null;
+            BuildingOnGrid = null;
         }
     }
 
     public bool canBuild()
     {
-        if (tower == null)
+        if (BuildingOnGrid == null)
         {
-            return true && !isObstacle && !isShipyard && factoryTowers.Count == 0;
+            return true && !IsObstacle && !IsShipyard ;
         }
         return false;
     }
     public bool hasTower()
     {
-        return tower != null;
+        return BuildingOnGrid != null;
     }
 
     public bool hasTurret()
     {
-        return tower != null && tower.GetComponent<TurretBase>() != null;
+        return BuildingOnGrid != null && BuildingOnGrid.GetComponent<TurretBase>() != null;
     }
 }
