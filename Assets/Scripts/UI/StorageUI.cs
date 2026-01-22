@@ -36,7 +36,7 @@ public class StorageUI : MonoBehaviour
                 break;
             }
             Image slotImage = itemSlots[i].Find("Icon").GetComponent<Image>();
-            slotImage.sprite = items[i].icon;
+            slotImage.sprite = items[i].Icon;
             slotImage.color = Color.white;
         }
     }

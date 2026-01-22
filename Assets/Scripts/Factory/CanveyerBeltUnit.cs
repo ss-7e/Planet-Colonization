@@ -27,7 +27,7 @@ namespace Factory
 
         public static BeltDir Not(this BeltDir dir) => dir.Opposite();
     }
-
+    //----------------------------------------------------------------------------------------------------
 
     // TODO 将Mono和非Mono部分拆开
     // 不知道要不要做三通
@@ -50,6 +50,7 @@ namespace Factory
 
         private float _beltSpeed;
         private LinkedList<GameObject> _itemsOnBelt;
+        private LinkedList<ItemType> _itemTypeOnBelt;
         private List<Vector3> _itemPositions;       //满排情况下物品的位置
         private readonly int _maxItems = 4;
         private int _currentItemCount;
@@ -138,7 +139,7 @@ namespace Factory
             _itemFrom = itemInput;
         }
 
-        bool IItemInput.InputItem(GameObject item)
+        bool IItemInput.InputItem(GameObject item, ItemType itemType)
         {
             if (_currentItemCount >= _maxItems)
             {
@@ -154,15 +155,16 @@ namespace Factory
             }
 
             _itemsOnBelt.AddLast(item);
+            _itemTypeOnBelt.AddLast(itemType);
             item.transform.position = _itemPositions[_maxItems];
             _currentItemCount++;
             return true;
         }
 
-
         private void UpdateItemOnBelt()
         {
             int idx = 0;
+            var type = _itemTypeOnBelt.First;
             for (var node = _itemsOnBelt.First; node != null;)
             {
                 var item = node.Value;
@@ -171,10 +173,11 @@ namespace Factory
                 item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, _beltSpeed * Time.deltaTime);
                 if(item.transform.position == targetPos && idx == 0)
                 {
-                    if(_itemTo != null && _itemTo.InputItem(item))
+                    if(_itemTo != null && _itemTo.InputItem(item, type.Value))
                     {
                         _currentItemCount--;
                         _itemsOnBelt.Remove(node);
+                        _itemTypeOnBelt.Remove(type);
                     }
                 }
                 idx++;

@@ -21,8 +21,8 @@ public class Grid
     public GridType GridType;
 
     internal IConnectTo ConnectableBuilding = null; //可连接物品，如工厂输入输出口，传送带等
-    public FactoryProducer ProducerFrom = null;             //工厂输出接口前方的格子
-    public FactoryProducer ProducerTo = null;               //TODO: 后续需要做成抽象
+    public FactoryStorager ProducerFrom = null;             //工厂输出接口前方的格子
+    public FactoryStorager ProducerTo = null;               //TODO: 后续需要做成抽象
     public CanveyerBeltUnit CanveyerBeltUnitFrom = null;    //传送带输出口前方格子
     public CanveyerBeltUnit CanveyerBeltUnitTo = null;      //传送带输入口前方格子
 

@@ -86,7 +86,7 @@ namespace Game.Towers.Factory
                     AmmoItem shellItem = new AmmoItem
                     {
                         shellData = shellLine.shellData,
-                        currentCount = shellLine.produceCountPerCycle
+                        CurrentCount = shellLine.produceCountPerCycle
                     };
                     OutputProduct(shellItem);
                     break;

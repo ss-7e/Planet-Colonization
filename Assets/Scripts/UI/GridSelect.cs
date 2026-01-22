@@ -78,7 +78,7 @@ public class GridSelector : MonoBehaviour
         RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance, LayerMask.GetMask("Default"));
         if(Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
         {
-            BuildManager.instance.TryBuildingOnGrid(gridSelected, false);
+            BuildManager.Instance.TryBuildingOnGrid(gridSelected, false);
             return;
         }
         
@@ -102,15 +102,15 @@ public class GridSelector : MonoBehaviour
                 selectionIndicator.transform.position = hitPoint;
                 gridSelected = GridManager.instance.GetGridXY(x, z);
 
-                BuildManager.instance.TryBuildingOnGrid(gridSelected, true);
+                BuildManager.Instance.TryBuildingOnGrid(gridSelected, true);
                 return;
             }
         }
-        BuildManager.instance.TryBuildingOnGrid(gridSelected, false);
+        BuildManager.Instance.TryBuildingOnGrid(gridSelected, false);
     }
     private void ConfirmBuild()
     {
-        BuildManager.instance.ConfirmBuildOnGrid(gridSelected);
+        BuildManager.Instance.ConfirmBuildOnGrid(gridSelected);
     }
     private void ClickGrid()
     {

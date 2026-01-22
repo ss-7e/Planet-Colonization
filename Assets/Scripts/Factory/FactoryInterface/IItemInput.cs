@@ -9,6 +9,6 @@ namespace Factory
 {
     internal interface IItemInput : IConnectTo
     {
-        bool InputItem(GameObject item);
+        bool InputItem(GameObject item, ItemType itemType);
     }
 }

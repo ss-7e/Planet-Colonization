@@ -69,7 +69,7 @@ public class Cargo : MonoBehaviour
         {
             if (item is TowerPackedItem packedItem && packedItem.towerData == tower)
             {
-                count += packedItem.currentCount;
+                count += packedItem.CurrentCount;
             }
         }
         return count;

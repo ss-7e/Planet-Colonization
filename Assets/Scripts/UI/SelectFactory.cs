@@ -77,7 +77,7 @@ public class SelectFactory : MonoBehaviour
                     // Confirm build
                     factoryPreview.GetComponent<Factory.FactorySquare>().ConfirmBuild();
                     factoryPreview.GetComponent<BuildingProcess>().ConfirmBuild();
-                    BuildManager.instance.ClearObjectToBuild();
+                    BuildManager.Instance.ClearObjectToBuild();
                     factoryPreview = null;
                     buildSpot.ConfirmBuild();
                     buildSpot = null;

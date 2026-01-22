@@ -41,13 +41,13 @@ namespace Factory
         IItemInput _connectTo;
         IConnectTo _connectFrom = null;
 
-        CanveyerBeltDebuild _debuild = new CanveyerBeltDebuild();
+        CanveyerBeltDebuild _debuild = new();
 
         public void Awake()
         {
-            _beltMeshDirect = BuildManager.instance.canveyerBelts[0];
-            _beltMeshTurnLeft = BuildManager.instance.canveyerBelts[1];
-            _beltMeshTurnRight = BuildManager.instance.canveyerBelts[2];
+            _beltMeshDirect = BuildManager.Instance.CanveyerBelts[0];
+            _beltMeshTurnLeft = BuildManager.Instance.CanveyerBelts[1];
+            _beltMeshTurnRight = BuildManager.Instance.CanveyerBelts[2];
         }
 
         /// <summary>
@@ -65,9 +65,9 @@ namespace Factory
             _startGrid = PointAt.Instance.gridHit;
             if (_startGrid.ConnectableBuilding != null)
             {
-                if (_startGrid.ConnectableBuilding is FactoryProducer)
+                if (_startGrid.ConnectableBuilding is FactoryStorager)
                 {
-                    FactoryProducer producer = _startGrid.ConnectableBuilding as FactoryProducer;
+                    FactoryStorager producer = _startGrid.ConnectableBuilding as FactoryStorager;
                     _curBeltInputDir = producer.OutputDir.Opposite();
                     _connectFrom = producer;
                 }
@@ -395,7 +395,7 @@ namespace Factory
             {
                 return;
             }
-            FactoryProducer producer = grid.ProducerTo;
+            FactoryStorager producer = grid.ProducerTo;
             CanveyerBeltUnit beltUnit = grid.CanveyerBeltUnitTo;
             if (producer != null)
             {
@@ -442,7 +442,7 @@ namespace Factory
         /// </summary> 
         public void ConfirmBuild()
         {
-            BuildManager.instance.ClearObjectToBuild();
+            BuildManager.Instance.ClearObjectToBuild();
             if (!_buildable)
             {
                 _previewBeltList.ForEach(belt => GameObject.Destroy(belt));
@@ -480,7 +480,7 @@ namespace Factory
             }
             if (_connectFrom != null)
             {
-                if (_connectFrom is FactoryProducer producer)
+                if (_connectFrom is FactoryStorager producer)
                     producer.SetItemTarget(canveyerBeltUnits[0]);
                 else if (_connectFrom is CanveyerBeltUnit fromUnit)
                     fromUnit.SetItemDeliverTarget(canveyerBeltUnits[0]);
@@ -504,7 +504,7 @@ namespace Factory
             }
             else
             {
-                if (_connectTo is FactoryProducer toProducer)
+                if (_connectTo is FactoryStorager toProducer)
                 {
                     //lastGrid.ProducerTo = toProducer;
                 }

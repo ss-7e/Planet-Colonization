@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,7 +20,7 @@ public class BuildingHoverSelectHandler : MonoBehaviour, IPointerEnterHandler, I
     }
     void Update()
     {
-        GameObject tower = BuildManager.instance.GetObjectToBuild();
+        GameObject tower = BuildManager.Instance.GetObjectToBuild();
         int towerCount = Cargo.instance.GetTowerCount(towerPrefab.GetComponent<Tower>());
         text.text = towerCount.ToString();
         selecting = (tower != null);
@@ -54,7 +54,7 @@ public class BuildingHoverSelectHandler : MonoBehaviour, IPointerEnterHandler, I
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             isHovering = false;
-            BuildManager.instance.SetObjectToBuild(towerPrefab);
+            BuildManager.Instance.SetObjectToBuild(towerPrefab);
             selectionFrame.gameObject.SetActive(true);
             selectionFrame.transform.position = transform.position;
             selectionFrame.transform.localScale = Vector3.one;
@@ -62,7 +62,7 @@ public class BuildingHoverSelectHandler : MonoBehaviour, IPointerEnterHandler, I
         }
         else if (eventData.button == PointerEventData.InputButton.Right)
         {
-            BuildManager.instance.SetObjectToBuild(null);
+            BuildManager.Instance.SetObjectToBuild(null);
             isHovering = false;
             selecting = false;
             selectionFrame.gameObject.SetActive(false);

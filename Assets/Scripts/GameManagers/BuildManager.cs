@@ -8,43 +8,43 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
-    public static BuildManager instance;
+    public static BuildManager Instance;
 
-    public List<GameObject> canveyerBelts;
+    public List<GameObject> CanveyerBelts;
 
-
+    //TODO 应当存这么多列表吗？
     private List<TurretBase> turretList = new List<TurretBase>();
     private List<Miner> miners = new List<Miner>();
     private List<StorageTower> storageTowers = new List<StorageTower>();
     private List<FactoryTowerBase> factoryTowers = new List<FactoryTowerBase>();
+    
+
     private GameObject objectToBuild;
-    private CanveyerBeltBuild canveyerBeltBuild = null;
+    private CanveyerBeltBuild _canveyerBeltBuild = null;
 
     void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             Debug.LogError("More than one BuildManager in scene!");
             return;
         }
-        instance = this;
+        Instance = this;
     }
 
     private void Update()
     {
-        if(canveyerBeltBuild != null) {
-            canveyerBeltBuild.Update();
-        }
+        _canveyerBeltBuild?.Update();
     }
 
     public void SetCanveyerBeltBuild()
     {
-        if( canveyerBeltBuild == null ) {
-            canveyerBeltBuild = new CanveyerBeltBuild();
-        }
-        canveyerBeltBuild.Awake();
+        _canveyerBeltBuild ??= new CanveyerBeltBuild();
+        _canveyerBeltBuild.Awake();
     }
 
+
+    //以下修改：是否应该不依赖于GameObject？
     public void SetObjectToBuild(GameObject obj)
     {
         if (objectToBuild != null) {
@@ -61,7 +61,7 @@ public class BuildManager : MonoBehaviour
             Destroy(objectToBuild);
         }
         objectToBuild = null;
-        canveyerBeltBuild = null;
+        _canveyerBeltBuild = null;
     }
 
     public GameObject GetObjectToBuild()
@@ -71,6 +71,8 @@ public class BuildManager : MonoBehaviour
 
     /// <summary>
     /// 点击格子尝试建造塔，或许应该改成观察者模式
+    /// TODO: 想办法弄掉getcomponent
+    ///
     /// </summary>
     /// <param name="grid"></param>
     public void ConfirmBuildOnGrid(Grid grid)
@@ -80,7 +82,7 @@ public class BuildManager : MonoBehaviour
         {
             BuildTowerOnGrid(grid);
         }
-        else if (objectToBuild.GetComponent<Factory.FactorySquare>())
+        else if (objectToBuild.GetComponent<FactorySquare>())
         {
             BuildFactoryOnGrid(grid);
         }
@@ -122,7 +124,7 @@ public class BuildManager : MonoBehaviour
         }
         objectToBuild.transform.parent = Factories.transform;
         SelectFactory.instance.OnCancelSelect();
-        objectToBuild.GetComponent<FactoryProducer>().ConfirmBuild();
+        objectToBuild.GetComponent<FactoryStorager>().ConfirmBuild();
         objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild();
         grid.AddFactoryToGrid(objectToBuild);
         objectToBuild = null;
@@ -202,7 +204,7 @@ public class BuildManager : MonoBehaviour
 
     }
 
-
+    //TODO 移除以下玩意
     void SetTowerStorage(Tower tower)
     {
         Vector3 TowerPos = tower.onGrid.Pos;

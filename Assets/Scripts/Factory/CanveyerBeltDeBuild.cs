@@ -50,7 +50,7 @@ namespace Factory
             if (unit == null) return;
             if(unit.ItemFrom != null)
             {
-                if (unit.ItemFrom is FactoryProducer producer)
+                if (unit.ItemFrom is FactoryStorager producer)
                 {
                     producer.SetItemTarget(null);
                     grid.ProducerFrom = producer;
@@ -71,7 +71,7 @@ namespace Factory
             }
             if(unit.ItemTo != null)
             {
-                if (unit.ItemTo is FactoryProducer toProducer)
+                if (unit.ItemTo is FactoryStorager toProducer)
                 {
                     grid.ProducerTo = toProducer;
                 }

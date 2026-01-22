@@ -8,15 +8,15 @@ public class ItemComponent : ScriptableObject, IStorable
     // IStorable Implementation
     public int Id { get; private set; }
 
-    public int maxCount => _maxCount;
+    public int MaxCount => _maxCount;
     [SerializeField] protected int _maxCount;
 
-    public int currentCount { get; set; } = 1;
+    public int CurrentCount { get; set; } = 1;
 
-    public Sprite icon { get => _icon; set => _icon = value; }
+    public Sprite Icon { get => _icon; set => _icon = value; }
     [SerializeField] protected Sprite _icon;
 
-    public ItemType itemType => ItemType.Component;
+    public ItemTypeA ItemType => ItemTypeA.Component;
 
     public bool SameItem(IStorable other)
     {
@@ -34,18 +34,18 @@ public class ItemComponent : ScriptableObject, IStorable
     }
     public void IncrementCount(int amount)
     {
-        currentCount += amount;
-        if (currentCount > maxCount)
+        CurrentCount += amount;
+        if (CurrentCount > MaxCount)
         {
-            currentCount = maxCount; // Ensure we don't exceed max count
+            CurrentCount = MaxCount; // Ensure we don't exceed max count
         }
     }
     public void DecrementCount(int amount)
     {
-        currentCount -= amount;
-        if (currentCount < 0)
+        CurrentCount -= amount;
+        if (CurrentCount < 0)
         {
-            currentCount = 0; // Ensure we don't go below zero
+            CurrentCount = 0; // Ensure we don't go below zero
         }
     }
 }

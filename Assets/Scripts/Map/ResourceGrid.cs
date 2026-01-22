@@ -18,7 +18,7 @@ public class ResourceGrid : Grid
             return null;
         }
         NaturalResource resourceCopy = Object.Instantiate(gridResource);
-        resourceCopy.currentCount = richness;
+        resourceCopy.CurrentCount = richness;
         return resourceCopy;
     }
 }

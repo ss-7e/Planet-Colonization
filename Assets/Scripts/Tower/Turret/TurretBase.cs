@@ -164,10 +164,10 @@ namespace Game.Towers.Turrets
         {
             foreach (Storage storage in storageList)
             {
-                storage.GetItemsByType(ItemType.Ammo, out List<IStorable> ammoItems);
+                storage.GetItemsByType(ItemTypeA.Ammo, out List<IStorable> ammoItems);
                 foreach (AmmoItem ammoItem in ammoItems)
                 {
-                    if(ammoItem.shellData.calibar == caliber && ammoItem.currentCount > 0)
+                    if(ammoItem.shellData.calibar == caliber && ammoItem.CurrentCount > 0)
                     {
                         ammoStorage.AddAmmo(storage.GetItem(ammoItem) as AmmoItem);
                     }

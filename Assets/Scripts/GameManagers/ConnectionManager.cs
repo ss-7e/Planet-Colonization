@@ -7,7 +7,7 @@ namespace Factory
     /// 管理场景中所有的链接关系：
     ///     传送带之间的链接
     ///     传送带和生产器/消费器之间的链接
-    /// 
+    /// TODO:是否需要？
     /// </summary>
     public class ConnectionManager : MonoBehaviour
     {
