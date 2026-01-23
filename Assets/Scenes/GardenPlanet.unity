@@ -8884,7 +8884,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &839443993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16619,7 +16619,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1608993349}
   - component: {fileID: 1608993353}
-  - component: {fileID: 1608993365}
   - component: {fileID: 1608993355}
   - component: {fileID: 1608993356}
   - component: {fileID: 1608993357}
@@ -16671,7 +16670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c03c343609718c040a7b0daa51fa5e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapType: 0
+  MapType: 0
 --- !u!114 &1608993355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16686,8 +16685,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CanveyerBelts:
   - {fileID: 3321336083740699153, guid: 7534977374006ad42bec18334329aa68, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 5493395155504869058, guid: 52aaebd0c69259a43bc5f552f03b515d, type: 3}
+  - {fileID: 4884595439039894037, guid: 9f97fbfbc8ae49247a1d62a691909664, type: 3}
 --- !u!114 &1608993356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16847,20 +16846,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 962bb18c1e908fa4ba0dcff0a107ab7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1608993365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1608993347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2c1e45115ac915408ac654e3f366ed2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destination: {x: 0, y: 0}
-  debugArrowPrefab: {fileID: 0}
 --- !u!114 &1608993366
 MonoBehaviour:
   m_ObjectHideFlags: 0

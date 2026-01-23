@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1873815483455901882}
   - component: {fileID: 2926676296257614897}
   - component: {fileID: 4748355343747044672}
-  - component: {fileID: -1224103711467180054}
   - component: {fileID: -3830152267769644803}
   m_Layer: 0
   m_Name: FactoryCube
@@ -125,18 +124,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transparentMaterial: {fileID: 2100000, guid: 51af666037205a24a909dc50a8f64748, type: 2}
   setMaterial: {fileID: 2100000, guid: 2fbc20175f50a014d923981a6af8c0e8, type: 2}
---- !u!114 &-1224103711467180054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3274750176253192354}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a068a204607deae4b9b58908322e1885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-3830152267769644803
 MonoBehaviour:
   m_ObjectHideFlags: 0

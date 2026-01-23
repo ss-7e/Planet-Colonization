@@ -35,8 +35,8 @@ namespace Game.Towers.Factory
         public void Start()
         {
             assembleLines = TechManager.instance.activeLines;
-            Storage towerStorage = new Storage(towerStorageCapacity);
-            storageList = new List<Storage>
+            StoragePrev towerStorage = new StoragePrev(towerStorageCapacity);
+            storageList = new List<StoragePrev>
             {
                 towerStorage
             };
@@ -107,7 +107,7 @@ namespace Game.Towers.Factory
             }
             else
             {
-                foreach (Storage storage in storageList)
+                foreach (StoragePrev storage in storageList)
                 {
                     if (storage.AddItem(Item))
                     {

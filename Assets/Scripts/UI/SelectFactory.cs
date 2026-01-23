@@ -3,10 +3,11 @@ using UnityEngine;
 
 /// <summary>
 /// 专门做建造在工厂塔上面的塔
+/// TODO: 在工厂建造Manager里管理这个，删掉这个单例
 /// </summary>
 public class SelectFactory : MonoBehaviour
 {
-    public static SelectFactory instance;
+    public static SelectFactory Instance;
 
     public GameObject factoryPreview;
 
@@ -43,9 +44,9 @@ public class SelectFactory : MonoBehaviour
 
     private void Start()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
         else
         {

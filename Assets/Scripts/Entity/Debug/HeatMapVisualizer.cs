@@ -29,7 +29,7 @@ public class HeatMapVisualizer : EntityBase
     {
         _heatMapSet = AIModule.Instance.HeatMapSet;
         _heatMapSet.NavFlowField.OnHeatMapChange += Repaint;
-        _mapSize = new Vector2Int(GridManager.instance.length, GridManager.instance.width);
+        _mapSize = new Vector2Int(GridManager.Instance.Length, GridManager.Instance.Width);
 
         CreateTexture();
         SetupMaterial();
@@ -70,7 +70,7 @@ public class HeatMapVisualizer : EntityBase
         if (_heatMapSet == null || _heatMapTexture == null)
             return;
 
-        Rect mapRectInWorld = GridManager.instance.GetMapRectInWorld();
+        Rect mapRectInWorld = GridManager.Instance.GetMapRectInWorld();
 
         Vector3[] vertices = new Vector3[] {
             new Vector3(mapRectInWorld.xMin, 0.6f, mapRectInWorld.yMin),

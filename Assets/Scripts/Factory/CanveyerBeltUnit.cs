@@ -36,10 +36,7 @@ namespace Factory
         [SerializeField]
         private float _itemDeltaY;
 
-        private IItemInput _itemTo;   //从本单元输出到这个接口
-        private IConnectTo _itemFrom;
-        internal IItemInput ItemTo => _itemTo;
-        internal IConnectTo ItemFrom => _itemFrom;
+        public BuildingConnection Connection { get; } = new(); 
 
 
         private BeltDir _inputDir;
@@ -50,7 +47,7 @@ namespace Factory
 
         private float _beltSpeed;
         private LinkedList<GameObject> _itemsOnBelt;
-        private LinkedList<ItemType> _itemTypeOnBelt;
+        private LinkedList<ItemID> _itemTypeOnBelt;
         private List<Vector3> _itemPositions;       //满排情况下物品的位置
         private readonly int _maxItems = 4;
         private int _currentItemCount;
@@ -67,9 +64,9 @@ namespace Factory
         public void CanveyerBeltUnitInit(BeltDir inputDir, BeltDir outputDir)
         {
             _currentItemCount = 0;
-            _itemTo = null;
             _beltSpeed = 2f; 
             _itemsOnBelt = new LinkedList<GameObject>();
+            _itemTypeOnBelt = new LinkedList<ItemID>();
             _itemPositions = new List<Vector3>(_maxItems + 1);
             _itemDeltaY = 0.1f;
             _inputDir = inputDir;
@@ -128,18 +125,7 @@ namespace Factory
             }
         }
 
-
-        internal void SetItemDeliverTarget(IItemInput unit)
-        {
-            _itemTo = unit;
-        }
-
-        internal void SetItemDeliverFrom(IConnectTo itemInput)
-        {
-            _itemFrom = itemInput;
-        }
-
-        bool IItemInput.InputItem(GameObject item, ItemType itemType)
+        bool IItemInput.InputItem(GameObject item, ItemID itemType)
         {
             if (_currentItemCount >= _maxItems)
             {
@@ -173,7 +159,7 @@ namespace Factory
                 item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, _beltSpeed * Time.deltaTime);
                 if(item.transform.position == targetPos && idx == 0)
                 {
-                    if(_itemTo != null && _itemTo.InputItem(item, type.Value))
+                    if(Connection.To != null && Connection.To.InputItem(item, type.Value))
                     {
                         _currentItemCount--;
                         _itemsOnBelt.Remove(node);

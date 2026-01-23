@@ -162,7 +162,7 @@ namespace Game.Towers.Turrets
 
         protected virtual void TryGetAmmo()
         {
-            foreach (Storage storage in storageList)
+            foreach (StoragePrev storage in storageList)
             {
                 storage.GetItemsByType(ItemTypeA.Ammo, out List<IStorable> ammoItems);
                 foreach (AmmoItem ammoItem in ammoItems)

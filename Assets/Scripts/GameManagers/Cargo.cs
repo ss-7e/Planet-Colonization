@@ -11,7 +11,7 @@ public class Cargo : MonoBehaviour
     [SerializeField] Dictionary<IStorable, float> galaxyShopItemPrices;
     [SerializeField] List<TowerPackedItem> defaltTowerItems;
     [SerializeField] StorageUI storageUI;
-    protected Storage storage;
+    protected StoragePrev storage;
 
     private void Awake()
     {
@@ -21,7 +21,7 @@ public class Cargo : MonoBehaviour
             return;
         }
         instance = this;
-        storage = new Storage(cargoCapacity);
+        storage = new StoragePrev(cargoCapacity);
         foreach (IStorable item in defaltTowerItems)
         {
             if (item != null)
@@ -33,7 +33,7 @@ public class Cargo : MonoBehaviour
     }
     public void BuyItem(IStorable item, float price)
     {
-        if(GameManager.instance.CostGalacticCredit(price))
+        if(GameManager.Instance.CostGalacticCredit(price))
         {
             if(AddItem(item))
             {
@@ -74,7 +74,7 @@ public class Cargo : MonoBehaviour
         }
         return count;
     }   
-    public Storage GetStorage()
+    public StoragePrev GetStorage()
     {
         return storage;
     }

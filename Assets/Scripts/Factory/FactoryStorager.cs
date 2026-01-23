@@ -1,13 +1,23 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace Factory
 {
-    public class FactoryStorager : FactorySquare, IConnectTo
+
+    /// <summary>
+    /// 支持输入输出物品的储存工厂
+    /// TODO: 加入storage component支持真正物品存储
+    /// </summary>
+    public class FactoryStorager : FactorySquare, IItemInput
     {
         [SerializeField]
         private GameObject _itemprefab;
-        private IItemInput _itemTo;
+
+        public BuildingConnection Connection { get; } = new(); //TODO: 将后面两个接口替换成这个
+
         private Grid _targetGrid;
+        private List<ItemID> _storedItemTypes = new();
+        //private StorageComponent _storageComp;
 
         public Grid TargetGrid => _targetGrid;
         public BeltDir OutputDir => BeltDir.up;
@@ -17,27 +27,30 @@ namespace Factory
             base.Start();
         }
 
-        internal void SetItemTarget(IItemInput target)
+        bool IItemInput.InputItem(GameObject item, ItemID itemType)
         {
-            _itemTo = target;
+            return true;
         }
+
+
         private void Update()
         {
+            IItemInput itemTo = Connection.To;
             //TODO 测试代码，后续删除
             if (Input.GetKeyDown(KeyCode.O))
             {
-                if (_itemTo != null)
+                if (itemTo != null)
                 {
                     Debug.Log("FactoryProducer: Start Output Item");
-                    _itemTo.InputItem(CreateItem(), ItemType.Raw_IronOre);
+                    itemTo.InputItem(CreateItem(), ItemID.Raw_IronOre);
                 }
             }
             if (Input.GetKeyDown(KeyCode.I))
             {
-                if (_itemTo != null)
+                if (itemTo != null)
                 {
                     Debug.Log("FactoryProducer: Start Output Item");
-                    _itemTo.InputItem(CreateItem(), ItemType.Refined_IronIngot);
+                    itemTo.InputItem(CreateItem(), ItemID.Refined_IronIngot);
                 }
             }
         }
@@ -51,10 +64,11 @@ namespace Factory
         public override void ConfirmBuild()
         {
             base.ConfirmBuild();
-            Grid grid = GridManager.instance.GetGridXY(transform.position, out Vector2Int XYpos);
+            Debug.Log("storage Factory ConfirmBuild");  
+            Grid grid = GridManager.Instance.GetGridXY(transform.position, out Vector2Int XYpos);
             if (grid != null) 
             {
-                _targetGrid = GridManager.instance.GetGridXY(XYpos.x, XYpos.y + 1);
+                _targetGrid = GridManager.Instance.GetGridXY(XYpos.x, XYpos.y + 1);
                 if (_targetGrid != null)
                 {
                     _targetGrid.ProducerFrom = this;
@@ -69,5 +83,6 @@ namespace Factory
                 _targetGrid.ProducerFrom = null;
             }
         }
+
     }
 }

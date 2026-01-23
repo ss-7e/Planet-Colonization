@@ -13,13 +13,13 @@ public class BuildManager : MonoBehaviour
     public List<GameObject> CanveyerBelts;
 
     //TODO 应当存这么多列表吗？
-    private List<TurretBase> turretList = new List<TurretBase>();
-    private List<Miner> miners = new List<Miner>();
-    private List<StorageTower> storageTowers = new List<StorageTower>();
-    private List<FactoryTowerBase> factoryTowers = new List<FactoryTowerBase>();
+    private List<TurretBase> _turretList = new();
+    private List<Miner> _miners = new();
+    private List<StorageTower> _storageTowers = new();
+    private List<FactoryTowerBase> _factoryTowers = new();
     
 
-    private GameObject objectToBuild;
+    private GameObject _objectToBuild;
     private CanveyerBeltBuild _canveyerBeltBuild = null;
 
     void Awake()
@@ -47,26 +47,26 @@ public class BuildManager : MonoBehaviour
     //以下修改：是否应该不依赖于GameObject？
     public void SetObjectToBuild(GameObject obj)
     {
-        if (objectToBuild != null) {
-            Destroy(objectToBuild);
+        if (_objectToBuild != null) {
+            Destroy(_objectToBuild);
         }
-        objectToBuild = Instantiate(obj);
-        objectToBuild.SetActive(false);
+        _objectToBuild = Instantiate(obj);
+        _objectToBuild.SetActive(false);
     }
 
     public void ClearObjectToBuild()
     {
-        if (objectToBuild != null)
+        if (_objectToBuild != null)
         {
-            Destroy(objectToBuild);
+            Destroy(_objectToBuild);
         }
-        objectToBuild = null;
+        _objectToBuild = null;
         _canveyerBeltBuild = null;
     }
 
     public GameObject GetObjectToBuild()
     {
-        return objectToBuild;
+        return _objectToBuild;
     }
 
     /// <summary>
@@ -77,12 +77,12 @@ public class BuildManager : MonoBehaviour
     /// <param name="grid"></param>
     public void ConfirmBuildOnGrid(Grid grid)
     {
-        if (objectToBuild == null || !grid.canBuild()) return;
-        if (objectToBuild.GetComponent<Tower>())
+        if (_objectToBuild == null || !grid.canBuild()) return;
+        if (_objectToBuild.GetComponent<Tower>())
         {
             BuildTowerOnGrid(grid);
         }
-        else if (objectToBuild.GetComponent<FactorySquare>())
+        else if (_objectToBuild.GetComponent<FactorySquare>())
         {
             BuildFactoryOnGrid(grid);
         }
@@ -91,50 +91,57 @@ public class BuildManager : MonoBehaviour
 
     public void TryBuildingOnGrid(Grid grid, bool set)
     {
-        if (objectToBuild == null) return;
+        if (_objectToBuild == null) return;
         if(set && grid.canBuild())
         {
-            objectToBuild.SetActive(true);
-            if (objectToBuild.GetComponent<Tower>())
+            _objectToBuild.SetActive(true);
+            if (_objectToBuild.GetComponent<Tower>())
             {
                 Vector3 towerPos = grid.Pos + new Vector3(0, 0.5f, 0);
-                objectToBuild.transform.position = towerPos;
+                _objectToBuild.transform.position = towerPos;
             }
-            else if (objectToBuild.GetComponent<Factory.FactorySquare>())
+            else if (_objectToBuild.GetComponent<Factory.FactorySquare>())
             {
-                objectToBuild.transform.position = grid.Pos + new Vector3(0, 1f, 0);
+                _objectToBuild.transform.position = grid.Pos + new Vector3(0, 1f, 0);
             }
         }
         else
         {
-            objectToBuild.SetActive(false);
+            _objectToBuild.SetActive(false);
         }
     }
     
 
     private void BuildFactoryOnGrid(Grid grid)
     {
-        objectToBuild.SetActive(true);
-        objectToBuild.transform.position = grid.Pos + new Vector3(0, 1f, 0);
+        _objectToBuild.SetActive(true);
+        _objectToBuild.transform.position = grid.Pos + new Vector3(0, 1f, 0);
+
 
         GameObject Factories = GameObject.Find("Factories");
         if (Factories == null)
         {
             Factories = new GameObject("Factories");
         }
-        objectToBuild.transform.parent = Factories.transform;
-        SelectFactory.instance.OnCancelSelect();
-        objectToBuild.GetComponent<FactoryStorager>().ConfirmBuild();
-        objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild();
-        grid.AddFactoryToGrid(objectToBuild);
-        objectToBuild = null;
+        _objectToBuild.transform.parent = Factories.transform;
+
+
+        SelectFactory.Instance.OnCancelSelect();
+        _objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild(); //TODO：后续这个都得删掉
+
+        FactorySquare factory = _objectToBuild.GetComponent<FactorySquare>();
+        factory.ConfirmBuild();
+        (factory as IConnectTo)?.ConnectTo(grid);
+
+        grid.AddFactoryToGrid(_objectToBuild);
+        _objectToBuild = null;
 
     }
 
 
     private void BuildTowerOnGrid(Grid grid)
     {
-        if (objectToBuild == null)
+        if (_objectToBuild == null)
         {
             return;
         }
@@ -145,9 +152,9 @@ public class BuildManager : MonoBehaviour
             //    return;
             //}
             Vector3 towerPos = grid.Pos + new Vector3(0, 0.5f, 0);
-            objectToBuild.SetActive(true);
-            objectToBuild.transform.position = towerPos;
-            GameObject tower = objectToBuild;
+            _objectToBuild.SetActive(true);
+            _objectToBuild.transform.position = towerPos;
+            GameObject tower = _objectToBuild;
             GameObject Towers =  GameObject.Find("Towers");
             if (Towers == null)
             {
@@ -155,7 +162,7 @@ public class BuildManager : MonoBehaviour
             }
             //finish set GameObject
 
-            objectToBuild = null;
+            _objectToBuild = null;
             tower.GetComponent<Tower>().BuildOnGrid(grid);
             AddToTowerList(tower);
 
@@ -183,20 +190,20 @@ public class BuildManager : MonoBehaviour
         switch (towerData)
         {
             case TurretBase turret:
-                turretList.Add(turret);
+                _turretList.Add(turret);
                 SetTowerStorage(turret);
                 SetFactoryAffectTurret(turret);
                 break;
             case Miner miner:
-                miners.Add(miner);
+                _miners.Add(miner);
                 SetTowerStorage(miner);
                 break;
             case StorageTower storage:
-                storageTowers.Add(storage);
+                _storageTowers.Add(storage);
                 UpdateTowersStorage();
                 break;
             case FactoryTowerBase factory:
-                factoryTowers.Add(factory);
+                _factoryTowers.Add(factory);
                 SetTowerStorage(factory);
                 SetFactoryTurretList(factory);
                 break;
@@ -208,7 +215,7 @@ public class BuildManager : MonoBehaviour
     void SetTowerStorage(Tower tower)
     {
         Vector3 TowerPos = tower.onGrid.Pos;
-        foreach (StorageTower storageTower in storageTowers)
+        foreach (StorageTower storageTower in _storageTowers)
         { 
             Vector3 storagePos = storageTower.onGrid.Pos;
             float distance = (TowerPos - storagePos).magnitude;
@@ -222,7 +229,7 @@ public class BuildManager : MonoBehaviour
     void SetFactoryAffectTurret(TurretBase turret)
     {
         Vector3 TowerPos = turret.onGrid.Pos;
-        foreach (FactoryTowerBase factory in factoryTowers)
+        foreach (FactoryTowerBase factory in _factoryTowers)
         {
             Vector3 factoryPos = factory.onGrid.Pos;
             float distance = (TowerPos - factoryPos).magnitude;
@@ -235,7 +242,7 @@ public class BuildManager : MonoBehaviour
     void SetFactoryTurretList(FactoryTowerBase factory)
     {
         Vector3 factoryPos = factory.onGrid.Pos;
-        foreach (TurretBase turret in turretList)
+        foreach (TurretBase turret in _turretList)
         {
             Vector3 TowerPos = turret.onGrid.Pos;
             float distance = (TowerPos - factoryPos).magnitude;
@@ -249,17 +256,17 @@ public class BuildManager : MonoBehaviour
 
     void UpdateTowersStorage()
     {
-        foreach (TurretBase turret in turretList)
+        foreach (TurretBase turret in _turretList)
         {
             SetTowerStorage(turret);
             Debug.LogWarning($"Updated storage for turret: {turret.name}");
         }
-        foreach (Miner miner in miners)
+        foreach (Miner miner in _miners)
         {
             SetTowerStorage(miner);
             Debug.LogWarning($"Updated storage for miner: {miner.name}");
         }
-        foreach (FactoryTowerBase factory in factoryTowers)
+        foreach (FactoryTowerBase factory in _factoryTowers)
         {
             Debug.LogWarning($"Updated storage for factory: {factory.name}");
             SetTowerStorage(factory);

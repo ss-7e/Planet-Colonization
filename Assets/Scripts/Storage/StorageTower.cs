@@ -9,13 +9,13 @@ namespace Game.Towers
     {
         [SerializeField] protected int storageLength = 8;
         [SerializeField] protected int storageWidth = 4;
-        protected Storage storage = null;
+        protected StoragePrev storage = null;
 
         public void Awake()
         {
             if(storage == null)
             {
-                storage = new Storage(storageLength * storageWidth);
+                storage = new StoragePrev(storageLength * storageWidth);
             }
         }
 
@@ -23,11 +23,11 @@ namespace Game.Towers
         {
             if (storage == null)
             {
-                storage = new Storage(storageLength * storageWidth);
+                storage = new StoragePrev(storageLength * storageWidth);
             }
         }
 
-        public Storage GetStorage()
+        public StoragePrev GetStorage()
         {
             return storage;
         }

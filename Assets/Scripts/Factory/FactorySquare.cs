@@ -10,6 +10,7 @@ namespace Factory
     /// </summary>
     public class FactorySquare : MonoBehaviour
     {
+        
         protected List<GameObject> buildSpots;
         List<FactorySquare> _connectedFactorylist;
         public void Start()
@@ -32,13 +33,14 @@ namespace Factory
         /// <summary>
         /// 确认在这里建造，启用功能，启用BuildSpots
         /// </summary>
-        virtual public void ConfirmBuild()
+        public virtual void ConfirmBuild()
         {
             _connectedFactorylist = new List<FactorySquare>();
-            foreach(GameObject spot in buildSpots)
-            {
-                spot.SetActive(true);
-            }
+            Debug.Log("FactorySquare: ConfirmBuild called");
+            //foreach(GameObject spot in buildSpots)
+            //{
+            //    spot.SetActive(true);
+            //}
 
         }
     }

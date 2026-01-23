@@ -13,10 +13,10 @@ namespace Factory
     /// </summary>
     public class FactoryProducer : FactorySquare, IItemInput
     {
-        private IItemInput _outputPort;
+        public BuildingConnection Connection { get; } = new(); 
         private Recipe _activeRecipe;
-        private Dictionary<ItemType, int> _inputItems; //原材料缓存
-        private Dictionary<ItemType, int> _storageItems; //产出物缓存？
+        private Dictionary<ItemID, int> _inputItems; //原材料缓存
+        private Dictionary<ItemID, int> _storageItems; //产出物缓存？
         private int _storageCapacity = 10;
         private float _productionTimer = 0f;
 
@@ -24,13 +24,13 @@ namespace Factory
         {
             base.Start();
             _productionTimer = 0;
-            _activeRecipe = RecipeManager.Instance.IronSmelt;
-            _inputItems = new Dictionary<ItemType, int>(_activeRecipe.Inputs);
+            _activeRecipe = RecipeManager.Instance.IronSmelt;  //TODO： 临时测试，后续修改
+            _inputItems = new Dictionary<ItemID, int>(_activeRecipe.Inputs);
             foreach (var item in _activeRecipe.Inputs)
             {
                 _inputItems[item.Key] = 0; // 初始化计数为0
             }
-            _storageItems = new Dictionary<ItemType, int>();
+            _storageItems = new Dictionary<ItemID, int>();
             foreach (var item in _activeRecipe.Outputs)
             {
                 _storageItems[item.Key] = 0; 
@@ -54,7 +54,7 @@ namespace Factory
             }
         }
 
-        public bool InputItem(GameObject item, ItemType type)
+        public bool InputItem(GameObject item, ItemID type)
         {
             if (!_inputItems.ContainsKey(type))
             {
@@ -64,7 +64,7 @@ namespace Factory
             return true;
         }
 
-        public bool InputItem(ItemType item)
+        public bool InputItem(ItemID item)
         {
             if (_inputItems.ContainsKey(item))
             {
@@ -123,16 +123,18 @@ namespace Factory
                 }
             }
 
-            if (_storageItems.Count > 0) // 传入的物品满足合成表
+            if (_storageItems.Count > 0) //TODO 这个不对
             {
                 GameObject producedItem = null;
+                IItemInput outputPort = Connection.To;
                 foreach (var output in _storageItems)
                 {
-                    if (_outputPort is CanveyerBeltUnit beltUnit)
+                    if (outputPort is CanveyerBeltUnit beltUnit)
                     {
-                        producedItem = Instantiate(ItemListManager.Instance.ItemPrefabs[output.Key]);
+                        //producedItem = Instantiate(ItemDataManager.Instance.ItemPrefabs[output.Key]);
                     }
-                    if (_outputPort != null && output.Value > 0 && _outputPort.InputItem(producedItem, output.Key)) 
+                    // 每次都需要遍历所有产出类型，效率有点低
+                    if (outputPort != null && output.Value > 0 && outputPort.InputItem(producedItem, output.Key)) 
                     {
                         _storageItems[output.Key] -= 1; // 假设每次传输一个单位
                         break; // 每次只传输一个物品
@@ -140,5 +142,13 @@ namespace Factory
                 }
             }
         }
+        public override void ConfirmBuild() //TODO: 后续删除
+        {
+            base.ConfirmBuild();
+        }
+
+
+
+
     }
 }

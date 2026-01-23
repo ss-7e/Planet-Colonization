@@ -7,16 +7,15 @@ public enum MapType
 }
 public class GridManager : MonoBehaviour
 {
-    public static GridManager instance;
-    public MapType mapType;
-    public Grid[] grids;
-    public GridPathDirection[] gridPathDirections;
-    public int length { get; set; }
-    public int width { get; set; }
+    public static GridManager Instance;
+    public MapType MapType;
+    public Grid[] Grids;
+    public int Length { get; set; }
+    public int Width { get; set; }
     void Awake()
     {
-        instance = this;
-        grids = null;
+        Instance = this;
+        Grids = null;
         LoadGridFromJson();
     }
 
@@ -31,37 +30,37 @@ public class GridManager : MonoBehaviour
 
         string json = System.IO.File.ReadAllText(path);
         GridData[] gridDataArray = Newtonsoft.Json.JsonConvert.DeserializeObject<GridData[]>(json);
-        width = 1000;
-        length = 1000;
+        Width = 1000;
+        Length = 1000;
 
-        grids = new Grid[gridDataArray.Length];
+        Grids = new Grid[gridDataArray.Length];
 
         for (int i = 0; i < gridDataArray.Length; i++)
         {
             var data = gridDataArray[i];
-            grids[i] = new Grid(data.GetPosition());
+            Grids[i] = new Grid(data.GetPosition());
         }
 
     }
 
     public Grid GetGridXY(int x, int y)
     {
-        if (x < 0 || x >= length || y < 0 || y >= width)
+        if (x < 0 || x >= Length || y < 0 || y >= Width)
         {
             return null;
         }
-        return grids[y * width + x];
+        return Grids[y * Width + x];
     }
 
     public void SetGridPos(int x, int y, Grid value)
     {
-        grids[y * width + x] = value;
+        Grids[y * Width + x] = value;
     }
 
     public Vector2Int GetGridXY(Vector3 pos)
     {
-        pos.x += length / 2;
-        pos.z += width / 2;
+        pos.x += Length / 2;
+        pos.z += Width / 2;
         int x = Mathf.RoundToInt(pos.x);
         int z = Mathf.RoundToInt(pos.z);
         return new Vector2Int(x, z);
@@ -75,6 +74,6 @@ public class GridManager : MonoBehaviour
 
     public Rect GetMapRectInWorld()
     {
-        return new Rect(-length / 2 - 0.5f, -width / 2 - 0.5f, length, width);
+        return new Rect(-Length / 2 - 0.5f, -Width / 2 - 0.5f, Length, Width);
     }
 }

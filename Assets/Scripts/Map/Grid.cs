@@ -15,12 +15,14 @@ public enum GridType
 public class Grid
 {
     public GameObject BuildingOnGrid = null;
-    public List<GameObject> FactoryTowers = new List<GameObject>();
+    public List<GameObject> FactoryTowers = new();
     public bool IsObstacle = false;
     public bool IsShipyard = false;
     public GridType GridType;
 
-    internal IConnectTo ConnectableBuilding = null; //可连接物品，如工厂输入输出口，传送带等
+    internal IConnectTo ItemOutputFromBuilding = null;     //建筑输出标记格子
+    internal IItemInput ItemInputToBuilding = null;       //可接受物品输入的建筑
+
     public FactoryStorager ProducerFrom = null;             //工厂输出接口前方的格子
     public FactoryStorager ProducerTo = null;               //TODO: 后续需要做成抽象
     public CanveyerBeltUnit CanveyerBeltUnitFrom = null;    //传送带输出口前方格子

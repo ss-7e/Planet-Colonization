@@ -91,16 +91,16 @@ public class GridSelector : MonoBehaviour
             if (hit.collider.gameObject.tag == "GridMap")
             {
                 Vector3 hitPoint = hit.point;
-                hitPoint.x += GridManager.instance.length / 2;
-                hitPoint.z += GridManager.instance.width / 2;
+                hitPoint.x += GridManager.Instance.Length / 2;
+                hitPoint.z += GridManager.Instance.Width / 2;
                 int x = Mathf.RoundToInt(hitPoint.x);
                 int z = Mathf.RoundToInt(hitPoint.z);
-                Vector3 pos = GridManager.instance.GetGridXY(x, z).Pos;
+                Vector3 pos = GridManager.Instance.GetGridXY(x, z).Pos;
                 hitPoint = pos;
                 hitPoint.y += 0.5f;
                 selectionIndicator.SetActive(true);
                 selectionIndicator.transform.position = hitPoint;
-                gridSelected = GridManager.instance.GetGridXY(x, z);
+                gridSelected = GridManager.Instance.GetGridXY(x, z);
 
                 BuildManager.Instance.TryBuildingOnGrid(gridSelected, true);
                 return;
@@ -141,8 +141,8 @@ public class GridSelector : MonoBehaviour
     }
     void SetConnectTowerUI(Tower tower)
     {
-        List<Storage> storageList = tower.GetStorageList();
-        Dictionary<Storage, Tower> storageTowerList = tower.GetStorageTowerList();
+        List<StoragePrev> storageList = tower.GetStorageList();
+        Dictionary<StoragePrev, Tower> storageTowerList = tower.GetStorageTowerList();
         GameObject connectTowerUIParent = GameObject.Find("ConnectTower");
         if (connectTowerUIParent == null)
         {
@@ -153,7 +153,7 @@ public class GridSelector : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        foreach (Storage storage in storageList)
+        foreach (StoragePrev storage in storageList)
         {
             if (storageTowerList.ContainsKey(storage))
             {

@@ -20,9 +20,9 @@ public class GridMeshGenerator : MonoBehaviour
     public void Regenerate()
     {
         MapGenerator mapGenerate = GetComponent<MapGenerator>();
-        if(GridManager.instance != null)
+        if(GridManager.Instance != null)
         {
-            GridManager.instance.grids = null;
+            GridManager.Instance.Grids = null;
             mapGenerate.RunTimeGenerate();
         }
         else
@@ -41,9 +41,9 @@ public class GridMeshGenerator : MonoBehaviour
             tileSize = config.tileSize;
         }
         Grid[] grids = null;
-        if (GridManager.instance != null)
+        if (GridManager.Instance != null)
         {
-            grids = GridManager.instance.grids;
+            grids = GridManager.Instance.Grids;
         }
         else 
         { 

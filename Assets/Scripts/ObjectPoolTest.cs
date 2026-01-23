@@ -389,7 +389,7 @@ public class ObjectPoolTest : MonoBehaviour
             System.GC.Collect();
         }
 
-        UnityEngine.Debug.Log($"已清理所有炮弹 (共{activeProjectiles.Count}个活跃)");
+        UnityEngine.Debug.Log($"已清理所有炮弹 (共{activeProjectiles.Count}个活跃)");  
     }
 
     void UpdateStats()

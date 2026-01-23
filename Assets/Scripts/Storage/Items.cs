@@ -11,7 +11,7 @@ public enum ItemTypeA
     Tower
 }
 [System.Flags]
-public enum ItemType : uint
+public enum ItemID : uint
 {
     // =============================================================== 位掩码定义 ===============================================================
     // 第一层：物品大类
@@ -137,52 +137,52 @@ public enum ItemType : uint
 public static class FactoryItemTypeParser
 {
     // 提取大类
-    public static ItemType GetCategory(ItemType type)
+    public static ItemID GetCategory(ItemID type)
     {
-        return (ItemType)((uint)type & (uint)ItemType.CategoryMask);
+        return (ItemID)((uint)type & (uint)ItemID.CategoryMask);
     }
 
     // 提取生产阶段
-    public static ItemType GetProductionStage(ItemType type)
+    public static ItemID GetProductionStage(ItemID type)
     {
-        return (ItemType)((uint)type & (uint)ItemType.StageMask);
+        return (ItemID)((uint)type & (uint)ItemID.StageMask);
     }
 
     // 提取品质等级
-    public static ItemType GetGrade(ItemType type)
+    public static ItemID GetGrade(ItemID type)
     {
-        return (ItemType)((uint)type & (uint)ItemType.GradeMask);
+        return (ItemID)((uint)type & (uint)ItemID.GradeMask);
     }
 
     // 提取具体型号ID
-    public static byte GetModelId(ItemType type)
+    public static byte GetModelId(ItemID type)
     {
-        return (byte)((uint)type & (uint)ItemType.ModelMask);
+        return (byte)((uint)type & (uint)ItemID.ModelMask);
     }
 
     // 判断是否为原材料
-    public static bool IsRawMaterial(ItemType type)
+    public static bool IsRawMaterial(ItemID type)
     {
-        return GetCategory(type) == ItemType.Category_RawMaterial;
+        return GetCategory(type) == ItemID.Category_RawMaterial;
     }
 
     // 判断是否为成品
-    public static bool IsFinishedProduct(ItemType type)
+    public static bool IsFinishedProduct(ItemID type)
     {
-        return GetCategory(type) == ItemType.Category_Product;
+        return GetCategory(type) == ItemID.Category_Product;
     }
 
     // 判断是否需要质量检测
-    public static bool RequiresQualityTest(ItemType type)
+    public static bool RequiresQualityTest(ItemID type)
     {
         var stage = GetProductionStage(type);
-        return stage == ItemType.Stage_Tested ||
-               stage == ItemType.Stage_Calibrated ||
-               stage == ItemType.Stage_Certified;
+        return stage == ItemID.Stage_Tested ||
+               stage == ItemID.Stage_Calibrated ||
+               stage == ItemID.Stage_Certified;
     }
 
     // 获取物品的生产流水线路径
-    public static string GetProductionPath(ItemType type)
+    public static string GetProductionPath(ItemID type)
     {
         var category = GetCategory(type);
         var stage = GetProductionStage(type);
@@ -190,38 +190,38 @@ public static class FactoryItemTypeParser
         return $"{GetCategoryName(category)} -> {GetStageName(stage)}";
     }
 
-    private static string GetCategoryName(ItemType category)
+    private static string GetCategoryName(ItemID category)
     {
         return category switch
         {
-            ItemType.Category_RawMaterial => "原材料采集",
-            ItemType.Category_RefinedMaterial => "材料精炼",
-            ItemType.Category_Component => "组件制造",
-            ItemType.Category_Module => "模块组装",
-            ItemType.Category_Product => "成品生产",
-            ItemType.Category_Blueprint => "设计研发",
-            ItemType.Category_Upgrade => "系统升级",
-            ItemType.Category_Special => "特殊物品",
+            ItemID.Category_RawMaterial => "原材料采集",
+            ItemID.Category_RefinedMaterial => "材料精炼",
+            ItemID.Category_Component => "组件制造",
+            ItemID.Category_Module => "模块组装",
+            ItemID.Category_Product => "成品生产",
+            ItemID.Category_Blueprint => "设计研发",
+            ItemID.Category_Upgrade => "系统升级",
+            ItemID.Category_Special => "特殊物品",
             _ => "未知分类"
         };
     }
 
-    private static string GetStageName(ItemType stage)
+    private static string GetStageName(ItemID stage)
     {
         return stage switch
         {
-            ItemType.Stage_Mined => "采矿作业",
-            ItemType.Stage_Harvested => "采集作业",
-            ItemType.Stage_Synthesized => "化学合成",
-            ItemType.Stage_Smelted => "高温熔炼",
-            ItemType.Stage_Refined => "精密提纯",
-            ItemType.Stage_Compressed => "高压压缩",
-            ItemType.Stage_Fabricated => "量子制造",
-            ItemType.Stage_Assembled => "纳米组装",
-            ItemType.Stage_Integrated => "系统集成",
-            ItemType.Stage_Tested => "性能测试",
-            ItemType.Stage_Calibrated => "精密校准",
-            ItemType.Stage_Certified => "质量认证",
+            ItemID.Stage_Mined => "采矿作业",
+            ItemID.Stage_Harvested => "采集作业",
+            ItemID.Stage_Synthesized => "化学合成",
+            ItemID.Stage_Smelted => "高温熔炼",
+            ItemID.Stage_Refined => "精密提纯",
+            ItemID.Stage_Compressed => "高压压缩",
+            ItemID.Stage_Fabricated => "量子制造",
+            ItemID.Stage_Assembled => "纳米组装",
+            ItemID.Stage_Integrated => "系统集成",
+            ItemID.Stage_Tested => "性能测试",
+            ItemID.Stage_Calibrated => "精密校准",
+            ItemID.Stage_Certified => "质量认证",
             _ => "生产阶段"
         };
     }
@@ -233,7 +233,7 @@ public interface IItem
     ItemTypeA ItemType { get; }
 }
 
-public interface IStorable : IItem // 能够在仓储界面看到的物品
+public interface IStorable : IItem // 能够在仓储界面看到的物品(似乎不用？
 {
     int MaxCount { get; }
     int CurrentCount { get; set; }

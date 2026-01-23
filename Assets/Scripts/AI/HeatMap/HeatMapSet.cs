@@ -13,9 +13,9 @@ public class HeatMapSet
 
     public void Initialize()
     {
-        int mapWidth = GridManager.instance.width;
-        int mapLength = GridManager.instance.length;
-        Rect mapRectInWorld = GridManager.instance.GetMapRectInWorld();
+        int mapWidth = GridManager.Instance.Width;
+        int mapLength = GridManager.Instance.Length;
+        Rect mapRectInWorld = GridManager.Instance.GetMapRectInWorld();
         NavFlowField.Initialize(mapRectInWorld, mapLength, mapWidth);
     }
 

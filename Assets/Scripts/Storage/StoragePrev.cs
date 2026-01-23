@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-public class Storage
+public class StoragePrev
+
 {
     int maxCapacity;
     List<IStorable> storableItems = new List<IStorable>();
 
-    public Storage(int capacity)
+    public StoragePrev(int capacity)
     {
         maxCapacity = capacity;
     }

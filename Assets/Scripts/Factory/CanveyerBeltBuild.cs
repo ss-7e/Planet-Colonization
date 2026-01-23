@@ -63,19 +63,19 @@ namespace Factory
 
 
             _startGrid = PointAt.Instance.gridHit;
-            if (_startGrid.ConnectableBuilding != null)
+            if (_startGrid.ItemOutputFromBuilding != null)
             {
-                if (_startGrid.ConnectableBuilding is FactoryStorager)
+                if (_startGrid.ItemOutputFromBuilding is FactoryStorager)
                 {
-                    FactoryStorager producer = _startGrid.ConnectableBuilding as FactoryStorager;
+                    FactoryStorager producer = _startGrid.ItemOutputFromBuilding as FactoryStorager;
                     _curBeltInputDir = producer.OutputDir.Opposite();
                     _connectFrom = producer;
                 }
-                else if (_startGrid.ConnectableBuilding is CanveyerBeltUnit)
+                else if (_startGrid.ItemOutputFromBuilding is CanveyerBeltUnit)
                 {
-                    CanveyerBeltUnit beltUnit = _startGrid.ConnectableBuilding as CanveyerBeltUnit;
+                    CanveyerBeltUnit beltUnit = _startGrid.ItemOutputFromBuilding as CanveyerBeltUnit;
                     _curBeltInputDir = beltUnit.InputDir;
-                    _connectFrom = beltUnit.ItemFrom;
+                    _connectFrom = beltUnit.Connection.From;
                 }
             }
             else if (_startGrid.ProducerFrom != null)
@@ -102,7 +102,7 @@ namespace Factory
                 else if (Input.GetMouseButtonDown(1))
                 {
                     Grid grid = PointAt.Instance.gridHit;
-                    if(grid != null && grid.ConnectableBuilding is CanveyerBeltUnit)
+                    if(grid != null && grid.ItemOutputFromBuilding is CanveyerBeltUnit)
                     {
                         _debuild.CanveyerBeltUnitOnGridDebuild(grid);
                     }
@@ -385,8 +385,8 @@ namespace Factory
 
         private void CheckPosBuildable(Vector3 pos, ref BeltDir input, ref BeltDir output)
         {
-            Grid grid = GridManager.instance.GetGridXY(pos, out Vector2Int _);
-            if (!grid.canBuild() || grid.ConnectableBuilding != null)
+            Grid grid = GridManager.Instance.GetGridXY(pos, out Vector2Int _);
+            if (!grid.canBuild() || grid.ItemOutputFromBuilding != null)
             {
                 _buildable = false;
                 return;
@@ -411,7 +411,7 @@ namespace Factory
 
         private void GetGridByDir(Grid grid, BeltDir dir, out Grid outGrid)
         {
-            GridManager manager = GridManager.instance;
+            GridManager manager = GridManager.Instance;
             Vector2Int index = manager.GetGridXY(grid.Pos);
             switch (dir)
             {
@@ -462,40 +462,35 @@ namespace Factory
                 canveyerBeltUnits.Add(canveyerBeltUnit);
                 canveyerBeltUnit.CanveyerBeltUnitInit(_inputDirs[i], _outputDirs[i]);
 
-                Grid grid = GridManager.instance.GetGridXY(beltUnit.transform.position, out Vector2Int _);
+                Grid grid = GridManager.Instance.GetGridXY(beltUnit.transform.position, out Vector2Int _);
                 grid.AddFactoryToGrid(beltUnit);
                 grid.AssignBuildingToGrid(beltUnit);
-                grid.ConnectableBuilding = canveyerBeltUnit;
+                grid.ItemOutputFromBuilding = canveyerBeltUnit;
                 if (i == 0) firstGrid = grid;
                 if (i == _previewBeltList.Count - 1)lastGrid = grid;
             }
             for (int i = 0; i < canveyerBeltUnits.Count; i++)
             {
-                canveyerBeltUnits[i].SetItemDeliverTarget(
+                canveyerBeltUnits[i].Connection.SetTarget(
                     i == canveyerBeltUnits.Count - 1 ? _connectTo : canveyerBeltUnits[i + 1]
                     );
-                canveyerBeltUnits[i].SetItemDeliverFrom(
+                canveyerBeltUnits[i].Connection.SetSource(
                     i == 0 ? _connectFrom : canveyerBeltUnits[i - 1]
                     );
             }
             if (_connectFrom != null)
             {
-                if (_connectFrom is FactoryStorager producer)
-                    producer.SetItemTarget(canveyerBeltUnits[0]);
-                else if (_connectFrom is CanveyerBeltUnit fromUnit)
-                    fromUnit.SetItemDeliverTarget(canveyerBeltUnits[0]);
+                //if (_connectFrom is FactoryStorager producer)
+                //    producer.SetItemDeliverTarget(canveyerBeltUnits[0]);
+                //else if (_connectFrom is CanveyerBeltUnit fromUnit)
+                //    fromUnit.SetItemDeliverTarget(canveyerBeltUnits[0]);
+                _connectFrom.Connection.SetTarget(canveyerBeltUnits[0]);
             }
             else
             {
                 GetGridByDir(firstGrid, canveyerBeltUnits[0].InputDir, out Grid grid);
                 grid.CanveyerBeltUnitTo = canveyerBeltUnits[0];
 
-                // Debug visual effect
-                //GameObject debugSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //debugSphere.transform.position = grid.Pos + Vector3.up;
-                //debugSphere.transform.localScale = Vector3.one * 0.5f;
-                //debugSphere.GetComponent<Renderer>().material.color = Color.magenta;
-                //GameObject.Destroy(debugSphere, 5f);
             }
             if (_connectTo == null)
             {
@@ -504,14 +499,15 @@ namespace Factory
             }
             else
             {
-                if (_connectTo is FactoryStorager toProducer)
-                {
-                    //lastGrid.ProducerTo = toProducer;
-                }
-                else if (_connectTo is CanveyerBeltUnit toUnit)
-                {
-                    toUnit.SetItemDeliverFrom(canveyerBeltUnits[^1]);
-                }
+                //if (_connectTo is FactoryStorager toProducer)
+                //{
+                //    //lastGrid.ProducerTo = toProducer;
+                //}
+                //else if (_connectTo is CanveyerBeltUnit toUnit)
+                //{
+                //    toUnit.Connection.SetSource(canveyerBeltUnits[^1]);
+                //}
+                _connectTo.Connection.SetSource(canveyerBeltUnits[^1]);
             }
         }
     }
