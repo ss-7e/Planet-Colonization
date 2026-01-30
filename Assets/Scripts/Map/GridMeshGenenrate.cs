@@ -90,8 +90,7 @@ public class GridMeshGenerator : MonoBehaviour
         GetComponent<MeshFilter>().mesh = combined;
         transform.position = new Vector3(0, 0.3f, 0);
 
-        MeshCollider meshCollider = GetComponent<MeshCollider>();
-        if (meshCollider == null)
+        if (!TryGetComponent<MeshCollider>(out var meshCollider))
         {
             meshCollider = gameObject.AddComponent<MeshCollider>();
         }

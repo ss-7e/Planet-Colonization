@@ -77,7 +77,7 @@ public class BuildManager : MonoBehaviour
     /// <param name="grid"></param>
     public void ConfirmBuildOnGrid(Grid grid)
     {
-        if (_objectToBuild == null || !grid.canBuild()) return;
+        if (_objectToBuild == null || !grid.CanBuild()) return;
         if (_objectToBuild.GetComponent<Tower>())
         {
             BuildTowerOnGrid(grid);
@@ -92,7 +92,7 @@ public class BuildManager : MonoBehaviour
     public void TryBuildingOnGrid(Grid grid, bool set)
     {
         if (_objectToBuild == null) return;
-        if(set && grid.canBuild())
+        if(set && grid.CanBuild())
         {
             _objectToBuild.SetActive(true);
             if (_objectToBuild.GetComponent<Tower>())
@@ -131,7 +131,9 @@ public class BuildManager : MonoBehaviour
 
         FactorySquare factory = _objectToBuild.GetComponent<FactorySquare>();
         factory.ConfirmBuild();
-        (factory as IConnectTo)?.ConnectTo(grid);
+        (factory as IItemOutput)?.SetOutputOnGrid(grid);
+        (factory as IItemInput)?.SetInputOnGrid(grid);
+        (factory as IItemInput)?.ConnetTo(grid);
 
         grid.AddFactoryToGrid(_objectToBuild);
         _objectToBuild = null;
@@ -145,7 +147,7 @@ public class BuildManager : MonoBehaviour
         {
             return;
         }
-        if (grid.canBuild())
+        if (grid.CanBuild())
         {
             //if (!Cargo.instance.FindTower(objectToBuild.GetComponent<Tower>())) 
             //{

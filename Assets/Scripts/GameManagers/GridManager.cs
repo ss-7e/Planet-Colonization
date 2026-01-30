@@ -57,7 +57,7 @@ public class GridManager : MonoBehaviour
         Grids[y * Width + x] = value;
     }
 
-    public Vector2Int GetGridXY(Vector3 pos)
+    public Vector2Int GetGridXYValue(Vector3 pos)
     {
         pos.x += Length / 2;
         pos.z += Width / 2;
@@ -65,10 +65,16 @@ public class GridManager : MonoBehaviour
         int z = Mathf.RoundToInt(pos.z);
         return new Vector2Int(x, z);
     }
-
-    public Grid GetGridXY(Vector3 pos, out Vector2Int gridXY)
+    public Grid GetGridByXZ(float x, float z, out Vector2Int gridXY)
     {
-        gridXY = GetGridXY(pos);
+        Vector3 pos = new(x, 0, z);
+        gridXY = GetGridXYValue(pos);
+        return GetGridXY(gridXY.x, gridXY.y);
+    }
+
+    public Grid GetGridByPos(Vector3 pos, out Vector2Int gridXY)
+    {
+        gridXY = GetGridXYValue(pos);
         return GetGridXY(gridXY.x, gridXY.y);
     }
 

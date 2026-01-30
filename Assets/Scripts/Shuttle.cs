@@ -22,7 +22,7 @@ public class Shuttle : MonoBehaviour, IDamageable, IPointerClickHandler
 
     public void SetShipGrids()
     {
-        Vector2Int basicGrid = GridManager.Instance.GetGridXY(transform.position);
+        Vector2Int basicGrid = GridManager.Instance.GetGridXYValue(transform.position);
         for (int i = -OccupyGrids.x; i < OccupyGrids.x; i++)
         {
             for (int j = -OccupyGrids.y; j < OccupyGrids.y; j++)

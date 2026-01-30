@@ -18,7 +18,6 @@ namespace Factory
             buildSpots = new List<GameObject>();
             for (int i = 0; i < transform.childCount; i++)
             {
-                Debug.Log("FactorySquare: Checking child " + i);
                 Transform child = transform.GetChild(i);
                 if (child.GetComponent<BuildSpot>())
                 {
@@ -31,17 +30,11 @@ namespace Factory
 
 
         /// <summary>
-        /// 确认在这里建造，启用功能，启用BuildSpots
+        /// 即将废弃
         /// </summary>
         public virtual void ConfirmBuild()
         {
-            _connectedFactorylist = new List<FactorySquare>();
-            Debug.Log("FactorySquare: ConfirmBuild called");
-            //foreach(GameObject spot in buildSpots)
-            //{
-            //    spot.SetActive(true);
-            //}
-
+            
         }
     }
 }

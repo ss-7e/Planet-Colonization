@@ -38,8 +38,8 @@ public class EnemyAttackState : EnemyBehaviorState
     public override void EnterState(GameObject enemy)
     {
         EnemySimpleAI enemyAI = enemy.GetComponent<EnemySimpleAI>();
-        Vector2Int startPos = GridManager.Instance.GetGridXY(enemy.transform.position);
-        Vector2Int targetPos = GridManager.Instance.GetGridXY(enemyAI.target.transform.position);
+        Vector2Int startPos = GridManager.Instance.GetGridXYValue(enemy.transform.position);
+        Vector2Int targetPos = GridManager.Instance.GetGridXYValue(enemyAI.target.transform.position);
         FindPath(startPos, targetPos);
         foreach (var node in path)
         {
@@ -60,7 +60,7 @@ public class EnemyAttackState : EnemyBehaviorState
             enemyAI.SetBehaviorState(new EnemyIdleState());
             return;
         }
-        Vector2Int currentPos = GridManager.Instance.GetGridXY(enemy.transform.position);
+        Vector2Int currentPos = GridManager.Instance.GetGridXYValue(enemy.transform.position);
         if (currentPos == new Vector2Int(path[0].x, path[0].y))
         {
             path.Remove(path[0]);

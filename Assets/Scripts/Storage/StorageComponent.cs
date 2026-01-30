@@ -9,7 +9,7 @@ public class StorageComponent
 {
     public struct StoredItem
     {
-        public ItemID ID;
+        public ItemIDPrev ID;
         public int Count;
     }
 
@@ -23,7 +23,7 @@ public class StorageComponent
     }
 
  
-    public bool AddItem(ItemID id, int count)
+    public bool AddItem(ItemIDPrev id, int count)
     {
         if (count <= 0) return true;
 
@@ -54,7 +54,7 @@ public class StorageComponent
         return remaining == 0;
     }
 
-    public bool GetOneItem(ItemID id)
+    public bool GetOneItem(ItemIDPrev id)
     {
         for (int i = 0; i < _storedItems.Count; i++)
         {
@@ -69,9 +69,9 @@ public class StorageComponent
         return false;
     }
 
-    public void GetStoredItems(out List<(ItemID id, int count)> items)
+    public void GetStoredItems(out List<(ItemIDPrev id, int count)> items)
     {
-        items = new List<(ItemID id, int count)>();
+        items = new List<(ItemIDPrev id, int count)>();
         foreach (var storedItem in _storedItems)
         {
             items.Add((storedItem.ID, storedItem.Count));

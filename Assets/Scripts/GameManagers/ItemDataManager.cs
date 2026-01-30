@@ -23,14 +23,24 @@ public class ItemDataManager
     private static readonly ItemDataManager _instance = new();
     public static ItemDataManager Instance => _instance;
 
-    private Dictionary<ItemID, GameObject> _itemPrefabs = new();
-    private Dictionary<ItemID, int> _itemMaxStackCounts = new();
-    public IReadOnlyDictionary<ItemID, GameObject> ItemPrefabs => _itemPrefabs;
-    public IReadOnlyDictionary<ItemID, int> ItemMaxStackCounts => _itemMaxStackCounts;
+    private Dictionary<ItemIDPrev, GameObject> _itemPrefabs = new();
+    private Dictionary<ItemIDPrev, int> _itemMaxStackCounts = new();
+    public IReadOnlyDictionary<ItemIDPrev, GameObject> ItemPrefabs => _itemPrefabs;
+    public IReadOnlyDictionary<ItemIDPrev, int> ItemMaxStackCounts => _itemMaxStackCounts;
 
-    public void SetItemStackMaxCountByID(ItemID itemID, int maxCount)
+    ItemDataManager()
     {
-        if(_itemMaxStackCounts.ContainsKey(itemID))
+        _itemMaxStackCounts = new Dictionary<ItemIDPrev, int>
+        {
+            { ItemIDPrev.Raw_IronOre, 5 },
+            { ItemIDPrev.Refined_IronIngot, 5 },
+        };
+    }
+
+
+    public void SetItemStackMaxCountByID(ItemIDPrev itemID, int maxCount)
+    {
+        if (_itemMaxStackCounts.ContainsKey(itemID))
         {
             _itemMaxStackCounts[itemID] = maxCount;
         }

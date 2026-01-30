@@ -4,6 +4,7 @@ using Game.UI;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -28,18 +29,18 @@ namespace Factory
             Vertical    //先垂直 (z轴)
         }
 
-        BeltDir _curBeltInputDir = BeltDir.down;
+        PortDir _curBeltInputDir = PortDir.down;
         bool _startBuild = false;
         bool _buildable = true;
         Grid _startGrid, _endGrid;
         List<Grid> _markPointGrids = new();
         List<GameObject> _previewBeltList = new();
-        List<BeltDir> _inputDirs = new();
-        List<BeltDir> _outputDirs = new();
+        List<PortDir> _inputDirs = new();
+        List<PortDir> _outputDirs = new();
         int _firstIdx;
         PreviewDirection _direction;
         IItemInput _connectTo;
-        IConnectTo _connectFrom = null;
+        IConnection _connectFrom = null;
 
         CanveyerBeltDebuild _debuild = new();
 
@@ -63,31 +64,9 @@ namespace Factory
 
 
             _startGrid = PointAt.Instance.gridHit;
-            if (_startGrid.ItemOutputFromBuilding != null)
-            {
-                if (_startGrid.ItemOutputFromBuilding is FactoryStorager)
-                {
-                    FactoryStorager producer = _startGrid.ItemOutputFromBuilding as FactoryStorager;
-                    _curBeltInputDir = producer.OutputDir.Opposite();
-                    _connectFrom = producer;
-                }
-                else if (_startGrid.ItemOutputFromBuilding is CanveyerBeltUnit)
-                {
-                    CanveyerBeltUnit beltUnit = _startGrid.ItemOutputFromBuilding as CanveyerBeltUnit;
-                    _curBeltInputDir = beltUnit.InputDir;
-                    _connectFrom = beltUnit.Connection.From;
-                }
-            }
-            else if (_startGrid.ProducerFrom != null)
-            {
-                _connectFrom = _startGrid.ProducerFrom;
-                _curBeltInputDir = _startGrid.ProducerFrom.OutputDir.Opposite();
-            }
-            else if (_startGrid.CanveyerBeltUnitFrom != null)
-            {
-                _connectFrom = _startGrid.CanveyerBeltUnitFrom;
-                _curBeltInputDir = _startGrid.CanveyerBeltUnitFrom.OutputDir.Opposite();
-            }
+            if(_startGrid == null) return;
+            _connectFrom = _startGrid.ItemOutputFromBuilding;
+            _curBeltInputDir = _startGrid.ItemOutputFromBuildingDir.Count > 0 ? _startGrid.ItemOutputFromBuildingDir[0].Item2 : PortDir.down;
         }
 
         public void Update()
@@ -112,11 +91,11 @@ namespace Factory
             }
             //if (Input.GetKeyDown(KeyCode.R))
             //{
-            //    curBeltInputDir = (BeltDir)(((int)curBeltInputDir + 1) % 4);
+            //    curBeltInputDir = (PortDir)(((int)curBeltInputDir + 1) % 4);
             //    Debug.Log(curBeltInputDir);
             //}
             AddMarkPoint();
-            RefreshBuildPreview(); //TODO: 只在鼠标移动到新格子时调用
+            RefreshBuildPreview(); 
             if (Input.GetMouseButtonUp(0))
             {
                 ConfirmBuild();
@@ -126,11 +105,11 @@ namespace Factory
 
 
         // 当鼠标移动时刷新预览
-        // TODO: 检测跨过其他传送带的情况
+        // TODO: 检测跨过其他传送带的情况（是否要禁止建造？）
         private void RefreshBuildPreview()
         {
             Grid currGrid = PointAt.Instance.gridHit;
-            if (currGrid == null)
+            if (currGrid == null || _endGrid == currGrid)
             {
                 return;
             }
@@ -158,7 +137,7 @@ namespace Factory
                 _direction = PreviewDirection.Vertical;
                 if(_firstIdx == 0 && _connectFrom == null)
                 {
-                    _curBeltInputDir = currGrid.Pos.z - _startGrid.Pos.z < 0 ? BeltDir.up : BeltDir.down;
+                    _curBeltInputDir = currGrid.Pos.z - _startGrid.Pos.z < 0 ? PortDir.up : PortDir.down;
                 }
             }
             else if (currGrid.Pos.z == _startGrid.Pos.z)
@@ -166,7 +145,7 @@ namespace Factory
                 _direction = PreviewDirection.Horizontal;
                 if (_firstIdx == 0 && _connectFrom == null)
                 {
-                    _curBeltInputDir = currGrid.Pos.x - _startGrid.Pos.x < 0 ? BeltDir.right : BeltDir.left;
+                    _curBeltInputDir = currGrid.Pos.x - _startGrid.Pos.x < 0 ? PortDir.right : PortDir.left;
                 }
             }
 
@@ -182,11 +161,11 @@ namespace Factory
                 //建造上一个标记点位置的传送带
                 if (_endGrid.Pos.x - _startGrid.Pos.x < 0) 
                 {
-                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, BeltDir.left)); 
+                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, PortDir.left)); 
                 }
                 else
                 {
-                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, BeltDir.right)); 
+                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, PortDir.right)); 
                 }
 
                 int count = (int)Mathf.Abs(_endGrid.Pos.x - _startGrid.Pos.x);
@@ -195,41 +174,41 @@ namespace Factory
                         Vector3 pos = new Vector3(_startGrid.Pos.x + i * Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x), _startGrid.Pos.y, _startGrid.Pos.z);
                         if (Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0)
                         {
-                            GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.left, BeltDir.right);
+                            GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.left, PortDir.right);
                             _previewBeltList.Add(previewBelt);
                         }
                         else
                         {
-                            GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.right, BeltDir.left);
+                            GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.right, PortDir.left);
                             _previewBeltList.Add(previewBelt);
                         }
                     }
 
                 //拐角点---------------------------------
                 if(_endGrid.Pos.z - _startGrid.Pos.z > 0) 
-                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_endGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z), Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0 ? BeltDir.left : BeltDir.right, BeltDir.up)); }
+                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_endGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z), Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0 ? PortDir.left : PortDir.right, PortDir.up)); }
                 else if(_endGrid.Pos.z - _startGrid.Pos.z < 0)
-                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_endGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z), Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0 ? BeltDir.left : BeltDir.right, BeltDir.down)); }
+                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_endGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z), Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0 ? PortDir.left : PortDir.right, PortDir.down)); }
                 else 
                 { 
-                    BeltDir dir = Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0 ? BeltDir.left : BeltDir.right;
+                    PortDir dir = Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0 ? PortDir.left : PortDir.right;
                     _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_endGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z), dir, dir.Opposite()));
                 }
 
 
                 count = (int)Mathf.Abs(_endGrid.Pos.z - _startGrid.Pos.z);
-                count -= _endGrid.canBuild() ? 0 : 1;
+                count -= _endGrid.CanBuild() ? 0 : 1;
                 for (int i = 1; i <= count; i++)
                 {
                     Vector3 pos = new Vector3(_endGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z + i * Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z));
                     if (Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0)
                     {
-                        GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.up, BeltDir.down);
+                        GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.up, PortDir.down);
                         _previewBeltList.Add(previewBelt);
                     }
                     else
                     {
-                        GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.down, BeltDir.up);
+                        GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.down, PortDir.up);
                         _previewBeltList.Add(previewBelt);
                     }
                 }
@@ -238,11 +217,11 @@ namespace Factory
             {
                 if(_endGrid.Pos.z - _startGrid.Pos.z < 0) 
                 {
-                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, BeltDir.down));
+                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, PortDir.down));
                 }
                 else
                 { 
-                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, BeltDir.up)); 
+                    _previewBeltList.Add(BuildBeltUnitPreview(_startGrid.Pos, _curBeltInputDir, PortDir.up)); 
                 }
 
 
@@ -252,40 +231,40 @@ namespace Factory
                     Vector3 pos = new Vector3(_startGrid.Pos.x, _startGrid.Pos.y, _startGrid.Pos.z + i * Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z));
                     if (Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0)
                     {
-                        GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.up, BeltDir.down);
+                        GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.up, PortDir.down);
                         _previewBeltList.Add(previewBelt);
                     }
                     else
                     {
-                        GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.down, BeltDir.up);
+                        GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.down, PortDir.up);
                         _previewBeltList.Add(previewBelt);
                     }
                 }
 
                 //拐角点---------------------------------
                 if (_endGrid.Pos.x - _startGrid.Pos.x > 0) 
-                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_startGrid.Pos.x, _startGrid.Pos.y, _endGrid.Pos.z), Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0 ? BeltDir.up : BeltDir.down, BeltDir.right)); }
+                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_startGrid.Pos.x, _startGrid.Pos.y, _endGrid.Pos.z), Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0 ? PortDir.up : PortDir.down, PortDir.right)); }
                 else if(_endGrid.Pos.x - _startGrid.Pos.x < 0)
-                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_startGrid.Pos.x, _startGrid.Pos.y, _endGrid.Pos.z), Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0 ? BeltDir.up :BeltDir.down, BeltDir.left)); }
+                { _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_startGrid.Pos.x, _startGrid.Pos.y, _endGrid.Pos.z), Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0 ? PortDir.up :PortDir.down, PortDir.left)); }
                 else 
                 { 
-                    BeltDir dir = Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0 ? BeltDir.up : BeltDir.down;
+                    PortDir dir = Mathf.Sign(_endGrid.Pos.z - _startGrid.Pos.z) < 0 ? PortDir.up : PortDir.down;
                     _previewBeltList.Add(BuildBeltUnitPreview(new Vector3(_startGrid.Pos.x, _startGrid.Pos.y, _endGrid.Pos.z), dir, dir.Opposite()));
                 }
 
                 count = (int)Mathf.Abs(_endGrid.Pos.x - _startGrid.Pos.x);
-                count -= _endGrid.canBuild() ? 0 : 1;
+                count -= _endGrid.CanBuild() ? 0 : 1;
                 for (int i = 1; i <= count; i++)
                 {
                     Vector3 pos = new Vector3(_startGrid.Pos.x + i * Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x), _startGrid.Pos.y, _endGrid.Pos.z);
                     if(Mathf.Sign(_endGrid.Pos.x - _startGrid.Pos.x) > 0)
                     {
-                        GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.left, BeltDir.right);
+                        GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.left, PortDir.right);
                         _previewBeltList.Add(previewBelt);
                     }
                     else
                     {
-                        GameObject previewBelt = BuildBeltUnitPreview(pos, BeltDir.right, BeltDir.left);
+                        GameObject previewBelt = BuildBeltUnitPreview(pos, PortDir.right, PortDir.left);
                         _previewBeltList.Add(previewBelt);
                     }
                 }
@@ -305,8 +284,8 @@ namespace Factory
             }
         }
 
-
-        private GameObject BuildBeltUnitPreview(Vector3 pos, BeltDir inputDir, BeltDir outputDir)
+        //TODO: 预览建筑材质？
+        private GameObject BuildBeltUnitPreview(Vector3 pos, PortDir inputDir, PortDir outputDir)
         {
             CheckPosBuildable(pos, ref inputDir, ref outputDir);
             pos += new Vector3(0, 0.5f, 0);
@@ -315,62 +294,62 @@ namespace Factory
             switch (inputDir)
             {
                 //默认从下面上来
-                case BeltDir.right:
+                case PortDir.right:
                     //顺时针旋转90°
                     quat = Quaternion.Euler(0, 90, 0);
-                    if (outputDir == BeltDir.left)
+                    if (outputDir == PortDir.left)
                     {
                         beltUnitPrefab = _beltMeshDirect;
                     }
-                    else if (outputDir == BeltDir.up)
+                    else if (outputDir == PortDir.up)
                     {
                         beltUnitPrefab = _beltMeshTurnLeft;
                     }
-                    else if(outputDir == BeltDir.down)
+                    else if(outputDir == PortDir.down)
                     {
                         beltUnitPrefab = _beltMeshTurnRight;
                     }
                         break;
-                case BeltDir.left:
+                case PortDir.left:
                     quat = Quaternion.Euler(0, -90, 0);
-                    if (outputDir == BeltDir.right)
+                    if (outputDir == PortDir.right)
                     {
                         beltUnitPrefab = _beltMeshDirect;
                     }
-                    else if (outputDir == BeltDir.up)
+                    else if (outputDir == PortDir.up)
                     {
                         beltUnitPrefab = _beltMeshTurnRight;
                     }
-                    else if (outputDir == BeltDir.down)
+                    else if (outputDir == PortDir.down)
                     {
                         beltUnitPrefab = _beltMeshTurnLeft;
                     }
                     break;
-                case BeltDir.down:
+                case PortDir.down:
                     quat = Quaternion.Euler(0, 180, 0);
-                    if (outputDir == BeltDir.left)
+                    if (outputDir == PortDir.left)
                     {
                         beltUnitPrefab = _beltMeshTurnRight;
                     }
-                    else if (outputDir == BeltDir.right)
+                    else if (outputDir == PortDir.right)
                     {
                         beltUnitPrefab = _beltMeshTurnLeft;
                     }
-                    else if (outputDir == BeltDir.up)
+                    else if (outputDir == PortDir.up)
                     {
                         beltUnitPrefab = _beltMeshDirect;
                     }
                     break;
-                case BeltDir.up:
-                    if (outputDir == BeltDir.left)
+                case PortDir.up:
+                    if (outputDir == PortDir.left)
                     {
                         beltUnitPrefab = _beltMeshTurnLeft;
                     }
-                    else if (outputDir == BeltDir.right)
+                    else if (outputDir == PortDir.right)
                     {
                         beltUnitPrefab = _beltMeshTurnRight;
                     }
-                    else if (outputDir == BeltDir.down)
+                    else if (outputDir == PortDir.down)
                     {
                         beltUnitPrefab = _beltMeshDirect;
                     }
@@ -383,10 +362,10 @@ namespace Factory
         }
 
 
-        private void CheckPosBuildable(Vector3 pos, ref BeltDir input, ref BeltDir output)
+        private void CheckPosBuildable(Vector3 pos, ref PortDir input, ref PortDir output)
         {
-            Grid grid = GridManager.Instance.GetGridXY(pos, out Vector2Int _);
-            if (!grid.canBuild() || grid.ItemOutputFromBuilding != null)
+            Grid grid = GridManager.Instance.GetGridByPos(pos, out Vector2Int _);
+            if (!grid.CanBuild())
             {
                 _buildable = false;
                 return;
@@ -395,36 +374,29 @@ namespace Factory
             {
                 return;
             }
-            FactoryStorager producer = grid.ProducerTo;
-            CanveyerBeltUnit beltUnit = grid.CanveyerBeltUnitTo;
-            if (producer != null)
-            {
-            }
-            else if(beltUnit != null)
-            {
-                _connectTo = beltUnit;
-                output = beltUnit.InputDir.Opposite();
-            }
+            _connectTo = grid.ItemInputToBuilding;
+            output = grid.ItemInputToBuildingDir.Count > 0 ? grid.ItemInputToBuildingDir[0].Item2 : output;
 
+            //TODO: 需要抽象
         }
 
-
-        private void GetGridByDir(Grid grid, BeltDir dir, out Grid outGrid)
+        //找到dir方向上的下一个格子
+        private void GetGridByDir(Grid grid, PortDir dir, out Grid outGrid)
         {
             GridManager manager = GridManager.Instance;
-            Vector2Int index = manager.GetGridXY(grid.Pos);
+            Vector2Int index = manager.GetGridXYValue(grid.Pos);
             switch (dir)
             {
-                case BeltDir.up:
+                case PortDir.up:
                     outGrid = manager.GetGridXY(index.x, index.y + 1);
                     break;
-                case BeltDir.down:
+                case PortDir.down:
                     outGrid = manager.GetGridXY(index.x, index.y - 1);
                     break;
-                case BeltDir.left:
+                case PortDir.left:
                     outGrid = manager.GetGridXY(index.x - 1, index.y);
                     break;
-                case BeltDir.right:
+                case PortDir.right:
                     outGrid = manager.GetGridXY(index.x + 1, index.y);
                     break;
                 default:
@@ -460,16 +432,19 @@ namespace Factory
                 GameObject beltUnit = _previewBeltList[i];
                 CanveyerBeltUnit canveyerBeltUnit = beltUnit.AddComponent<CanveyerBeltUnit>();
                 canveyerBeltUnits.Add(canveyerBeltUnit);
-                canveyerBeltUnit.CanveyerBeltUnitInit(_inputDirs[i], _outputDirs[i]);
+                canveyerBeltUnit.CanveyerBeltUnitInit(_inputDirs[i], _outputDirs[i]);       //TODO: 如果有多输入/输出？
+                Grid grid = GridManager.Instance.GetGridByPos(beltUnit.transform.position, out Vector2Int _);
+                canveyerBeltUnit.SetOutputOnGrid(grid);
+                canveyerBeltUnit.SetInputOnGrid(grid);
 
-                Grid grid = GridManager.Instance.GetGridXY(beltUnit.transform.position, out Vector2Int _);
                 grid.AddFactoryToGrid(beltUnit);
                 grid.AssignBuildingToGrid(beltUnit);
-                grid.ItemOutputFromBuilding = canveyerBeltUnit;
+                //grid.ItemOutputFromBuilding = canveyerBeltUnit;
                 if (i == 0) firstGrid = grid;
                 if (i == _previewBeltList.Count - 1)lastGrid = grid;
             }
-            for (int i = 0; i < canveyerBeltUnits.Count; i++)
+            //强制连接建造的所有传送带单元（不考虑地面）
+            for (int i = 0; i < canveyerBeltUnits.Count; i++)  
             {
                 canveyerBeltUnits[i].Connection.SetTarget(
                     i == canveyerBeltUnits.Count - 1 ? _connectTo : canveyerBeltUnits[i + 1]
@@ -478,37 +453,8 @@ namespace Factory
                     i == 0 ? _connectFrom : canveyerBeltUnits[i - 1]
                     );
             }
-            if (_connectFrom != null)
-            {
-                //if (_connectFrom is FactoryStorager producer)
-                //    producer.SetItemDeliverTarget(canveyerBeltUnits[0]);
-                //else if (_connectFrom is CanveyerBeltUnit fromUnit)
-                //    fromUnit.SetItemDeliverTarget(canveyerBeltUnits[0]);
-                _connectFrom.Connection.SetTarget(canveyerBeltUnits[0]);
-            }
-            else
-            {
-                GetGridByDir(firstGrid, canveyerBeltUnits[0].InputDir, out Grid grid);
-                grid.CanveyerBeltUnitTo = canveyerBeltUnits[0];
-
-            }
-            if (_connectTo == null)
-            {
-                GetGridByDir(lastGrid, canveyerBeltUnits[^1].OutputDir, out Grid grid);
-                grid.CanveyerBeltUnitFrom = canveyerBeltUnits[^1];
-            }
-            else
-            {
-                //if (_connectTo is FactoryStorager toProducer)
-                //{
-                //    //lastGrid.ProducerTo = toProducer;
-                //}
-                //else if (_connectTo is CanveyerBeltUnit toUnit)
-                //{
-                //    toUnit.Connection.SetSource(canveyerBeltUnits[^1]);
-                //}
-                _connectTo.Connection.SetSource(canveyerBeltUnits[^1]);
-            }
+            _connectFrom?.Connection.SetTarget(canveyerBeltUnits[0]);
+            _connectTo?.Connection.SetSource(canveyerBeltUnits[^1]);
         }
     }
 }

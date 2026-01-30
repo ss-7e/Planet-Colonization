@@ -121,7 +121,7 @@ public class GridSelector : MonoBehaviour
                 UIManager.instance.HideTowerUI(previousTower);
                 previousTurret = null;
             }
-            if (gridSelected.hasTower())
+            if (gridSelected.HasTower())
             {
                 Tower tower = gridSelected.BuildingOnGrid.GetComponent<Tower>();
                 SetConnectTowerUI(tower);

@@ -8,28 +8,29 @@ namespace Factory
     /// 支持输入输出物品的储存工厂
     /// TODO: 加入storage component支持真正物品存储
     /// </summary>
-    public class FactoryStorager : FactorySquare, IItemInput
+    public class FactoryStorager : FactorySquare, IItemInput, IItemOutput
     {
         [SerializeField]
         private GameObject _itemprefab;
 
-        public BuildingConnection Connection { get; } = new(); //TODO: 将后面两个接口替换成这个
+        public BuildingConnection Connection { get; } = new();
+        private StorageComponent _storageComp = new(5);
 
-        private Grid _targetGrid;
-        private List<ItemID> _storedItemTypes = new();
-        //private StorageComponent _storageComp;
-
-        public Grid TargetGrid => _targetGrid;
-        public BeltDir OutputDir => BeltDir.up;
+        public PortDir OutputDir => PortDir.up;
 
         public new void Start()
         {
             base.Start();
         }
 
-        bool IItemInput.InputItem(GameObject item, ItemID itemType)
+        bool IItemInput.InputItem(GameObject item, ItemIDPrev itemType)
         {
-            return true;
+            if(_storageComp.AddItem(itemType, 1))
+            {
+                item.transform.position = transform.position + Vector3.down * 2;
+                return true;
+            }
+            return false;
         }
 
 
@@ -39,19 +40,11 @@ namespace Factory
             //TODO 测试代码，后续删除
             if (Input.GetKeyDown(KeyCode.O))
             {
-                if (itemTo != null)
-                {
-                    Debug.Log("FactoryProducer: Start Output Item");
-                    itemTo.InputItem(CreateItem(), ItemID.Raw_IronOre);
-                }
+                itemTo?.InputItem(CreateItem(), ItemIDPrev.Raw_IronOre);
             }
             if (Input.GetKeyDown(KeyCode.I))
             {
-                if (itemTo != null)
-                {
-                    Debug.Log("FactoryProducer: Start Output Item");
-                    itemTo.InputItem(CreateItem(), ItemID.Refined_IronIngot);
-                }
+                itemTo?.InputItem(CreateItem(), ItemIDPrev.Refined_IronIngot);
             }
         }
         GameObject CreateItem()
@@ -64,25 +57,23 @@ namespace Factory
         public override void ConfirmBuild()
         {
             base.ConfirmBuild();
-            Debug.Log("storage Factory ConfirmBuild");  
-            Grid grid = GridManager.Instance.GetGridXY(transform.position, out Vector2Int XYpos);
-            if (grid != null) 
-            {
-                _targetGrid = GridManager.Instance.GetGridXY(XYpos.x, XYpos.y + 1);
-                if (_targetGrid != null)
-                {
-                    _targetGrid.ProducerFrom = this;
-                }
-            }
         }
 
         private void OnDestroy()
         {
-            if(_targetGrid != null)
-            {
-                _targetGrid.ProducerFrom = null;
-            }
+            
         }
-
+        public void SetOutputOnGrid(Grid centerGrid)
+        {
+            Vector2Int centerXY = new((int)centerGrid.Pos.x, (int)centerGrid.Pos.z);
+            Grid targetGrid = GridManager.Instance.GetGridByXZ(centerXY.x + 1, centerXY.y, out _);
+            targetGrid.AddItemOutputFromBuildingDir(this, PortDir.left);  //TODO: 临时写为输出到右边
+        }
+        public void SetInputOnGrid(Grid centerGrid)
+        {
+            Vector2Int centerXY = new((int)centerGrid.Pos.x, (int)centerGrid.Pos.z);
+            Grid targetGrid = GridManager.Instance.GetGridByXZ(centerXY.x, centerXY.y - 1, out _);
+            targetGrid?.AddItemInputToBuildingDir(this, PortDir.up);  //TODO: 临时写为输入到下面
+        }
     }
 }

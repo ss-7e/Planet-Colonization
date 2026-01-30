@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// 这是啥？是否应当删掉
+/// </summary>
 public class ItemComponent : ScriptableObject, IStorable
 {
 

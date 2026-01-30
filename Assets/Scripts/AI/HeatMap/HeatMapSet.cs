@@ -6,7 +6,7 @@ enum HeatMapType
 {
     NavFlowField,
 }
-    
+
 public class HeatMapSet
 {
     public NavFlowField NavFlowField = new();

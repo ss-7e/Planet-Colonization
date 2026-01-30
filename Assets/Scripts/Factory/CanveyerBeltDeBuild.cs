@@ -16,22 +16,22 @@ namespace Factory
     public class CanveyerBeltDebuild
     {
 
-        private void GetGridByDir(Grid grid, BeltDir dir, out Grid outGrid)
+        private void GetGridByDir(Grid grid, PortDir dir, out Grid outGrid)
         {
             GridManager manager = GridManager.Instance;
-            Vector2Int index = manager.GetGridXY(grid.Pos);
+            Vector2Int index = manager.GetGridXYValue(grid.Pos);
             switch (dir)
             {
-                case BeltDir.up:
+                case PortDir.up:
                     outGrid = manager.GetGridXY(index.x, index.y + 1);
                     break;
-                case BeltDir.down:
+                case PortDir.down:
                     outGrid = manager.GetGridXY(index.x, index.y - 1);
                     break;
-                case BeltDir.left:
+                case PortDir.left:
                     outGrid = manager.GetGridXY(index.x - 1, index.y);
                     break;
-                case BeltDir.right:
+                case PortDir.right:
                     outGrid = manager.GetGridXY(index.x + 1, index.y);
                     break;
                 default:
@@ -46,7 +46,6 @@ namespace Factory
         {
             GameObject unitObject = grid.BuildingOnGrid;
             CanveyerBeltUnit unit = grid.ItemOutputFromBuilding as CanveyerBeltUnit;
-            grid.ItemOutputFromBuilding = null;
             if (unit == null) return;
             if(unit.Connection.From != null)
             {
@@ -57,8 +56,8 @@ namespace Factory
                 GetGridByDir(grid, unit.InputDir, out Grid fromGrid);
                 if (fromGrid != null)
                 {
-                }
 
+                }
             }
 
 

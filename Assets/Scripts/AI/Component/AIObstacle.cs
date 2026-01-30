@@ -22,7 +22,7 @@ public class AIObstacle : MonoBehaviour, IObstacle
     {
         get
         {
-            Vector2Int gridPos = GridManager.Instance.GetGridXY(transform.position);
+            Vector2Int gridPos = GridManager.Instance.GetGridXYValue(transform.position);
             return new RectInt(gridPos, _obstacleRect);
         }
     }
