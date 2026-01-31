@@ -42,13 +42,13 @@ namespace Factory
         IItemInput _connectTo;
         IConnection _connectFrom = null;
 
-        CanveyerBeltDebuild _debuild = new();
+        ConveyorBeltDebuild _debuild = new();
 
         public void Awake()
         {
-            _beltMeshDirect = BuildManager.Instance.CanveyerBelts[0];
-            _beltMeshTurnLeft = BuildManager.Instance.CanveyerBelts[1];
-            _beltMeshTurnRight = BuildManager.Instance.CanveyerBelts[2];
+            _beltMeshDirect = BuildManager.Instance.ConveyorBelts[0];
+            _beltMeshTurnLeft = BuildManager.Instance.ConveyorBelts[1];
+            _beltMeshTurnRight = BuildManager.Instance.ConveyorBelts[2];
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Factory
                     Grid grid = PointAt.Instance.gridHit;
                     if(grid != null && grid.ItemOutputFromBuilding is ConveyorBeltUnit)
                     {
-                        _debuild.CanveyerBeltUnitOnGridDebuild(grid);
+                        _debuild.ConveyorBeltUnitOnGridDebuild(grid);
                     }
                 }
 
@@ -424,37 +424,37 @@ namespace Factory
                 _buildable = true;
                 return;
             }
-            List<ConveyorBeltUnit> canveyerBeltUnits = new();
+            List<ConveyorBeltUnit> conveyorBeltUnits = new();
             Grid firstGrid = null;
             Grid lastGrid = null;
             for (int i = 0; i < _previewBeltList.Count; i++)
             {
                 GameObject beltUnit = _previewBeltList[i];
-                ConveyorBeltUnit canveyerBeltUnit = beltUnit.AddComponent<ConveyorBeltUnit>();
-                canveyerBeltUnits.Add(canveyerBeltUnit);
-                canveyerBeltUnit.ConveyorBeltUnitInit(_inputDirs[i], _outputDirs[i]);       //TODO: 如果有多输入/输出？
+                ConveyorBeltUnit conveyorBeltUnit = beltUnit.AddComponent<ConveyorBeltUnit>();
+                conveyorBeltUnits.Add(conveyorBeltUnit);
+                conveyorBeltUnit.ConveyorBeltUnitInit(_inputDirs[i], _outputDirs[i]);       //TODO: 如果有多输入/输出？
                 Grid grid = GridManager.Instance.GetGridByPos(beltUnit.transform.position, out Vector2Int _);
-                canveyerBeltUnit.SetOutputOnGrid(grid);
-                canveyerBeltUnit.SetInputOnGrid(grid);
+                conveyorBeltUnit.SetOutputOnGrid(grid);
+                conveyorBeltUnit.SetInputOnGrid(grid);
 
                 grid.AddFactoryToGrid(beltUnit);
                 grid.AssignBuildingToGrid(beltUnit);
-                //grid.ItemOutputFromBuilding = canveyerBeltUnit;
+                //grid.ItemOutputFromBuilding = conveyorBeltUnit;
                 if (i == 0) firstGrid = grid;
                 if (i == _previewBeltList.Count - 1)lastGrid = grid;
             }
             //强制连接建造的所有传送带单元（不考虑地面）
-            for (int i = 0; i < canveyerBeltUnits.Count; i++)  
+            for (int i = 0; i < conveyorBeltUnits.Count; i++)  
             {
-                canveyerBeltUnits[i].Connection.SetTarget(
-                    i == canveyerBeltUnits.Count - 1 ? _connectTo : canveyerBeltUnits[i + 1]
+                conveyorBeltUnits[i].Connection.SetTarget(
+                    i == conveyorBeltUnits.Count - 1 ? _connectTo : conveyorBeltUnits[i + 1]
                     );
-                canveyerBeltUnits[i].Connection.SetSource(
-                    i == 0 ? _connectFrom : canveyerBeltUnits[i - 1]
+                conveyorBeltUnits[i].Connection.SetSource(
+                    i == 0 ? _connectFrom : conveyorBeltUnits[i - 1]
                     );
             }
-            _connectFrom?.Connection.SetTarget(canveyerBeltUnits[0]);
-            _connectTo?.Connection.SetSource(canveyerBeltUnits[^1]);
+            _connectFrom?.Connection.SetTarget(conveyorBeltUnits[0]);
+            _connectTo?.Connection.SetSource(conveyorBeltUnits[^1]);
         }
     }
 }

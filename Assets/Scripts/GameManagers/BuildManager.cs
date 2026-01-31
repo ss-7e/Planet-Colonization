@@ -12,7 +12,7 @@ public class BuildManager : MonoBehaviour
 {
     public static BuildManager Instance;
 
-    public List<GameObject> CanveyerBelts;
+    public List<GameObject> ConveyorBelts;
 
     /// <summary>
     /// 建造事件
@@ -26,7 +26,7 @@ public class BuildManager : MonoBehaviour
     private List<FactoryTowerBase> _factoryTowers = new();
 
     private GameObject _objectToBuild;
-    private ConveyorBeltBuild _canveyerBeltBuild = null;
+    private ConveyorBeltBuild _conveyorBeltBuild = null;
 
     void Awake()
     {
@@ -40,13 +40,13 @@ public class BuildManager : MonoBehaviour
 
     private void Update()
     {
-        _canveyerBeltBuild?.Update();
+        _conveyorBeltBuild?.Update();
     }
 
-    public void SetCanveyerBeltBuild()
+    public void SetConveyorBeltBuild()
     {
-        _canveyerBeltBuild ??= new ConveyorBeltBuild();
-        _canveyerBeltBuild.Awake();
+        _conveyorBeltBuild ??= new ConveyorBeltBuild();
+        _conveyorBeltBuild.Awake();
     }
 
 
@@ -67,7 +67,7 @@ public class BuildManager : MonoBehaviour
             Destroy(_objectToBuild);
         }
         _objectToBuild = null;
-        _canveyerBeltBuild = null;
+        _conveyorBeltBuild = null;
     }
 
     public GameObject GetObjectToBuild()

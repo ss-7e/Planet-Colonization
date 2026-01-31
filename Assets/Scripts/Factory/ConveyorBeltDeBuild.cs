@@ -13,7 +13,7 @@ namespace Factory
     /// 传送带拆除逻辑
     /// 
     /// </summary>
-    public class CanveyerBeltDebuild
+    public class ConveyorBeltDebuild
     {
 
         private void GetGridByDir(Grid grid, PortDir dir, out Grid outGrid)
@@ -42,7 +42,7 @@ namespace Factory
 
 
         //调用的时候需要确定grid上的确有一个传送带单元
-        public void CanveyerBeltUnitOnGridDebuild(Grid grid)
+        public void ConveyorBeltUnitOnGridDebuild(Grid grid)
         {
             GameObject unitObject = grid.BuildingOnGrid;
             ConveyorBeltUnit unit = grid.ItemOutputFromBuilding as ConveyorBeltUnit;
