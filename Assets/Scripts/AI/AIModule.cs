@@ -26,7 +26,7 @@ public class AIModule : MonoBehaviour
         EntityBase entity = EntityManager.Instance.CreateEntity("HeatMapVisualizer", typeof(HeatMapVisualizer));
         entity.gameObject.SetActive(false);
 
-        BuildManager.instance.OnBuildEvent += OnBuild;
+        BuildManager.Instance.OnBuildEvent += OnBuild;
     }
 
     private void LateUpdate()
@@ -40,7 +40,7 @@ public class AIModule : MonoBehaviour
 
     private void OnDestroy()
     {
-        BuildManager.instance.OnBuildEvent -= OnBuild;
+        BuildManager.Instance.OnBuildEvent -= OnBuild;
     }
 
     private void OnBuild()
