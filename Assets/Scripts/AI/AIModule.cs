@@ -11,6 +11,8 @@ public class AIModule : MonoBehaviour
 
     public readonly HeatMapSet HeatMapSet = new();
 
+    private bool _needRefreshHeatMap = false;
+
     private void Awake()
     {
         Instance = this;
@@ -23,5 +25,26 @@ public class AIModule : MonoBehaviour
         HeatMapSet.Refresh();
         EntityBase entity = EntityManager.Instance.CreateEntity("HeatMapVisualizer", typeof(HeatMapVisualizer));
         entity.gameObject.SetActive(false);
+
+        BuildManager.instance.OnBuildEvent += OnBuild;
+    }
+
+    private void LateUpdate()
+    {
+        if (_needRefreshHeatMap)
+        {
+            HeatMapSet.Refresh();
+            _needRefreshHeatMap = false;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        BuildManager.instance.OnBuildEvent -= OnBuild;
+    }
+
+    private void OnBuild()
+    {
+        _needRefreshHeatMap = true;
     }
 }

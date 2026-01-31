@@ -6,12 +6,18 @@ using Factory;
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate void OnBuildDelegate();
+
 public class BuildManager : MonoBehaviour
 {
     public static BuildManager instance;
 
     public List<GameObject> canveyerBelts;
 
+    /// <summary>
+    /// 建造事件
+    /// </summary>
+    public event OnBuildDelegate OnBuildEvent;
 
     private List<TurretBase> turretList = new List<TurretBase>();
     private List<Miner> miners = new List<Miner>();
@@ -127,6 +133,7 @@ public class BuildManager : MonoBehaviour
         grid.AddFactoryToGrid(objectToBuild);
         objectToBuild = null;
 
+        OnBuildEvent?.Invoke();
     }
 
 
@@ -166,7 +173,8 @@ public class BuildManager : MonoBehaviour
             grid.AssignBuildingToGrid(tower);
             UIManager.instance.setHealthBar(tower);
             UIManager.instance.downSelectionBarFrame.gameObject.SetActive(false);
-            
+
+            OnBuildEvent?.Invoke();
         }
         else
         {

@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public delegate void OnHeatMapChange();
+public delegate void HeatMapChangeDelegate();
     
 /// <summary>
 /// 热力图接口
 /// </summary>
 public interface IHeatMap
 {
-    public event OnHeatMapChange OnHeatMapChange;
+    public event HeatMapChangeDelegate HeatMapChangeEvent;
 
     /// <summary>
     /// 更新 tick
