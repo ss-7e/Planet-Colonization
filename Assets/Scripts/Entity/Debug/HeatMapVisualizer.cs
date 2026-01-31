@@ -28,7 +28,7 @@ public class HeatMapVisualizer : EntityBase
     private void Start()
     {
         _heatMapSet = AIModule.Instance.HeatMapSet;
-        _heatMapSet.NavFlowField.OnHeatMapChange += Repaint;
+        _heatMapSet.NavFlowField.HeatMapChangeEvent += Repaint;
         _mapSize = new Vector2Int(GridManager.Instance.Length, GridManager.Instance.Width);
 
         CreateTexture();
@@ -38,6 +38,8 @@ public class HeatMapVisualizer : EntityBase
 
     private void OnDestroy()
     {
+        _heatMapSet.NavFlowField.HeatMapChangeEvent -= Repaint;
+
         if (_heatMapTexture != null)
         {
             Destroy(_heatMapTexture);
