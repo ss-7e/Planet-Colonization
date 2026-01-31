@@ -16684,7 +16684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c8f213748328d40acb4efac1396673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanveyerBelts:
+  ConveyorBelts:
   - {fileID: 3321336083740699153, guid: 7534977374006ad42bec18334329aa68, type: 3}
   - {fileID: 5493395155504869058, guid: 52aaebd0c69259a43bc5f552f03b515d, type: 3}
   - {fileID: 4884595439039894037, guid: 9f97fbfbc8ae49247a1d62a691909664, type: 3}
@@ -17352,7 +17352,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1608993355}
         m_TargetAssemblyTypeName: BuildManager, Assembly-CSharp
-        m_MethodName: SetCanveyerBeltBuild
+        m_MethodName: SetConveyorBeltBuild
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
