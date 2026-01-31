@@ -6,16 +6,16 @@ namespace Game.Towers
 {
     public class Tower : MonoBehaviour
     {
-        protected List<Storage> storageList = new List<Storage>(); //nearby storages 
-        protected Dictionary<Storage, Tower> storageTowerList = new Dictionary<Storage, Tower>(); //nearby storage towers
-        protected Dictionary<Storage, float> storageDistance = new Dictionary<Storage, float>();
+        protected List<StoragePrev> storageList = new List<StoragePrev>(); //nearby storages 
+        protected Dictionary<StoragePrev, Tower> storageTowerList = new Dictionary<StoragePrev, Tower>(); //nearby storage towers
+        protected Dictionary<StoragePrev, float> storageDistance = new Dictionary<StoragePrev, float>();
         public Grid onGrid {  get; protected set; }
         public virtual void BuildOnGrid(Grid grid)
         {
             onGrid = grid;
         }
 
-        public void addStorage(Storage storage, float distance)
+        public void addStorage(StoragePrev storage, float distance)
         {
             if (storageList.Contains(storage))
             {
@@ -26,7 +26,7 @@ namespace Game.Towers
             storageList.Sort((a, b) => storageDistance[a].CompareTo(storageDistance[b]));
         }
 
-        public void addStorage(Tower tower, Storage storage, float distance)
+        public void addStorage(Tower tower, StoragePrev storage, float distance)
         {
             if (storageTowerList.ContainsKey(storage))
             {
@@ -42,17 +42,17 @@ namespace Game.Towers
             storageList.Sort((a, b) => storageDistance[a].CompareTo(storageDistance[b]));
         }
 
-        public void addStorage(Storage storage)
+        public void addStorage(StoragePrev storage)
         {
             storageList.Add(storage);
         }
 
-        public List<Storage> GetStorageList()
+        public List<StoragePrev> GetStorageList()
         {
             return storageList;
         }
 
-        public Dictionary<Storage, Tower> GetStorageTowerList()
+        public Dictionary<StoragePrev, Tower> GetStorageTowerList()
         {
             return storageTowerList;
         }

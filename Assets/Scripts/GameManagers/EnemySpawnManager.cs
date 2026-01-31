@@ -52,11 +52,11 @@ namespace Game.Entites
                 cameraPos.y,
                 Random.Range(cameraPos.z, cameraPos.z + 90)
             );
-            spawnPosition.x += GridManager.instance.length / 2;
-            spawnPosition.z += GridManager.instance.width / 2;
+            spawnPosition.x += GridManager.Instance.Length / 2;
+            spawnPosition.z += GridManager.Instance.Width / 2;
             int x = Mathf.RoundToInt(spawnPosition.x);
             int z = Mathf.RoundToInt(spawnPosition.z);
-            spawnPosition = GridManager.instance.GetGridXY(x, z).Pos;
+            spawnPosition = GridManager.Instance.GetGridXY(x, z).Pos;
             spawnPosition.y += 1f;
             SpawnEnemy(enemyPrefab, spawnPosition);
         }
@@ -113,9 +113,9 @@ namespace Game.Entites
             {
                 return;
             }
-            int x = Random.Range(0, GridManager.instance.length);
-            int z = Random.Range(0, GridManager.instance.width);
-            Grid grid = GridManager.instance.GetGridXY(x, z);
+            int x = Random.Range(0, GridManager.Instance.Length);
+            int z = Random.Range(0, GridManager.Instance.Width);
+            Grid grid = GridManager.Instance.GetGridXY(x, z);
             if (grid == null || grid.IsObstacle )
             {
                 return; // Skip if the grids is null or occupied

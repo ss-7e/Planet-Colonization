@@ -7,49 +7,51 @@ namespace Factory
     /// <summary>
     /// 
     /// </summary>
-    public enum BeltDir //TODO 这个玩意后续不应该放这里
+    public enum PortDir //TODO 这个玩意后续不应该放这里
     {
         up, down, left, right
     }
     public static class BeltDirExtensions
     {
-        public static BeltDir Opposite(this BeltDir dir)
+        public static PortDir Opposite(this PortDir dir)
         {
             return dir switch
             {
-                BeltDir.up => BeltDir.down,
-                BeltDir.down => BeltDir.up,
-                BeltDir.left => BeltDir.right,
-                BeltDir.right => BeltDir.left,
+                PortDir.up => PortDir.down,
+                PortDir.down => PortDir.up,
+                PortDir.left => PortDir.right,
+                PortDir.right => PortDir.left,
                 _ => throw new ArgumentOutOfRangeException(nameof(dir), dir, null)
             };
         }
 
-        public static BeltDir Not(this BeltDir dir) => dir.Opposite();
+        public static PortDir Not(this PortDir dir) => dir.Opposite();
     }
-
+    //----------------------------------------------------------------------------------------------------
 
     // TODO 将Mono和非Mono部分拆开
-    // 不知道要不要做三通
-    public class CanveyerBeltUnit : MonoBehaviour,  IItemInput
+    // 不知道要不要做三通（要吧）（怎么修改位置队列？）
+    /// <summary>
+    /// 传送带单元，接受物品输入并传送到输出端
+    /// 维护一个位置队列，物品按位置移动/排列
+    /// </summary>
+    public class ConveyorBeltUnit : MonoBehaviour,  IItemInput, IItemOutput
     {
         [SerializeField]
         private float _itemDeltaY;
 
-        private IItemInput _itemTo;   //从本单元输出到这个接口
-        private IConnectTo _itemFrom;
-        internal IItemInput ItemTo => _itemTo;
-        internal IConnectTo ItemFrom => _itemFrom;
+        public BuildingConnection Connection { get; } = new(); 
 
 
-        private BeltDir _inputDir;
-        private BeltDir _outputDir;
-        public BeltDir InputDir => _inputDir;
-        public BeltDir OutputDir => _outputDir;
+        private PortDir _inputDir;
+        private PortDir _outputDir;
+        public PortDir InputDir => _inputDir;
+        public PortDir OutputDir => _outputDir;
 
 
         private float _beltSpeed;
         private LinkedList<GameObject> _itemsOnBelt;
+        private LinkedList<ItemIDPrev> _itemTypeOnBelt;
         private List<Vector3> _itemPositions;       //满排情况下物品的位置
         private readonly int _maxItems = 4;
         private int _currentItemCount;
@@ -63,12 +65,12 @@ namespace Factory
         
 
         // 初始化传送带：所有物品满排位置
-        public void CanveyerBeltUnitInit(BeltDir inputDir, BeltDir outputDir)
+        public void ConveyorBeltUnitInit(PortDir inputDir, PortDir outputDir)//TODO： 后续做多输入/输出？
         {
             _currentItemCount = 0;
-            _itemTo = null;
             _beltSpeed = 2f; 
-            _itemsOnBelt = new LinkedList<GameObject>();
+            _itemsOnBelt = new LinkedList<GameObject>();//TODO: 后续可能不使用LinkedList
+            _itemTypeOnBelt = new LinkedList<ItemIDPrev>();
             _itemPositions = new List<Vector3>(_maxItems + 1);
             _itemDeltaY = 0.1f;
             _inputDir = inputDir;
@@ -81,35 +83,35 @@ namespace Factory
             Vector3 outputPos = Vector3.zero;
             switch (outputDir)
             {
-                case BeltDir.up:
+                case PortDir.up:
                     deltaPos2 = new Vector3(0, 0, -_deltaAxisValue);
                     outputPos = new Vector3(0, _itemDeltaY, 0.5f) + transform.position;
                     break;
-                case BeltDir.down:
+                case PortDir.down:
                     deltaPos2 = new Vector3(0, 0, _deltaAxisValue);
                     outputPos = new Vector3(0, _itemDeltaY, -0.5f) + transform.position;
                     break;
-                case BeltDir.left:
+                case PortDir.left:
                     deltaPos2 = new Vector3(_deltaAxisValue, 0, 0);
                     outputPos = new Vector3(-0.5f, _itemDeltaY, 0) + transform.position;
                     break;
-                case BeltDir.right:
+                case PortDir.right:
                     deltaPos2 = new Vector3(-_deltaAxisValue, 0, 0);
                     outputPos = new Vector3(0.5f, _itemDeltaY, 0) + transform.position;
                     break;
             }
             switch (inputDir)
             {
-                case BeltDir.up:
+                case PortDir.up:
                     deltaPos1 = new Vector3(0, 0, _deltaAxisValue);
                     break;
-                case BeltDir.down:
+                case PortDir.down:
                     deltaPos1 = new Vector3(0, 0, -_deltaAxisValue);
                     break;
-                case BeltDir.left:
+                case PortDir.left:
                     deltaPos1 = new Vector3(-_deltaAxisValue, 0, 0);
                     break;
-                case BeltDir.right:
+                case PortDir.right:
                     deltaPos1 = new Vector3(_deltaAxisValue, 0, 0);
                     break;
             }
@@ -127,18 +129,7 @@ namespace Factory
             }
         }
 
-
-        internal void SetItemDeliverTarget(IItemInput unit)
-        {
-            _itemTo = unit;
-        }
-
-        internal void SetItemDeliverFrom(IConnectTo itemInput)
-        {
-            _itemFrom = itemInput;
-        }
-
-        bool IItemInput.InputItem(GameObject item)
+        bool IItemInput.InputItem(GameObject item, ItemIDPrev itemType)
         {
             if (_currentItemCount >= _maxItems)
             {
@@ -154,33 +145,87 @@ namespace Factory
             }
 
             _itemsOnBelt.AddLast(item);
+            _itemTypeOnBelt.AddLast(itemType);
             item.transform.position = _itemPositions[_maxItems];
             _currentItemCount++;
             return true;
         }
 
-
         private void UpdateItemOnBelt()
         {
             int idx = 0;
+            var type = _itemTypeOnBelt.First;
             for (var node = _itemsOnBelt.First; node != null;)
             {
                 var item = node.Value;
+                var nextNode = node.Next;
+                var nextType = type.Next;
                 Vector3 targetPos = _itemPositions[idx];
-                // 将当前编号物品移动到目标位置
+                // 将当前编号物品移动到目标位置 TODO：逻辑有问题，需要等这里面Remove之后才能外部删掉
                 item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, _beltSpeed * Time.deltaTime);
                 if(item.transform.position == targetPos && idx == 0)
                 {
-                    if(_itemTo != null && _itemTo.InputItem(item))
+                    if(Connection.To != null && Connection.To.InputItem(item, type.Value))
                     {
                         _currentItemCount--;
                         _itemsOnBelt.Remove(node);
+                        _itemTypeOnBelt.Remove(type);
                     }
                 }
                 idx++;
-                node = node.Next;
-                
+                node = nextNode;
+                type = nextType;
             }
+        }
+        public void SetOutputOnGrid(Grid centerGrid)
+        {
+            Vector2Int gridOffset = Vector2Int.zero;
+            switch (_outputDir)
+            {
+                case PortDir.up:
+                    gridOffset = new Vector2Int(0, 1);
+                    break;
+                case PortDir.down:
+                    gridOffset = new Vector2Int(0, -1);
+                    break;
+                case PortDir.left:
+                    gridOffset = new Vector2Int(-1, 0);
+                    break;
+                case PortDir.right:
+                    gridOffset = new Vector2Int(1, 0);
+                    break;
+            }
+            Grid outputGrid = GridManager.Instance.GetGridByXZ(
+                (int)(centerGrid.Pos.x + gridOffset.x),
+                (int)(centerGrid.Pos.z + gridOffset.y),
+                out _
+            );
+            outputGrid?.AddItemOutputFromBuildingDir(this, _outputDir.Opposite());
+        }
+        public void SetInputOnGrid(Grid centerGrid)
+        {
+            Vector2Int gridOffset = Vector2Int.zero;
+            switch (_inputDir)
+            {
+                case PortDir.up:
+                    gridOffset = new Vector2Int(0, 1);
+                    break;
+                case PortDir.down:
+                    gridOffset = new Vector2Int(0, -1);
+                    break;
+                case PortDir.left:
+                    gridOffset = new Vector2Int(-1, 0);
+                    break;
+                case PortDir.right:
+                    gridOffset = new Vector2Int(1, 0);
+                    break;
+            }
+            Grid inputGrid = GridManager.Instance.GetGridByXZ(
+                (int)(centerGrid.Pos.x + gridOffset.x),
+                (int)(centerGrid.Pos.z + gridOffset.y),
+                out _
+            );
+            inputGrid?.AddItemInputToBuildingDir(this, _inputDir.Opposite());
         }
     }
 }

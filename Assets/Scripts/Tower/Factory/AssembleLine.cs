@@ -5,6 +5,6 @@ namespace Game.Towers.Factory
     {
         public float produceTime;
         public int produceCountPerCycle;
-        public ItemType productType;
+        public ItemTypeA productType;
     }
 }

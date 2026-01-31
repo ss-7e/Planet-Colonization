@@ -6,7 +6,7 @@ public class StorageUI : MonoBehaviour
 {
     public GameObject itemsParent;
     public List<Transform> itemSlots;
-    protected Storage storage;
+    protected StoragePrev storage;
 
     private void Start()
     {
@@ -17,7 +17,7 @@ public class StorageUI : MonoBehaviour
         UpdateStorageUI();
     }
 
-    public void SetStorage(Storage newStorage)
+    public void SetStorage(StoragePrev newStorage)
     {
         storage = newStorage;
         UpdateStorageUI();
@@ -36,7 +36,7 @@ public class StorageUI : MonoBehaviour
                 break;
             }
             Image slotImage = itemSlots[i].Find("Icon").GetComponent<Image>();
-            slotImage.sprite = items[i].icon;
+            slotImage.sprite = items[i].Icon;
             slotImage.color = Color.white;
         }
     }

@@ -23,7 +23,7 @@ namespace Game.UI
         {
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100f, LayerMask.GetMask("Default"));
             defaltHit = hit;
-            gridHit = GridManager.instance.GetGridXY(defaltHit.point, out Vector2Int gridPos);
+            gridHit = GridManager.Instance.GetGridByPos(defaltHit.point, out Vector2Int gridPos);
             this.gridPos = gridPos;
             hits = Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), 100f);
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100f, LayerMask.GetMask("Build"));

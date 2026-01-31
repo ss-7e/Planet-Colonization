@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+
+//TODO 建造流程控制不应该是Mono吧？
 public class BuildingProcess : MonoBehaviour
 {
     [SerializeField] Material transparentMaterial;
@@ -21,6 +23,5 @@ public class BuildingProcess : MonoBehaviour
     public void ConfirmBuild()
     {
         this.gameObject.GetComponent<Renderer>().material = setMaterial;
-
     }
 }

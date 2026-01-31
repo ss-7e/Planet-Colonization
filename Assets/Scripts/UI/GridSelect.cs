@@ -5,6 +5,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
+
+/// <summary>
+/// TODO：怎么建造是这里发出来的？
+/// 之后需要将这部分建造和玩家交互逻辑整合到命令模式中（玩家输入）
+/// </summary>
 public class GridSelector : MonoBehaviour
 {
     public GameObject ConnectTowerUIPrefab;
@@ -27,11 +32,6 @@ public class GridSelector : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
-            //{
-            //    return;
-            //}
             ClickGrid();
         }
         HighlightGrid();
@@ -78,7 +78,7 @@ public class GridSelector : MonoBehaviour
         RaycastHit[] hits = Physics.RaycastAll(ray, maxDistance, LayerMask.GetMask("Default"));
         if(Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
         {
-            BuildManager.instance.TryBuildingOnGrid(gridSelected, false);
+            BuildManager.Instance.TryBuildingOnGrid(gridSelected, false);
             return;
         }
         
@@ -91,26 +91,26 @@ public class GridSelector : MonoBehaviour
             if (hit.collider.gameObject.tag == "GridMap")
             {
                 Vector3 hitPoint = hit.point;
-                hitPoint.x += GridManager.instance.length / 2;
-                hitPoint.z += GridManager.instance.width / 2;
+                hitPoint.x += GridManager.Instance.Length / 2;
+                hitPoint.z += GridManager.Instance.Width / 2;
                 int x = Mathf.RoundToInt(hitPoint.x);
                 int z = Mathf.RoundToInt(hitPoint.z);
-                Vector3 pos = GridManager.instance.GetGridXY(x, z).Pos;
+                Vector3 pos = GridManager.Instance.GetGridXY(x, z).Pos;
                 hitPoint = pos;
                 hitPoint.y += 0.5f;
                 selectionIndicator.SetActive(true);
                 selectionIndicator.transform.position = hitPoint;
-                gridSelected = GridManager.instance.GetGridXY(x, z);
+                gridSelected = GridManager.Instance.GetGridXY(x, z);
 
-                BuildManager.instance.TryBuildingOnGrid(gridSelected, true);
+                BuildManager.Instance.TryBuildingOnGrid(gridSelected, true);
                 return;
             }
         }
-        BuildManager.instance.TryBuildingOnGrid(gridSelected, false);
+        BuildManager.Instance.TryBuildingOnGrid(gridSelected, false);
     }
     private void ConfirmBuild()
     {
-        BuildManager.instance.ConfirmBuildOnGrid(gridSelected);
+        BuildManager.Instance.ConfirmBuildOnGrid(gridSelected);
     }
     private void ClickGrid()
     {
@@ -121,7 +121,7 @@ public class GridSelector : MonoBehaviour
                 UIManager.instance.HideTowerUI(previousTower);
                 previousTurret = null;
             }
-            if (gridSelected.hasTower())
+            if (gridSelected.HasTower())
             {
                 Tower tower = gridSelected.BuildingOnGrid.GetComponent<Tower>();
                 SetConnectTowerUI(tower);
@@ -141,8 +141,8 @@ public class GridSelector : MonoBehaviour
     }
     void SetConnectTowerUI(Tower tower)
     {
-        List<Storage> storageList = tower.GetStorageList();
-        Dictionary<Storage, Tower> storageTowerList = tower.GetStorageTowerList();
+        List<StoragePrev> storageList = tower.GetStorageList();
+        Dictionary<StoragePrev, Tower> storageTowerList = tower.GetStorageTowerList();
         GameObject connectTowerUIParent = GameObject.Find("ConnectTower");
         if (connectTowerUIParent == null)
         {
@@ -153,7 +153,7 @@ public class GridSelector : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        foreach (Storage storage in storageList)
+        foreach (StoragePrev storage in storageList)
         {
             if (storageTowerList.ContainsKey(storage))
             {

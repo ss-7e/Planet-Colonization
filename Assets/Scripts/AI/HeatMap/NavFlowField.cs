@@ -276,10 +276,10 @@ public class NavFlowField : IHeatMap
     {
         _solver.ClearObstacle();
 
-        GridManager gridManager = GridManager.instance;
-        for (int x = 0; x < gridManager.length; x++)
+        GridManager gridManager = GridManager.Instance;
+        for (int x = 0; x < gridManager.Length; x++)
         {
-            for (int y = 0; y < gridManager.width; y++)
+            for (int y = 0; y < gridManager.Width; y++)
             {
                 Grid grid = gridManager.GetGridXY(x, y);
                 if (grid.IsObstacle || grid.FactoryTowers.Count > 0)

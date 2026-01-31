@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Game.Ammo;
 public class TurretAmmoStorage
@@ -15,12 +15,12 @@ public class TurretAmmoStorage
 
     public bool AddAmmo(AmmoItem ammoItem)
     {
-        int count = ammoItem.currentCount;
+        int count = ammoItem.CurrentCount;
         count = Mathf.Clamp(count, 0, ammoCapacity - ammoCount);
         AddAmmo(ammoItem.shellData, count);
         ammoCount += count;
-        ammoItem.currentCount -= count;
-        return ammoItem.currentCount <= 0;
+        ammoItem.CurrentCount -= count;
+        return ammoItem.CurrentCount <= 0;
     }
 
 

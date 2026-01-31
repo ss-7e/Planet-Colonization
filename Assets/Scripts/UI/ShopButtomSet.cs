@@ -17,7 +17,7 @@ public class ShopButtomSet : MonoBehaviour
     }
     public void BuyTowerItem(TowerPackedItem item)
     {
-        if (GameManager.instance.CostGalacticCredit(price))
+        if (GameManager.Instance.CostGalacticCredit(price))
         {
             Cargo.instance.AddItem(item);
         }
@@ -25,6 +25,6 @@ public class ShopButtomSet : MonoBehaviour
 
     public void Buy()
     {
-        GameManager.instance.CostGalacticCredit(price);
+        GameManager.Instance.CostGalacticCredit(price);
     }
 }

@@ -10,12 +10,12 @@ namespace Game.Modules
 
         //----------------------------------------------------------
         // IStorable Implementation
-        public int currentCount { get; set; }
-        public int maxCount { get; private set; }
+        public int CurrentCount { get; set; }
+        public int MaxCount { get; private set; }
         public int Id { get; }
-        public Sprite icon { get => _icon; set => _icon = value; }
+        public Sprite Icon { get => _icon; set => _icon = value; }
         [SerializeField] protected Sprite _icon;
-        public ItemType itemType => ItemType.Module;
+        public ItemTypeA ItemType => ItemTypeA.Module;
 
         public bool SameItem(IStorable other)
         {
@@ -27,8 +27,8 @@ namespace Game.Modules
         {
             this.module = module;
             this.Id = Id;
-            this.currentCount = count;
-            this.maxCount = 1;
+            this.CurrentCount = count;
+            this.MaxCount = 1;
         }
     }
 }

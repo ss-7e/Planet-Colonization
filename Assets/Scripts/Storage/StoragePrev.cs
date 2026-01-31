@@ -1,11 +1,12 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-public class Storage
+public class StoragePrev
+
 {
     int maxCapacity;
     List<IStorable> storableItems = new List<IStorable>();
 
-    public Storage(int capacity)
+    public StoragePrev(int capacity)
     {
         maxCapacity = capacity;
     }
@@ -16,18 +17,18 @@ public class Storage
         {
             if (existingItem.SameItem(item))
             {
-                if (existingItem.currentCount + item.currentCount <= existingItem.maxCount)
+                if (existingItem.CurrentCount + item.CurrentCount <= existingItem.MaxCount)
                 {
-                    existingItem.currentCount += item.currentCount;
+                    existingItem.CurrentCount += item.CurrentCount;
                     return true; 
                 }
                 else
                 {
-                    item.currentCount -= (existingItem.maxCount - existingItem.currentCount);
+                    item.CurrentCount -= (existingItem.MaxCount - existingItem.CurrentCount);
                 }
             }
         }
-        if (item.currentCount > 0) { return AddNewItem(item); } 
+        if (item.CurrentCount > 0) { return AddNewItem(item); } 
         return false;
     }
     bool AddNewItem(IStorable item)
@@ -74,21 +75,21 @@ public class Storage
         {
             if (existingItem.SameItem(item))
             {
-                if (existingItem.currentCount >= count)
+                if (existingItem.CurrentCount >= count)
                 {
-                    existingItem.currentCount -= count;
-                    if (existingItem.currentCount <= 0)
+                    existingItem.CurrentCount -= count;
+                    if (existingItem.CurrentCount <= 0)
                     {
                         storableItems.Remove(existingItem);
                     }
-                    item.currentCount += count; 
+                    item.CurrentCount += count; 
                     count = 0;
                     break;
                 }
                 else
                 {
-                    count -= existingItem.currentCount;
-                    item.currentCount += existingItem.currentCount;
+                    count -= existingItem.CurrentCount;
+                    item.CurrentCount += existingItem.CurrentCount;
                     itemsToRemove.Add(existingItem);
                 }
             }
@@ -109,12 +110,12 @@ public class Storage
         return new List<IStorable>(storableItems);
     }
 
-    public List<IStorable> GetItemsByType(ItemType itemType)
+    public List<IStorable> GetItemsByType(ItemTypeA itemType)
     {
         List<IStorable> itemsOfType = new List<IStorable>();
         foreach (IStorable item in storableItems)
         {
-            if (item.itemType == itemType)
+            if (item.ItemType == itemType)
             {
                 itemsOfType.Add(item);
             }
@@ -122,7 +123,7 @@ public class Storage
         return itemsOfType;
     }
 
-    public void GetItemsByType(ItemType itemType, out List<IStorable> items)
+    public void GetItemsByType(ItemTypeA itemType, out List<IStorable> items)
     {
         items = GetItemsByType(itemType);
     }
@@ -135,11 +136,11 @@ public class Storage
         {
             if (itemCounts.ContainsKey(item))
             {
-                itemCounts[item] += item.currentCount;
+                itemCounts[item] += item.CurrentCount;
             }
             else
             {
-                itemCounts[item] = item.currentCount;
+                itemCounts[item] = item.CurrentCount;
             }
         }
         storableItems.Clear();

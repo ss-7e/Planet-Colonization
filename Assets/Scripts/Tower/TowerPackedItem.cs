@@ -9,15 +9,15 @@ public class TowerPackedItem : ScriptableObject, IStorable
     // IStorable Implementation
     public int Id { get; private set; }
 
-    public int maxCount => _maxCount;
+    public int MaxCount => _maxCount;
     [SerializeField] protected int _maxCount = 1;
 
-    public int currentCount { get; set; } = 1;
+    public int CurrentCount { get; set; } = 1;
 
-    public Sprite icon { get => _icon; set => _icon = value; }
+    public Sprite Icon { get => _icon; set => _icon = value; }
     [SerializeField] protected Sprite _icon;
 
-    public ItemType itemType => ItemType.Tower;
+    public ItemTypeA ItemType => ItemTypeA.Tower;
 
     public bool SameItem(IStorable other)
     {

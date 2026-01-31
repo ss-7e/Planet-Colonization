@@ -1,16 +1,21 @@
-﻿using Unity.VisualScripting;
+﻿using Factory;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-    public float galacticCredit { get; private set; } = 1000f;
-    public float techPoints { get; private set; } = 0f; 
+    public static GameManager Instance;
+   
+
+
+    //玩家参数，可以打包为一个类
+    public float GalacticCredit { get; private set; } = 1000f;
+    public float TechPoints { get; private set; } = 0f; 
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -22,7 +27,7 @@ public class GameManager : MonoBehaviour
     {
         if(UIManager.instance != null)
         {
-            UIManager.instance.SetGalaxyCredit((int)galacticCredit);
+            UIManager.instance.SetGalaxyCredit((int)GalacticCredit);
         }
     }
 
@@ -32,19 +37,19 @@ public class GameManager : MonoBehaviour
     }
     public void AddGalacticCredit(float amount)
     {
-        galacticCredit += amount;
-        UIManager.instance.SetGalaxyCredit((int)galacticCredit);
+        GalacticCredit += amount;
+        UIManager.instance.SetGalaxyCredit((int)GalacticCredit);
     }
 
     public bool CostGalacticCredit(float amount)
     {
-        if (galacticCredit >= amount)
+        if (GalacticCredit >= amount)
         {
-            galacticCredit -= amount;
-            UIManager.instance.SetGalaxyCredit((int)galacticCredit);
+            GalacticCredit -= amount;
+            UIManager.instance.SetGalaxyCredit((int)GalacticCredit);
             return true;
         }
-        Debug.LogWarning("Not enough Galactic Credits. Required: " + amount + ", Available: " + galacticCredit);
+        Debug.LogWarning("Not enough Galactic Credits. Required: " + amount + ", Available: " + GalacticCredit);
         return false;
     }
 }

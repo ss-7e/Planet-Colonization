@@ -26,7 +26,7 @@ namespace Game.Towers.ColonizeBuilding
         }
         void GenerateCoins()
         {
-            GameManager.instance.AddGalacticCredit(coinPerSecond);
+            GameManager.Instance.AddGalacticCredit(coinPerSecond);
         }
 
     }
