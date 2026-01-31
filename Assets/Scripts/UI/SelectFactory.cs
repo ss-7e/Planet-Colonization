@@ -76,7 +76,6 @@ public class SelectFactory : MonoBehaviour
                 if(Input.GetMouseButtonDown(0))
                 {
                     // Confirm build
-                    factoryPreview.GetComponent<Factory.FactorySquare>().ConfirmBuild();
                     factoryPreview.GetComponent<BuildingProcess>().ConfirmBuild();
                     BuildManager.Instance.ClearObjectToBuild();
                     factoryPreview = null;

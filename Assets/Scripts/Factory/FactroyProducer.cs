@@ -51,9 +51,6 @@ namespace Factory
 
         public bool InputItem(GameObject item, ItemIDPrev type)
         {
-
-            Debug.Log("FactoryProducer received item: " + item);
-            Debug.Log("Current input items: " + string.Join(", ", _inputItems));
             if (!_inputItems.ContainsKey(type))
             {
                 return false; // 该物品不是当前配方所需的原材料
@@ -136,10 +133,6 @@ namespace Factory
                     }
                 }
             }
-        }
-        public override void ConfirmBuild() //TODO: 后续删除
-        {
-            base.ConfirmBuild();
         }
         public void SetOutputOnGrid(Grid centerGrid)
         {

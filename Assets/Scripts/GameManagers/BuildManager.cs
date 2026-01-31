@@ -20,7 +20,7 @@ public class BuildManager : MonoBehaviour
     
 
     private GameObject _objectToBuild;
-    private CanveyerBeltBuild _canveyerBeltBuild = null;
+    private ConveyorBeltBuild _canveyerBeltBuild = null;
 
     void Awake()
     {
@@ -39,7 +39,7 @@ public class BuildManager : MonoBehaviour
 
     public void SetCanveyerBeltBuild()
     {
-        _canveyerBeltBuild ??= new CanveyerBeltBuild();
+        _canveyerBeltBuild ??= new ConveyorBeltBuild();
         _canveyerBeltBuild.Awake();
     }
 
@@ -130,7 +130,6 @@ public class BuildManager : MonoBehaviour
         _objectToBuild.GetComponent<BuildingProcess>().ConfirmBuild(); //TODO：后续这个都得删掉
 
         FactorySquare factory = _objectToBuild.GetComponent<FactorySquare>();
-        factory.ConfirmBuild();
         (factory as IItemOutput)?.SetOutputOnGrid(grid);
         (factory as IItemInput)?.SetInputOnGrid(grid);
         (factory as IItemInput)?.ConnetTo(grid);

@@ -45,7 +45,7 @@ namespace Factory
         public void CanveyerBeltUnitOnGridDebuild(Grid grid)
         {
             GameObject unitObject = grid.BuildingOnGrid;
-            CanveyerBeltUnit unit = grid.ItemOutputFromBuilding as CanveyerBeltUnit;
+            ConveyorBeltUnit unit = grid.ItemOutputFromBuilding as ConveyorBeltUnit;
             if (unit == null) return;
             if(unit.Connection.From != null)
             {

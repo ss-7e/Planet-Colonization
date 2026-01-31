@@ -35,7 +35,7 @@ namespace Factory
     /// 传送带单元，接受物品输入并传送到输出端
     /// 维护一个位置队列，物品按位置移动/排列
     /// </summary>
-    public class CanveyerBeltUnit : MonoBehaviour,  IItemInput, IItemOutput
+    public class ConveyorBeltUnit : MonoBehaviour,  IItemInput, IItemOutput
     {
         [SerializeField]
         private float _itemDeltaY;
@@ -65,7 +65,7 @@ namespace Factory
         
 
         // 初始化传送带：所有物品满排位置
-        public void CanveyerBeltUnitInit(PortDir inputDir, PortDir outputDir)//TODO： 后续做多输入/输出？
+        public void ConveyorBeltUnitInit(PortDir inputDir, PortDir outputDir)//TODO： 后续做多输入/输出？
         {
             _currentItemCount = 0;
             _beltSpeed = 2f; 

@@ -23,6 +23,5 @@ public class BuildingProcess : MonoBehaviour
     public void ConfirmBuild()
     {
         this.gameObject.GetComponent<Renderer>().material = setMaterial;
-
     }
 }

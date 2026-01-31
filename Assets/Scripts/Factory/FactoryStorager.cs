@@ -54,11 +54,6 @@ namespace Factory
             return item;
         }
 
-        public override void ConfirmBuild()
-        {
-            base.ConfirmBuild();
-        }
-
         private void OnDestroy()
         {
             

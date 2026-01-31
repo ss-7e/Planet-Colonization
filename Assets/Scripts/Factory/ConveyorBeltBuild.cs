@@ -16,7 +16,7 @@ namespace Factory
     /// 预览传送带路径（第一次点击）
     /// 确定建造逻辑（第二次点击）：添加到grid访问，连接前后传送带单元
     /// </summary>
-    public class CanveyerBeltBuild 
+    public class ConveyorBeltBuild 
     {
         
         GameObject _beltMeshDirect;
@@ -81,7 +81,7 @@ namespace Factory
                 else if (Input.GetMouseButtonDown(1))
                 {
                     Grid grid = PointAt.Instance.gridHit;
-                    if(grid != null && grid.ItemOutputFromBuilding is CanveyerBeltUnit)
+                    if(grid != null && grid.ItemOutputFromBuilding is ConveyorBeltUnit)
                     {
                         _debuild.CanveyerBeltUnitOnGridDebuild(grid);
                     }
@@ -424,15 +424,15 @@ namespace Factory
                 _buildable = true;
                 return;
             }
-            List<CanveyerBeltUnit> canveyerBeltUnits = new();
+            List<ConveyorBeltUnit> canveyerBeltUnits = new();
             Grid firstGrid = null;
             Grid lastGrid = null;
             for (int i = 0; i < _previewBeltList.Count; i++)
             {
                 GameObject beltUnit = _previewBeltList[i];
-                CanveyerBeltUnit canveyerBeltUnit = beltUnit.AddComponent<CanveyerBeltUnit>();
+                ConveyorBeltUnit canveyerBeltUnit = beltUnit.AddComponent<ConveyorBeltUnit>();
                 canveyerBeltUnits.Add(canveyerBeltUnit);
-                canveyerBeltUnit.CanveyerBeltUnitInit(_inputDirs[i], _outputDirs[i]);       //TODO: 如果有多输入/输出？
+                canveyerBeltUnit.ConveyorBeltUnitInit(_inputDirs[i], _outputDirs[i]);       //TODO: 如果有多输入/输出？
                 Grid grid = GridManager.Instance.GetGridByPos(beltUnit.transform.position, out Vector2Int _);
                 canveyerBeltUnit.SetOutputOnGrid(grid);
                 canveyerBeltUnit.SetInputOnGrid(grid);

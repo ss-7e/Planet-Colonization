@@ -5,6 +5,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
+
+/// <summary>
+/// TODO：怎么建造是这里发出来的？
+/// 之后需要将这部分建造和玩家交互逻辑整合到命令模式中（玩家输入）
+/// </summary>
 public class GridSelector : MonoBehaviour
 {
     public GameObject ConnectTowerUIPrefab;
@@ -27,11 +32,6 @@ public class GridSelector : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //if (EventSystem.current.IsPointerOverGameObject() || Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, LayerMask.GetMask("Build")))
-            //{
-            //    return;
-            //}
             ClickGrid();
         }
         HighlightGrid();

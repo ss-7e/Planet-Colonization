@@ -26,15 +26,5 @@ namespace Factory
                 }
             }
         }
-
-
-
-        /// <summary>
-        /// 即将废弃
-        /// </summary>
-        public virtual void ConfirmBuild()
-        {
-            
-        }
     }
 }

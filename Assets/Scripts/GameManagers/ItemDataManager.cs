@@ -1,17 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Item : IItem // TODO:有用吗？
-{
-    public int Id { get; private set; }
-    public ItemTypeA ItemType { get; private set; }
-    public Item(int id = 0, ItemTypeA itemType = ItemTypeA.NaturalResource)
-    {
-        Id = id;
-        ItemType = itemType;
-    }
-}
-
 
 /// <summary>
 /// 记录游戏中物品数据
