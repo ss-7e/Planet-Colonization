@@ -10,7 +10,7 @@ namespace Game.Towers.Mine
         public float outputTime{ get; protected set; } = 0;
         public override void BuildOnGrid(Grid grid)
         {
-            onGrid = grid;
+            OnGrid = grid;
             placedGrid = grid as ResourceGrid;
         }
         public void TakeDamage(float damage)

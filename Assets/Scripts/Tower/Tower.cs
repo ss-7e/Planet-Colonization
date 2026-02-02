@@ -6,13 +6,13 @@ namespace Game.Towers
 {
     public class Tower : MonoBehaviour
     {
-        protected List<StoragePrev> storageList = new List<StoragePrev>(); //nearby storages 
-        protected Dictionary<StoragePrev, Tower> storageTowerList = new Dictionary<StoragePrev, Tower>(); //nearby storage towers
-        protected Dictionary<StoragePrev, float> storageDistance = new Dictionary<StoragePrev, float>();
-        public Grid onGrid {  get; protected set; }
+        protected List<StoragePrev> storageList = new(); //nearby storages 
+        protected Dictionary<StoragePrev, Tower> storageTowerList = new(); //nearby storage towers
+        protected Dictionary<StoragePrev, float> storageDistance = new();
+        public Grid OnGrid {  get; protected set; }
         public virtual void BuildOnGrid(Grid grid)
         {
-            onGrid = grid;
+            OnGrid = grid;
         }
 
         public void addStorage(StoragePrev storage, float distance)

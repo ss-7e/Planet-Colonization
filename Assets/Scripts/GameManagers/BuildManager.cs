@@ -223,10 +223,10 @@ public class BuildManager : MonoBehaviour
     //TODO 移除以下玩意
     void SetTowerStorage(Tower tower)
     {
-        Vector3 TowerPos = tower.onGrid.Pos;
+        Vector3 TowerPos = tower.OnGrid.Pos;
         foreach (StorageTower storageTower in _storageTowers)
         { 
-            Vector3 storagePos = storageTower.onGrid.Pos;
+            Vector3 storagePos = storageTower.OnGrid.Pos;
             float distance = (TowerPos - storagePos).magnitude;
             if (distance < 10)
             {
@@ -237,10 +237,10 @@ public class BuildManager : MonoBehaviour
 
     void SetFactoryAffectTurret(TurretBase turret)
     {
-        Vector3 TowerPos = turret.onGrid.Pos;
+        Vector3 TowerPos = turret.OnGrid.Pos;
         foreach (FactoryTowerBase factory in _factoryTowers)
         {
-            Vector3 factoryPos = factory.onGrid.Pos;
+            Vector3 factoryPos = factory.OnGrid.Pos;
             float distance = (TowerPos - factoryPos).magnitude;
             if (distance < 10)
             {
@@ -250,10 +250,10 @@ public class BuildManager : MonoBehaviour
     }
     void SetFactoryTurretList(FactoryTowerBase factory)
     {
-        Vector3 factoryPos = factory.onGrid.Pos;
+        Vector3 factoryPos = factory.OnGrid.Pos;
         foreach (TurretBase turret in _turretList)
         {
-            Vector3 TowerPos = turret.onGrid.Pos;
+            Vector3 TowerPos = turret.OnGrid.Pos;
             float distance = (TowerPos - factoryPos).magnitude;
             if (distance < 10)
             {

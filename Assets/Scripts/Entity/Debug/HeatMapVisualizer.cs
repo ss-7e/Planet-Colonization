@@ -36,7 +36,7 @@ public class HeatMapVisualizer : EntityBase
         Repaint();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         _heatMapSet.NavFlowField.HeatMapChangeEvent -= Repaint;
 
