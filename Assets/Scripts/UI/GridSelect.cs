@@ -160,7 +160,7 @@ public class GridSelector : MonoBehaviour
                 Tower storageTower = storageTowerList[storage];
                 if (storageTower != null)
                 {
-                    Vector3 UIPos = storageTower.onGrid.Pos + new Vector3(0, 3f, 0);
+                    Vector3 UIPos = storageTower.OnGrid.Pos + new Vector3(0, 3f, 0);
                     GameObject connectTowerUI = Instantiate(ConnectTowerUIPrefab, UIPos, Quaternion.identity);
                     connectTowerUI.transform.SetParent(connectTowerUIParent.transform);
                 }
