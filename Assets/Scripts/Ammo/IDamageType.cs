@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Game.Entites;
@@ -13,7 +13,7 @@ namespace Game.Ammo
     }
     public class PiercingDamage : IDamageType
     {
-        private float piercingDepthCount = 0f; //mm
+        //private float piercingDepthCount = 0f; //mm
         public void applyDamage(Shell shell, RaycastHit[] hits)
         {
             foreach (var hit in hits)

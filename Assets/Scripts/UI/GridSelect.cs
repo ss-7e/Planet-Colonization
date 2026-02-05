@@ -19,7 +19,6 @@ public class GridSelector : MonoBehaviour
     private Mesh mesh;
     private Vector3[] originalVertices;
     private Grid gridSelected;
-    private TurretBase previousTurret = null;
     private Tower previousTower = null;
 
     private void Start()
@@ -119,7 +118,6 @@ public class GridSelector : MonoBehaviour
             if (previousTower != null)
             {
                 UIManager.instance.HideTowerUI(previousTower);
-                previousTurret = null;
             }
             if (gridSelected.HasTower())
             {
