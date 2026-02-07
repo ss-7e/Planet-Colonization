@@ -15,7 +15,7 @@ class DataType:
     def __init__(self, name: str):
         self.name = name
 
-    def parse_value(self, value: str) -> Any:
+    def parse_value(self, value: str, **kwargs) -> Any:
         """
         将字符串值解析为对应的数据类型
         """
@@ -53,7 +53,7 @@ class IntType(DataType):
     def __init__(self, name: str):
         super().__init__(name)
     
-    def parse_value(self, value: str):
+    def parse_value(self, value: str, **kwargs):
         return int(value)
     
 
@@ -62,7 +62,7 @@ class FloatType(DataType):
     def __init__(self, name: str):
         super().__init__(name)
     
-    def parse_value(self, value: str):
+    def parse_value(self, value: str, **kwargs):
         return float(value)
 
 
@@ -71,7 +71,7 @@ class StringType(DataType):
     def __init__(self, name: str):
         super().__init__(name)
     
-    def parse_value(self, value: str):
+    def parse_value(self, value: str, **kwargs):
         return value
 
 
@@ -80,8 +80,8 @@ class IDType(DataType):
     def __init__(self, name: str):
         super().__init__(name)
     
-    def parse_value(self, value: str):
-        return value  # ID 类型暂时不进行解析，直接返回字符串值
+    def parse_value(self, value: str, **kwargs):
+        return kwargs["row_index"]  # ID 类型的值固定为行号
 
 
 @DataType.register("path")
@@ -89,7 +89,7 @@ class PathType(DataType):
     def __init__(self, name: str):
         super().__init__(name)
     
-    def parse_value(self, value: str):
+    def parse_value(self, value: str, **kwargs):
         return value  # 路径类型暂时不进行解析，直接返回字符串值
 
 
@@ -97,12 +97,18 @@ class PathType(DataType):
 class RefType(DataType):
     ref_sheet: str
 
-    def __init__(self, name: str, ref_sheet: str):
+    def __init__(self, name: str, ref_sheet_name: str):
         super().__init__(name)
-        self.ref_sheet = ref_sheet
+        self.ref_sheet_name = ref_sheet_name
     
-    def parse_value(self, value: str):
-        return value  # 引用类型暂时不进行解析，直接返回字符串值
+    def parse_value(self, value: str, **kwargs):
+        db: SheetDatabase = kwargs["db"]
+        if db is None:
+            raise ValueError("SheetDatabase is required to parse RefType")
+        ref_sheet = db.get_sheet(self.ref_sheet_name)
+        if ref_sheet is None:
+            raise ValueError(f"Referenced sheet '{self.ref_sheet_name}' not found in database")
+        return ref_sheet.get_row_index_by_id(value)  # 返回引用行的索引
 
 
 class ColumnHeader:
@@ -117,9 +123,11 @@ class ColumnHeader:
 
 
 class Sheet:
-    def __init__(self) -> None:
+    def __init__(self, parent_database: SheetDatabase | None = None) -> None:
         self._headers: list[ColumnHeader] = []
         self._raw_data: list[list[str]] = []
+        self._raw_id_to_index: dict[str, int] = {}
+        self._parent_database = parent_database
     
     def load_from_sheet(self, workbook: openpyxl.Workbook, sheet_name: str):
         """
@@ -136,7 +144,9 @@ class Sheet:
         except StopIteration:
             raise ValueError(f"Sheet '{sheet_name}' does not have enough rows for headers")
 
-        for name, dtype, default_value in zip(row1, row2, row3):
+        id_column_index = -1  # 记录 ID 列的索引位置
+
+        for i, (name, dtype, default_value) in enumerate(zip(row1, row2, row3)):
             if not isinstance(name, str):
                 raise ValueError(f"Invalid column name: {name}")
             if not isinstance(dtype, str):
@@ -144,14 +154,37 @@ class Sheet:
             datatype = DataType.from_definition(dtype)
             self._headers.append(ColumnHeader(name, datatype, str(default_value) if default_value is not None else ""))
 
+            # 检测 ID 列
+            if isinstance(datatype, IDType):
+                if id_column_index != -1:
+                    raise ValueError("Multiple ID columns found")
+                id_column_index = i
+
         for row in sheet_iter:
             row_data = []
             for cell in row:
                 if cell is None:
                     cell = ""
                 row_data.append(cell)
-            self._raw_data.append(row_data)
 
+            if any(cell != "" for cell in row_data):
+                self._raw_data.append(row_data)
+
+                # 建立 ID 到行索引的映射
+                if id_column_index != -1:
+                    row_id = str(row_data[id_column_index])
+                    if row_id in self._raw_id_to_index:
+                        raise ValueError(f"Duplicate ID value found: {row_id}")
+                    self._raw_id_to_index[row_id] = len(self._raw_data) - 1
+
+
+    def get_row_index_by_id(self, row_id: str) -> int:
+        """
+        获取 Sheet 中指定 ID 的行索引
+        """
+        if row_id not in self._raw_id_to_index:
+            raise KeyError(f"Row ID '{row_id}' not found")
+        return self._raw_id_to_index[row_id]
 
     def get_row(self, index: int) -> dict[str, Any]:
         """
@@ -165,7 +198,7 @@ class Sheet:
         for header, cell in zip(self._headers, row):
             if cell == "":
                 cell = header.default_value
-            parsed_value = header.datatype.parse_value(str(cell))
+            parsed_value = header.datatype.parse_value(str(cell), row_index=index, db=self._parent_database)
 
             # 处理数组类型字段
             bracket_start = header.name.find("[")
@@ -217,6 +250,12 @@ class SheetDatabase:
     def __init__(self) -> None:
         self._sheets: dict[str, Sheet] = {}
     
+    def get_sheet(self, sheet_name: str) -> Sheet | None:
+        """
+        获取指定名称的 Sheet
+        """
+        return self._sheets.get(sheet_name, None)
+    
     def load_from_excel(self, excel_dir: str):
         """
         从 Excel 加载数据
@@ -231,7 +270,7 @@ class SheetDatabase:
         """
         workbook = openpyxl.load_workbook(file_path, read_only=True)
         for sheet_name in workbook.sheetnames:
-            sheet = Sheet()
+            sheet = Sheet(parent_database=self)
             try:
                 sheet.load_from_sheet(workbook, sheet_name)
                 self._sheets[sheet_name] = sheet
