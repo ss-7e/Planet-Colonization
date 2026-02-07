@@ -1,0 +1,12 @@
+# Ignore virtual environment directories
+/venv/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore local settings files
+local_config.json
+
+# Ignore test output directories
+/test_output/
