@@ -153,22 +153,64 @@ class Sheet:
             self._raw_data.append(row_data)
 
 
+    def get_row(self, index: int) -> dict[str, Any]:
+        """
+        获取 Sheet 中指定索引的行数据，返回字典
+        """
+        if index < 0 or index >= len(self._raw_data):
+            raise IndexError(f"Row index {index} is out of bounds")
+        
+        row = self._raw_data[index]
+        row_dict = {}
+        for header, cell in zip(self._headers, row):
+            if cell == "":
+                cell = header.default_value
+            parsed_value = header.datatype.parse_value(str(cell))
+
+            # 处理数组类型字段
+            bracket_start = header.name.find("[")
+            if bracket_start != -1:
+                if not header.name.endswith("]"):
+                    raise ValueError(f"Invalid array field name: {header.name}")
+                base_name = header.name[:bracket_start]
+                index = int(header.name[bracket_start + 1:-1])
+                arr = row_dict.setdefault(base_name, [])
+                if len(arr) <= index:
+                    arr.extend([None] * (index - len(arr)) + [parsed_value])
+                elif arr[index] is None:
+                    arr[index] = parsed_value
+                else:
+                    raise ValueError(f"Duplicate value for array field '{header.name}'")
+            else:
+                row_dict[header.name] = parsed_value
+
+        # 验证数组类型字段是否缺失值
+        for header_name, cell in row_dict.items():
+            if isinstance(cell, list):
+                for i, value in enumerate(cell):
+                    if value is None:
+                        raise ValueError(f"Array field '{header_name}[{i}]' is missed")
+
+        return row_dict
+    
+    def iter_rows(self):
+        """
+        迭代 Sheet 中的所有行数据，返回字典
+        """
+        for index in range(len(self._raw_data)):
+            yield self.get_row(index)
+
     def save_to_json(self, file_path: str):
         """
         将 Sheet 数据保存为 JSON 文件
         """
-        data = []
-        for row in self._raw_data:
-            row_dict = {}
-            for header, cell in zip(self._headers, row):
-                if cell == "":
-                    cell = header.default_value
-                parsed_value = header.datatype.parse_value(str(cell))
-                row_dict[header.name] = parsed_value
-            data.append(row_dict)
-        
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        try:
+            data = list(self.iter_rows())
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        except:
+            print(f"Failed to save sheet data to JSON file '{file_path}':")
+            print_exc()
 
 
 class SheetDatabase:
