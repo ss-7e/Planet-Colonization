@@ -22,12 +22,15 @@ namespace DOTS
                 AddComponent(entity, new AmmoData
                 {
                     Damage = authoring.Damage,
-                    Speed = authoring.Speed,
-                    Lifetime = authoring.Lifetime
+                    Speed = authoring.Speed
                 });
-                AddComponent(entity, new MovementComponent
+                AddComponent(entity, new ProjectileMoveComponent
                 {
-                    Direction = float3.zero, // 初始方向可以在发射时设置
+                    Direction = float3.zero // 初始方向可以在发射时设置
+                });
+                AddComponent(entity, new LifeTimeComponent
+                {
+                    Lifetime = authoring.Lifetime,
                     ElapsedTime = 0f
                 });
             }

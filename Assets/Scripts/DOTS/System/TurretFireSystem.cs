@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.Jobs;
 using Unity.Transforms;
 using Unity.Collections;
+using Game.Ammo;
 
 namespace DOTS
 {
@@ -12,8 +13,8 @@ namespace DOTS
     public partial struct TurretFireSystem : ISystem
     {
         private EntityQuery _turretQuery;
-        // 声明 Lookup
         private ComponentLookup<LocalToWorld> _localToWorldLookup;
+        private ComponentLookup<AmmoData> _shellDataLookup;
 
         public void OnCreate(ref SystemState state)
         {
@@ -25,8 +26,8 @@ namespace DOTS
                 .WithAll<Turret, TurretAimer, TurretShooter>()
                 .Build();
             
-            // 初始化 Lookup
             _localToWorldLookup = state.GetComponentLookup<LocalToWorld>(true);
+            _shellDataLookup = state.GetComponentLookup<AmmoData>(true);
         }
 
         public void OnUpdate(ref SystemState state)
@@ -34,14 +35,15 @@ namespace DOTS
             var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-            // 更新 Lookup 的当前帧状态
             _localToWorldLookup.Update(ref state);
+            _shellDataLookup.Update(ref state);
 
             var fireJob = new TurretFireJob
             {
                 DeltaTime = SystemAPI.Time.DeltaTime,
                 ECB = ecb.AsParallelWriter(),
-                LocalToWorldLookup = _localToWorldLookup // 使用 LocalToWorld
+                LocalToWorldLookup = _localToWorldLookup,
+                ShellDataLookup = _shellDataLookup
             };
 
             state.Dependency = fireJob.ScheduleParallel(_turretQuery, state.Dependency);
@@ -53,11 +55,11 @@ namespace DOTS
             public float DeltaTime;
             public EntityCommandBuffer.ParallelWriter ECB;
             [ReadOnly] public ComponentLookup<LocalToWorld> LocalToWorldLookup;
+            [ReadOnly] public ComponentLookup<AmmoData> ShellDataLookup;
 
             public void Execute(
                 [EntityIndexInQuery] int sortKey,
                 ref Turret turret,
-                ref TurretAimer aimer,
                 ref TurretShooter shooter)
             {
                 shooter.TimeSinceLastShot += DeltaTime;
@@ -66,23 +68,28 @@ namespace DOTS
                 {
                     if (shooter.ShellPrefab == Entity.Null) return;
 
-                    // 创建子弹实体
                     Entity shell = ECB.Instantiate(sortKey, shooter.ShellPrefab);
-
-                    // 使用 LocalToWorld 获取炮口在世界空间的位置和旋转
+                    
                     if (shooter.MuzzleEntity != Entity.Null &&
                         LocalToWorldLookup.TryGetComponent(shooter.MuzzleEntity, out LocalToWorld muzzleLtw))
                     {
-                        // 将 LocalToWorld 转换为 LocalTransform (世界空间)
                         var shellTransform = LocalTransform.FromPositionRotation(
                             muzzleLtw.Position, 
                             quaternion.LookRotation(muzzleLtw.Forward, muzzleLtw.Up)
                         );
-                        MovementComponent ammoMovement = new MovementComponent
+
+                        float initialSpeed = 0f;
+                        if (ShellDataLookup.TryGetComponent(shooter.ShellPrefab, out var shellData))
                         {
-                            Direction = muzzleLtw.Forward,
-                            ElapsedTime = 0f
+                            initialSpeed = shellData.Speed;
+                        }
+
+                        ProjectileMoveComponent ammoMovement = new ProjectileMoveComponent
+                        {
+                            Direction = math.normalize(muzzleLtw.Forward),
+                            Speed = initialSpeed
                         };
+
                         ECB.SetComponent(sortKey, shell, shellTransform);
                         ECB.SetComponent(sortKey, shell, ammoMovement);
                     }

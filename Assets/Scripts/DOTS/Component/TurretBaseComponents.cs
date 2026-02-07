@@ -35,6 +35,7 @@ namespace DOTS
         public float MinRange;           // 最小瞄准距离
         public float TargetingYaw;     // 当前瞄准偏航角（Yaw，相对于初始朝向）
         public float TargetingPitch;     // 当前瞄准俯仰角（Pitch，向上为正）
+        public float HitTime;
     }
 
     // 4. 敌人标记组件

@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections;
+using Game.UI;
 
 namespace DOTS
 {
@@ -47,64 +48,73 @@ namespace DOTS
                 if (!EnemyTransforms.TryGetComponent(turret.TargetEntity, out var enemyTransform))
                     return;
 
-                // 计算目标方向
-                float3 toTarget = enemyTransform.Position - turretTransform.Position;
+                // --- 0. Setup Targets ---、
+                //float3 targetTemp = PointAt.Instance.gridHit.Pos;
+                //float3 toTarget = targetTemp - turretTransform.Position;
+                float3 targetPos = enemyTransform.Position;
+                float3 toTarget = targetPos - turretTransform.Position;
 
                 // --- 1. 水平旋转 (Yaw) ---
                 float3 horizontalDirection = new float3(toTarget.x, 0, toTarget.z);
-                float horizontalDistance = math.length(horizontalDirection); // 保存距离用于Pitch计算
-                horizontalDirection = math.normalize(horizontalDirection);
+                float horizontalDistance = math.length(horizontalDirection);
+                
+                if (horizontalDistance < 0.001f) return;
 
-                // 计算水平旋转角度
-                float currentHorizontalAngle = aimer.TargetingYaw;
+                float3 normalizedHorizontal = horizontalDirection / horizontalDistance;
+
                 float targetHorizontalAngle = CalculateAngle(
                     turret.InitialForward,
-                    horizontalDirection,
+                    normalizedHorizontal,
                     new float3(0, 1, 0)
                 );
 
-                // 角度限制
                 targetHorizontalAngle = math.clamp(
                     targetHorizontalAngle,
                     -turret.MaxRotationAngle,
                     turret.MaxRotationAngle
                 );
 
-                // 插值旋转 Yaw
-                aimer.TargetingYaw = math.lerp(
-                    currentHorizontalAngle,
-                    targetHorizontalAngle,
-                    turret.RotationSpeed * DeltaTime
-                );
+                float deltaYaw = targetHorizontalAngle - aimer.TargetingYaw;
+                deltaYaw = math.atan2(math.sin(deltaYaw), math.cos(deltaYaw));
+                aimer.TargetingYaw += deltaYaw * math.min(1.0f, turret.RotationSpeed * DeltaTime);
 
                 // --- 2. 垂直俯仰 (Pitch) ---
-                // 计算目标俯仰角 (atan2(y, horizontalDistance))
-                // 假设：正值为向上抬起 (Up)
-                float targetPitchAngle = math.atan2(toTarget.y, horizontalDistance);
+                float v = 20f; // Projectile Speed (should be a variable in Turret component)
+                float g = 5f; // Gravity
+                float x = horizontalDistance;
+                float y = toTarget.y; // Vertical displacement
 
-                // 简单的角度限制 (通常俯仰角限制不同于水平角，这里暂时复用或给死值，例如 -45 到 45 度)
-                // 注意：atan2返回的是弧度，Update中使用的是弧度插值，如果RotationSpeed是度，要注意单位转换
-                // 原代码 calculateAngle 返回弧度，lerp 直接用。我们保持一致，targetPitchAngle 也是弧度。
-                // 限制在 +/- 45度 (0.78弧度)
-                float maxPitchRad = math.radians(45); 
+                float v2 = v * v;
+                float v4 = v2 * v2;
+                float root = v4 - g * (g * (x * x) + 2 * y * v2);
+
+                float targetPitchAngle;
+                if (root >= 0)
+                {
+                    // Calculate the low-arc trajectory angle
+                    targetPitchAngle = math.atan((v2 - math.sqrt(root)) / (g * x));
+                    aimer.HitTime = x / (v * math.cos(targetPitchAngle));
+                }
+                else
+                {
+                    // Target is out of range, point towards it as best as possible
+                    targetPitchAngle = math.atan2(y, x);
+                    aimer.HitTime = 0;
+                }
+
+                float maxPitchRad = math.radians(45);
                 targetPitchAngle = math.clamp(targetPitchAngle, -maxPitchRad, maxPitchRad);
 
-                float currentPitchAngle = aimer.TargetingPitch;
-                
-                // 插值旋转 Pitch
-                aimer.TargetingPitch = math.lerp(
-                    currentPitchAngle,
-                    targetPitchAngle,
-                    turret.RotationSpeed * DeltaTime
-                );
+                float deltaPitch = targetPitchAngle - aimer.TargetingPitch;
+                deltaPitch = math.atan2(math.sin(deltaPitch), math.cos(deltaPitch));
+                aimer.TargetingPitch += deltaPitch * math.min(1.0f, turret.RotationSpeed * DeltaTime);
             }
 
-            private float CalculateAngle(float3 from, float3 to, float3 axis)
+            private readonly float CalculateAngle(float3 from, float3 to, float3 axis)
             {
-                float3 cross = math.cross(from, to);
-                float sign = math.sign(math.dot(cross, axis));
-                float angle = math.acos(math.clamp(math.dot(math.normalize(from), math.normalize(to)), -1f, 1f));
-                return angle * sign;
+                float dot = math.dot(from, to);
+                float det = math.dot(axis, math.cross(from, to));
+                return math.atan2(det, dot);
             }
         }
     }

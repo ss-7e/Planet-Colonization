@@ -20,11 +20,12 @@ namespace DOTS
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            // 查询所有需要选择目标的炮塔
-            state.RequireForUpdate(state.EntityManager.CreateEntityQuery(
-                ComponentType.ReadOnly<Turret>(),
-                ComponentType.ReadOnly<TurretAimer>()
-            ));
+            // Using EntityQueryBuilder avoids the managed array allocation error caused by params ComponentType[]
+            var turretQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<Turret, TurretAimer>()
+                .Build(ref state);
+
+            state.RequireForUpdate(turretQuery);
 
             // 敌人查询
             _enemyQuery = new EntityQueryBuilder(Allocator.Temp)
