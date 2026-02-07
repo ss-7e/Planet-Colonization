@@ -1,19 +1,30 @@
-﻿import json
+﻿from datetime import datetime
+import json
 import os
 from tkinter import filedialog
 from typing import Any
 from traceback import print_exc
 
+import jinja2
 import openpyxl
+
+
+jinja_env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader('templates'),
+    trim_blocks=True,
+    lstrip_blocks=True
+)
 
 
 class DataType:
     name: str
+    cs_type: str  # 生成代码时使用的 C# 类型名称
 
     __datatype_registry: dict[str, type[DataType]] = {}
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, cs_type: str):
         self.name = name
+        self.cs_type = cs_type
 
     def parse_value(self, value: str, **kwargs) -> Any:
         """
@@ -51,7 +62,7 @@ class DataType:
 @DataType.register("int")
 class IntType(DataType):
     def __init__(self, name: str):
-        super().__init__(name)
+        super().__init__(name, "int")
     
     def parse_value(self, value: str, **kwargs):
         return int(value)
@@ -60,7 +71,7 @@ class IntType(DataType):
 @DataType.register("float")
 class FloatType(DataType):
     def __init__(self, name: str):
-        super().__init__(name)
+        super().__init__(name, "float")
     
     def parse_value(self, value: str, **kwargs):
         return float(value)
@@ -69,7 +80,7 @@ class FloatType(DataType):
 @DataType.register("string")
 class StringType(DataType):
     def __init__(self, name: str):
-        super().__init__(name)
+        super().__init__(name, "string")
     
     def parse_value(self, value: str, **kwargs):
         return value
@@ -78,7 +89,7 @@ class StringType(DataType):
 @DataType.register("id")
 class IDType(DataType):
     def __init__(self, name: str):
-        super().__init__(name)
+        super().__init__(name, "int")
     
     def parse_value(self, value: str, **kwargs):
         return kwargs["row_index"]  # ID 类型的值固定为行号
@@ -87,7 +98,7 @@ class IDType(DataType):
 @DataType.register("path")
 class PathType(DataType):
     def __init__(self, name: str):
-        super().__init__(name)
+        super().__init__(name, "string")
     
     def parse_value(self, value: str, **kwargs):
         return value  # 路径类型暂时不进行解析，直接返回字符串值
@@ -98,7 +109,7 @@ class RefType(DataType):
     ref_sheet: str
 
     def __init__(self, name: str, ref_sheet_name: str):
-        super().__init__(name)
+        super().__init__(name, "int")
         self.ref_sheet_name = ref_sheet_name
     
     def parse_value(self, value: str, **kwargs):
@@ -112,19 +123,64 @@ class RefType(DataType):
 
 
 class ColumnHeader:
+    title: str
     name: str
     datatype: DataType
     default_value: str
 
-    def __init__(self, name: str, datatype: DataType, default_value: str = ""):
+    def __init__(self, title: str, name: str, datatype: DataType, default_value: str = ""):
+        self.title = title
         self.name = name
         self.datatype = datatype
         self.default_value = default_value
+    
+    @property
+    def field_name(self) -> str:
+        """
+        获取字段名称（去除数组索引部分）
+        """
+        bracket_index = self.name.find("[")
+        if bracket_index != -1:
+            if not self.name.endswith("]"):
+                raise ValueError(f"Invalid array field name: {self.name}")
+            return self.name[:bracket_index]
+        return self.name
+
+    @property
+    def is_array(self) -> bool:
+        """
+        判断字段是否为数组类型
+        """
+        return self.name.find("[") != -1 and self.name.endswith("]")
+
+    @property
+    def array_index(self) -> int:
+        """
+        获取数组字段的索引位置
+        """
+        if not self.is_array:
+            raise ValueError(f"Field '{self.name}' is not an array type")
+        bracket_start = self.name.find("[")
+        return int(self.name[bracket_start + 1:-1])
+
+
+class DataField:
+    name: str
+    cs_type: str
+    comment: str
+
+    def __init__(self, name: str, cs_type: str, comment: str):
+        self.name = name
+        self.cs_type = cs_type
+        self.comment = comment
 
 
 class Sheet:
-    def __init__(self, parent_database: SheetDatabase | None = None) -> None:
-        self._headers: list[ColumnHeader] = []
+    def __init__(self, name: str, parent_database: SheetDatabase | None = None) -> None:
+        self.name = name
+        self.headers: list[ColumnHeader] = []
+        self.data_fields: list[DataField] = []
+
         self._raw_data: list[list[str]] = []
         self._raw_id_to_index: dict[str, int] = {}
         self._parent_database = parent_database
@@ -137,7 +193,7 @@ class Sheet:
         sheet_iter = sheet.iter_rows(values_only=True)
 
         try:
-            _ = next(sheet_iter)  # 第一行：字段中文名，不作处理，直接跳过
+            row0 = next(sheet_iter)  # 第一行：字段中文名
             row1 = next(sheet_iter)  # 第二行：字段英文名
             row2 = next(sheet_iter)  # 第三行：字段数据类型
             row3 = next(sheet_iter)  # 第四行：字段默认值
@@ -146,13 +202,21 @@ class Sheet:
 
         id_column_index = -1  # 记录 ID 列的索引位置
 
-        for i, (name, dtype, default_value) in enumerate(zip(row1, row2, row3)):
+        for i, (title, name, dtype, default_value) in enumerate(zip(row0, row1, row2, row3)):
+            if not isinstance(title, str):
+                raise ValueError(f"Invalid column title: {title}")
             if not isinstance(name, str):
                 raise ValueError(f"Invalid column name: {name}")
             if not isinstance(dtype, str):
                 raise ValueError(f"Invalid data type definition: {dtype}")
             datatype = DataType.from_definition(dtype)
-            self._headers.append(ColumnHeader(name, datatype, str(default_value) if default_value is not None else ""))
+            header = ColumnHeader(title, name, datatype, str(default_value) if default_value is not None else "")
+            self.headers.append(header)
+
+            field_name = header.field_name
+            if field_name not in [field.name for field in self.data_fields]:
+                cs_type = f"{datatype.cs_type}[]" if header.is_array else datatype.cs_type
+                self.data_fields.append(DataField(field_name, cs_type, title))
 
             # 检测 ID 列
             if isinstance(datatype, IDType):
@@ -195,19 +259,16 @@ class Sheet:
         
         row = self._raw_data[index]
         row_dict = {}
-        for header, cell in zip(self._headers, row):
+        for header, cell in zip(self.headers, row):
             if cell == "":
                 cell = header.default_value
             parsed_value = header.datatype.parse_value(str(cell), row_index=index, db=self._parent_database)
 
             # 处理数组类型字段
-            bracket_start = header.name.find("[")
-            if bracket_start != -1:
-                if not header.name.endswith("]"):
-                    raise ValueError(f"Invalid array field name: {header.name}")
-                base_name = header.name[:bracket_start]
-                index = int(header.name[bracket_start + 1:-1])
-                arr = row_dict.setdefault(base_name, [])
+            if header.is_array:
+                field_name = header.field_name
+                index = header.array_index
+                arr = row_dict.setdefault(field_name, [])
                 if len(arr) <= index:
                     arr.extend([None] * (index - len(arr)) + [parsed_value])
                 elif arr[index] is None:
@@ -270,7 +331,7 @@ class SheetDatabase:
         """
         workbook = openpyxl.load_workbook(file_path, read_only=True)
         for sheet_name in workbook.sheetnames:
-            sheet = Sheet(parent_database=self)
+            sheet = Sheet(sheet_name, parent_database=self)
             try:
                 sheet.load_from_sheet(workbook, sheet_name)
                 self._sheets[sheet_name] = sheet
@@ -287,6 +348,16 @@ class SheetDatabase:
         for sheet_name, sheet in self._sheets.items():
             json_file_path = os.path.join(output_dir, f"{sheet_name}.json")
             sheet.save_to_json(json_file_path)
+
+    def generate_code(self, output_dir: str):
+        """
+        生成数据访问代码
+        """
+        template = jinja_env.get_template('csharp_template.j2')
+        output_file_path = os.path.join(output_dir, "SheetDatabase.cs")
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            code = template.render(sheets=self._sheets.values(), export_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            f.write(code)
 
 
 def main():
@@ -311,6 +382,7 @@ def main():
     database = SheetDatabase()
     database.load_from_excel(config["excel_dir"])
     database.save_to_json(config["output_dir"])
+    database.generate_code(config["output_dir"])
 
 
 if __name__ == "__main__":
