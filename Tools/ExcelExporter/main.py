@@ -214,7 +214,7 @@ def main():
     }
 
     if os.path.exists("local_config.json"):
-        with open("local_config.json", "r") as f:
+        with open("local_config.json", "r", encoding="utf-8") as f:
             local_config = json.load(f)
             config.update(local_config)
 
@@ -224,7 +224,7 @@ def main():
             return
         config["excel_dir"] = os.path.abspath(excel_dir)
     
-    with open("local_config.json", "w") as f:
+    with open("local_config.json", "w", encoding="utf-8") as f:
         json.dump(config, f, ensure_ascii=False, indent=4)
     
     database = SheetDatabase()
