@@ -1,0 +1,67 @@
+[
+    {
+        "id": 0,
+        "name": "铁矿",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 1,
+        "name": "煤炭",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 2,
+        "name": "铜矿",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 3,
+        "name": "钢卷",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 4,
+        "name": "弹头",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 5,
+        "name": "火药",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 6,
+        "name": "普通弹",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 7,
+        "name": "燃烧弹",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 8,
+        "name": "冰冻弹",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 9,
+        "name": "水",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 10,
+        "name": "汽油",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 11,
+        "name": "乙醇",
+        "icon": "xxx/xxx/xxx"
+    },
+    {
+        "id": 12,
+        "name": "有机质",
+        "icon": "xxx/xxx/xxx"
+    }
+]

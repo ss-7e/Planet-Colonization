@@ -339,30 +339,38 @@ class SheetDatabase:
                 print(f"Failed to load sheet '{sheet_name}' from file '{file_path}':")
                 print_exc()
     
-    def save_to_json(self, output_dir: str):
+    def save_to_json(self, output_data_dir: str):
         """
         将所有 Sheet 数据保存为 JSON 文件
         """
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+        json_data_dir = os.path.join(output_data_dir, "JSON")
+        if not os.path.exists(json_data_dir):
+            os.makedirs(json_data_dir)
         for sheet_name, sheet in self._sheets.items():
-            json_file_path = os.path.join(output_dir, f"{sheet_name}.json")
+            json_file_path = os.path.join(json_data_dir, f"{sheet_name}.json")
             sheet.save_to_json(json_file_path)
 
-    def generate_code(self, output_dir: str):
+    def generate_code(self, output_script_dir: str, data_dir: str):
         """
         生成数据访问代码
         """
         template = jinja_env.get_template('csharp_template.j2')
-        output_file_path = os.path.join(output_dir, "SheetDatabase.cs")
+        output_file_path = os.path.join(output_script_dir, "SheetDatabase.generated.cs")
+        if not os.path.exists(output_file_path):
+            os.makedirs(output_file_path)
         with open(output_file_path, "w", encoding="utf-8") as f:
-            code = template.render(sheets=self._sheets.values(), export_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            # code = template.render(sheets=self._sheets.values(), export_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            #                        data_dir=data_dir)
+            code = template.render(sheets=self._sheets.values(), data_dir=data_dir)
             f.write(code)
 
 
 def main():
+    assets_dir = "../../Assets"
+    resource_dir = "../../Assets/Resources"
     config = {
-        "output_dir": "./test_output"
+        "output_script_dir": "Scripts/Data",
+        "output_data_dir": "SheetDatabase",
     }
 
     if os.path.exists("local_config.json"):
@@ -381,8 +389,8 @@ def main():
     
     database = SheetDatabase()
     database.load_from_excel(config["excel_dir"])
-    database.save_to_json(config["output_dir"])
-    database.generate_code(config["output_dir"])
+    database.save_to_json(os.path.join(resource_dir, config["output_data_dir"]))
+    database.generate_code(os.path.join(assets_dir, config["output_script_dir"]), config["output_data_dir"])
 
 
 if __name__ == "__main__":

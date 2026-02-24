@@ -7,6 +7,3 @@ __pycache__/
 
 # Ignore local settings files
 local_config.json
-
-# Ignore test output directories
-/test_output/
