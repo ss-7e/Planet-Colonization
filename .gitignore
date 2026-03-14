@@ -78,3 +78,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Assets/Scenes/ProtoTypeScene1.unity
 Assets/Scenes/ProtoTypeScene1.unity
+
+# AI Agents
+.claude/
+.opencode/
+.copilot/
