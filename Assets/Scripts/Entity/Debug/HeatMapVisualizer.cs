@@ -25,20 +25,24 @@ public class HeatMapVisualizer : EntityBase
         _meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    private void Start()
+    private void OnEnable()
     {
         _heatMapSet = AIModule.Instance.HeatMapSet;
-        _heatMapSet.NavFlowField.HeatMapChangeEvent += Repaint;
         _mapSize = new Vector2Int(GridManager.Instance.Length, GridManager.Instance.Width);
-
+        
         CreateTexture();
         SetupMaterial();
+
+        _heatMapSet.NavFlowField.HeatMapChangeEvent += Repaint;
         Repaint();
     }
 
     private void OnDisable()
     {
-        _heatMapSet.NavFlowField.HeatMapChangeEvent -= Repaint;
+        if (_heatMapSet != null)
+        {
+            _heatMapSet.NavFlowField.HeatMapChangeEvent -= Repaint;
+        }
 
         if (_heatMapTexture != null)
         {
