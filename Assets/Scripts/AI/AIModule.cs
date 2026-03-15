@@ -23,7 +23,7 @@ public class AIModule : MonoBehaviour
         HeatMapSet.Initialize();
         HeatMapSet.NavFlowField.SetGoal(_centerSpacecraft.position.x, _centerSpacecraft.position.z);
         HeatMapSet.Refresh();
-        EntityBase entity = EntityManagerPrev.Instance.CreateEntity("HeatMapVisualizer", typeof(HeatMapVisualizer));
+        EntityBase entity = Game.EntityManager.Instance.CreateEntity("HeatMapVisualizer", typeof(HeatMapVisualizer));
         entity.gameObject.SetActive(false);
 
         BuildManager.Instance.OnBuildEvent += OnBuild;
