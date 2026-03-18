@@ -31,20 +31,11 @@ public class EnemySimpleAI : EnemyAI
 
 public class EnemyAttackState : EnemyBehaviorState
 {
-    List<GridNode> path;
     Vector3 movingForce;
     float updateTargetInterval = 1.5f;
     float updateTargetTime = 0f;
     public override void EnterState(GameObject enemy)
     {
-        EnemySimpleAI enemyAI = enemy.GetComponent<EnemySimpleAI>();
-        Vector2Int startPos = GridManager.Instance.GetGridXYValue(enemy.transform.position);
-        Vector2Int targetPos = GridManager.Instance.GetGridXYValue(enemyAI.target.transform.position);
-        FindPath(startPos, targetPos);
-        foreach (var node in path)
-        {
-            Grid grid = GridManager.Instance.GetGridXY(node.x, node.y);
-        }
     }
     public override void UpdateState(GameObject enemy)
     {
@@ -55,24 +46,24 @@ public class EnemyAttackState : EnemyBehaviorState
         {
             return;
         }
-        if (path == null || path.Count == 0)
+        
+        Vector2 gradient = AIModule.Instance.HeatMapSet.NavFlowField.GetGradient(
+            enemy.transform.position.x,
+            enemy.transform.position.z
+        );
+        
+        Vector3 targetDir = new Vector3(-gradient.x, 0, -gradient.y);
+        if (targetDir.sqrMagnitude > 0.001f)
         {
-            enemyAI.SetBehaviorState(new EnemyIdleState());
-            return;
+            targetDir.Normalize();
         }
-        Vector2Int currentPos = GridManager.Instance.GetGridXYValue(enemy.transform.position);
-        if (currentPos == new Vector2Int(path[0].x, path[0].y))
-        {
-            path.Remove(path[0]);
-        }
-        Vector3 targetDir = GridManager.Instance.GetGridXY(path[0].x, path[0].y).Pos - enemy.transform.position;
-        targetDir.y = 0;
-        targetDir.Normalize();
+        
         if (updateTargetTime >= updateTargetInterval)
         {
             updateTargetTime = 0f;
             enemyData.AddMoveForce(targetDir, 1f);
         }
+        
         LayerMask layerMask = LayerMask.GetMask("Player");
         Collider[] hitColliders = Physics.OverlapSphere(enemy.transform.position, enemyAI.attackRange, layerMask);
         if (hitColliders.Length > 0)
@@ -86,22 +77,6 @@ public class EnemyAttackState : EnemyBehaviorState
             }
             enemyAI.SetBehaviorState(new EnemyExplodeState());
         }
-    }
-    public void FindPath(Vector2Int start, Vector2Int target)
-    {
-        Grid[] grids = GridManager.Instance.Grids;
-        GridNode[] gridNodes = new GridNode[grids.Length];
-        for (int i = 0; i < grids.Length; i++) 
-        {
-            gridNodes[i] = new GridNode
-            {
-                x = i % GridManager.Instance.Width,
-                y = i / GridManager.Instance.Width,
-                isObstacle = grids[i].IsObstacle
-            };
-        }
-        Pathfinder pathfinder = new Pathfinder();
-        path = pathfinder.FindPath(gridNodes, GridManager.Instance.Width, GridManager.Instance.Length, start, target);
     }
 
 }
