@@ -28,3 +28,9 @@
 ### 命名空间
 - namespace Game：C# 游戏逻辑
 - namespace Game.Editor：C# 编辑器逻辑
+
+---
+
+## OpenSpec 流程
+- 使用 openspec instructions 后 MUST 遵循 context 的要求以中文撰写 artifacts
+- 完成 spec 同步或归档后，MUST 运行 `openspec validate --all --json` 指令做校验

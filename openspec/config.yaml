@@ -1,11 +1,11 @@
 schema: spec-driven
 context: |
-    Language: Chinese (Simplified)
-    Write in Chinese (Simplified), but:
-    - Keep technical terms like "API", "REST", "GraphQL" in English
-    - Keep UPPERCASE spec terms (e.g., "SHALL", "WHEN", "THEN") in English
-    - Keep section headers (e.g., "Goals", "Non-goals", "Tasks") in English
-    - Code examples and file paths remain in English
+    语言: 简体中文
+    使用简体中文撰写所有内容, 除了以下情况:
+    - 保留技术术语如 "API", "REST", "GraphQL" 为英文
+    - 保留英文大写的规范术语 (如 "SHALL", "WHEN", "THEN") 为英文
+    - 保留章节标题 (如 "Goals", "Non-goals", "Tasks") 为英文
+    - 保留代码块和文件路径为其原始格式
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
