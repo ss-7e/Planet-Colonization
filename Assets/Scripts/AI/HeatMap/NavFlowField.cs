@@ -134,53 +134,52 @@ public class FastSweepingSolver
         return maxChange;
     }
 
-    // 求解成本场
-    public void Solve(int goalX, int goalY, int maxIterations = 8, float tolerance = 0.001f)
+    public void Solve(List<Vector2Int> goals, int maxIterations = 8, float tolerance = 0.001f)
     {
-        // 1. 初始化T场
         for (int y = 0; y < _height; y++)
             for (int x = 0; x < _width; x++)
                 _cost_field[y, x] = _obstacle_map[y, x] ? float.MaxValue : float.MaxValue;
 
-        // 设置目标点
-        if (!_obstacle_map[goalY, goalX])
-            _cost_field[goalY, goalX] = 0;
-        else
+        foreach (var goal in goals)
         {
-            Debug.LogWarning("Goal is in obstacle! Finding nearest valid cell...");
-            // 寻找最近的可通行点
-            SetNearestValidGoal(ref goalX, ref goalY);
-            _cost_field[goalY, goalX] = 0;
+            int goalX = goal.x;
+            int goalY = goal.y;
+            if (!_obstacle_map[goalY, goalX])
+                _cost_field[goalY, goalX] = 0;
+            else
+            {
+                SetNearestValidGoal(ref goalX, ref goalY);
+                _cost_field[goalY, goalX] = 0;
+            }
         }
 
-        // 2. 迭代扫描
         for (int iter = 0; iter < maxIterations; iter++)
         {
             float maxChange = 0;
 
-            // 扫描顺序1: 从上到下，从左到右
             maxChange = Mathf.Max(maxChange,
                 PerformSweep(0, _height, 1, 0, _width, 1));
 
-            // 扫描顺序2: 从上到下，从右到左
             maxChange = Mathf.Max(maxChange,
                 PerformSweep(0, _height, 1, _width - 1, -1, -1));
 
-            // 扫描顺序3: 从下到上，从左到右
             maxChange = Mathf.Max(maxChange,
                 PerformSweep(_height - 1, -1, -1, 0, _width, 1));
 
-            // 扫描顺序4: 从下到上，从右到左
             maxChange = Mathf.Max(maxChange,
                 PerformSweep(_height - 1, -1, -1, _width - 1, -1, -1));
 
-            // 检查收敛
             if (maxChange < tolerance)
             {
                 Debug.Log($"FSS converged after {iter + 1} iterations");
                 break;
             }
         }
+    }
+
+    public void Solve(int goalX, int goalY, int maxIterations = 8, float tolerance = 0.001f)
+    {
+        Solve(new List<Vector2Int> { new Vector2Int(goalX, goalY) }, maxIterations, tolerance);
     }
 
     // 寻找最近的可通行点作为目标
@@ -282,14 +281,44 @@ public class NavFlowField : IHeatMap
             for (int y = 0; y < gridManager.Width; y++)
             {
                 Grid grid = gridManager.GetGridXY(x, y);
-                if (grid.IsObstacle || grid.FactoryTowers.Count > 0)
+                if (grid.IsObstacle)
                 {
                     _solver.SetObstacle(x, y, true);
                 }
             }
         }
 
-        _solver.Solve(_goal.x, _goal.y, maxIterations: 8);
+        List<Vector2Int> goals = new List<Vector2Int>();
+        if (gridManager != null && gridManager.Grids != null)
+        {
+            for (int x = 0; x < gridManager.Length; x++)
+            {
+                for (int y = 0; y < gridManager.Width; y++)
+                {
+                    Grid grid = gridManager.GetGridXY(x, y);
+                    if (grid != null)
+                    {
+                        foreach (GameObject factoryObj in grid.FactoryTowers)
+                        {
+                            if (factoryObj != null)
+                            {
+                                Vector3 worldPos = factoryObj.transform.position;
+                                int cellX = Mathf.RoundToInt((worldPos.x - _mapRect.xMin) / _mapRect.width * _solver.Width);
+                                int cellY = Mathf.RoundToInt((worldPos.z - _mapRect.yMin) / _mapRect.height * _solver.Height);
+                                cellX = Mathf.Clamp(cellX, 0, _solver.Width - 1);
+                                cellY = Mathf.Clamp(cellY, 0, _solver.Height - 1);
+                                goals.Add(new Vector2Int(cellX, cellY));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (goals.Count > 0)
+        {
+            _solver.Solve(goals, maxIterations: 8);
+        }
 
         HeatMapChangeEvent?.Invoke();
     }
