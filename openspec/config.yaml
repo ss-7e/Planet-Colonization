@@ -1,0 +1,18 @@
+schema: spec-driven
+context: |
+    Language: Chinese (Simplified)
+    Write in Chinese (Simplified), but:
+    - Keep technical terms like "API", "REST", "GraphQL" in English
+    - Keep UPPERCASE spec terms (e.g., "SHALL", "WHEN", "THEN") in English
+    - Keep section headers (e.g., "Goals", "Non-goals", "Tasks") in English
+    - Code examples and file paths remain in English
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
